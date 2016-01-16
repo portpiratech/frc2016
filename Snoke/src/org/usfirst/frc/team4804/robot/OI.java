@@ -1,7 +1,8 @@
 package org.usfirst.frc.team4804.robot;
 
-import edu.wpi.first.wpilibj.buttons.Button;
-import org.usfirst.frc.team4804.robot.commands.ExampleCommand;
+import org.usfirst.frc.team4804.robot.commands.CannonLoad;
+
+import com.portpiratech.xbox360.XboxController;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -34,5 +35,20 @@ public class OI {
     // Start the command when the button is released  and let it run the command
     // until it is finished as determined by it's isFinished method.
     // button.whenReleased(new ExampleCommand());
+	
+	private static final int OPERATOR_CONTROLLER_PORT = 1;
+	private static final int DRIVER_CONTROLLER_PORT = 0;
+	private XboxController driverController = new XboxController(DRIVER_CONTROLLER_PORT);
+    private XboxController operatorController = new XboxController(OPERATOR_CONTROLLER_PORT);
+    
+	public static final int TANKDRIVE_LEFT_PORT = 2; // TalonSRX
+	public static final int TANKDRIVE_RIGHT_PORT = 3; // TalonSRX
+	public static final int CANNONMOTOR_PORT = 4; // TalonSRX
+	public static final int CANNONPOSITION_PORT = 5; // TalonSRX
+	
+	public OI() {
+        // Connect the buttons to commands
+		operatorController.getAButton().whenPressed(new CannonLoad());
+	}
 }
 
