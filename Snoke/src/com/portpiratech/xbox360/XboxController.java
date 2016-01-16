@@ -89,5 +89,16 @@ public class XboxController extends Joystick {
 		return new JoystickButton(this, 7);
 	}
 	
+	public JoystickButton getStart() {
+		return new JoystickButton(this, 8);
+	}
+	
+	public JoystickButton getLStickButton() {
+		return new JoystickButton(this, 9);
+	}
+	
+	public JoystickButton getRStickButton() {
+		return new JoystickButton(this, 10);
+	}
 
 }

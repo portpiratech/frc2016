@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4804.robot;
 
+import org.usfirst.frc.team4804.robot.commands.CannonLaunch;
 import org.usfirst.frc.team4804.robot.commands.CannonLoad;
 
 import com.portpiratech.xbox360.XboxController;
@@ -41,14 +42,15 @@ public class OI {
 	private XboxController driverController = new XboxController(DRIVER_CONTROLLER_PORT);
     private XboxController operatorController = new XboxController(OPERATOR_CONTROLLER_PORT);
     
-	public static final int TANKDRIVE_LEFT_PORT = 2; // TalonSRX
-	public static final int TANKDRIVE_RIGHT_PORT = 3; // TalonSRX
-	public static final int CANNONMOTOR_PORT = 4; // TalonSRX
-	public static final int CANNONPOSITION_PORT = 5; // TalonSRX
+	public static final int TANKDRIVE_LEFT_ID = 2; // TalonSRX
+	public static final int TANKDRIVE_RIGHT_ID = 3; // TalonSRX
+	public static final int CANNONMOTOR_ID = 4; // TalonSRX
+	public static final int CANNONPOSITION_ID = 5; // TalonSRX
 	
 	public OI() {
         // Connect the buttons to commands
 		operatorController.getAButton().whenPressed(new CannonLoad());
+		operatorController.getBButton().whenPressed(new CannonLaunch());
 	}
 }
 

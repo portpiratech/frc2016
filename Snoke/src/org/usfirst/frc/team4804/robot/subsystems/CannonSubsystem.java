@@ -2,7 +2,6 @@
 package org.usfirst.frc.team4804.robot.subsystems;
 
 import org.usfirst.frc.team4804.robot.Robot;
-import org.usfirst.frc.team4804.robot.commands.ExampleCommand;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 
@@ -13,8 +12,13 @@ public class CannonSubsystem extends Subsystem {
     
 	// Wheel launcher variables
 	public static double motorSpeed = 0;
-	public static final double LOAD_SPEED = -0.1;
-	public static final double LAUNCH_SPEED = 0.2;
+	// public static final double LOAD_SPEED = -0.1;
+	// public static final double LAUNCH_SPEED = 0.2;
+	
+	public static final double LOAD_SPEED_L = -0.1;
+	public static final double LOAD_SPEED_R = -0.15;
+	public static final double LAUNCH_SPEED_L = 0.2;
+	public static final double LAUNCH_SPEED_R = 0.2;
 	
 	// Cannon positioning variables
 	public static double tiltAngle = 0;
@@ -33,16 +37,22 @@ public class CannonSubsystem extends Subsystem {
     }
     
     public void motorLoad() {
-    	setMotors(LOAD_SPEED);
+    	setMotor("L", LOAD_SPEED_L);
+    	setMotor("R", LOAD_SPEED_R);
     }
     
     public void motorLaunch() {
-    	setMotors(LAUNCH_SPEED);
+    	setMotor("L", LAUNCH_SPEED_L);
+    	setMotor("R", LAUNCH_SPEED_R);
     }
     
-    public void setMotors(double speed) {
-    	Robot.cannonShooterMotorLeft.set(speed);
-    	Robot.cannonShooterMotorRight.set(speed); // check if this is the right method
+    public void setMotor(String side, double speed) {
+    	// side "L" = left
+    	// side "R" = right1
+    	switch(side) {
+    		case "L": Robot.cannonShooterMotorLeft.set(speed); // check if this is the right method
+    		case "R": Robot.cannonShooterMotorRight.set(speed);
+    	}
     }
     
     public void setCannonPosition(double position) {
