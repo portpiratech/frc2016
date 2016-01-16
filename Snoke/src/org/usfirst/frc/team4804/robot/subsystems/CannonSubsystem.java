@@ -15,10 +15,10 @@ public class CannonSubsystem extends Subsystem {
 	// public static final double LOAD_SPEED = -0.1;
 	// public static final double LAUNCH_SPEED = 0.2;
 	
-	public static final double LOAD_SPEED_L = -0.1;
-	public static final double LOAD_SPEED_R = -0.15;
-	public static final double LAUNCH_SPEED_L = 0.2;
-	public static final double LAUNCH_SPEED_R = 0.2;
+	public static final double LOAD_SPEED_L = -1.0;
+	public static final double LOAD_SPEED_R = -1.0;
+	public static final double LAUNCH_SPEED_L = 1.0;
+	public static final double LAUNCH_SPEED_R = 1.0;
 	
 	// Cannon positioning variables
 	public static double tiltAngle = 0;
