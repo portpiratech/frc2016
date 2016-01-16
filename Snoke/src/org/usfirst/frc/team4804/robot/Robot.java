@@ -24,10 +24,11 @@ public class Robot extends IterativeRobot {
 	public static OI oi;
 	public static CannonSubsystem cannonSubsystem;
 	
-	public static CANTalon tankDriveLeft = new CANTalon(2);
-	public static CANTalon tankDriveRight = new CANTalon(3);
-	public static CANTalon cannonShooterMotors = new CANTalon(4);		
-	public static CANTalon cannonTiltMotor = new CANTalon(5);
+	// public static CANTalon tankDriveLeft = new CANTalon(2);
+	// public static CANTalon tankDriveRight = new CANTalon(3);
+	public static CANTalon cannonShooterMotorRight = new CANTalon(2);
+	public static CANTalon cannonShooterMotorLeft = new CANTalon(3);		
+	public static CANTalon cannonTiltMotor = new CANTalon(4);
 
     Command autonomousCommand;
 
