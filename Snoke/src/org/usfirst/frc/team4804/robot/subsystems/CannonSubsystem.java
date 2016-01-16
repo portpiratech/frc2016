@@ -41,7 +41,8 @@ public class CannonSubsystem extends Subsystem {
     }
     
     public void setMotors(double speed) {
-    	Robot.cannonShooterMotors.set(speed); // check if this is the right method
+    	Robot.cannonShooterMotorLeft.set(speed);
+    	Robot.cannonShooterMotorRight.set(speed); // check if this is the right method
     }
     
     public void setCannonPosition(double position) {

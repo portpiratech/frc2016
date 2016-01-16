@@ -7,6 +7,7 @@ import org.usfirst.frc.team4804.robot.subsystems.ExampleSubsystem;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -24,11 +25,16 @@ public class Robot extends IterativeRobot {
 	public static OI oi;
 	public static CannonSubsystem cannonSubsystem;
 	
-	public static CANTalon tankDriveLeft = new CANTalon(2);
-	public static CANTalon tankDriveRight = new CANTalon(3);
-	public static CANTalon cannonShooterMotors = new CANTalon(4);		
+	public static Talon tankDriveLeftOld;
+	public static Talon tankDriveRightOld;
+	public static CANTalon tankDriveLeft;
+	public static CANTalon tankDriveRight;
+	public static CANTalon cannonShooterMotorRight;
+	public static CANTalon cannonShooterMotorLeft;
 	public static CANTalon cannonTiltMotor = new CANTalon(5);
 
+	public static RobotModes currentMode = RobotModes.CANNON_MODE;
+	
     Command autonomousCommand;
 
     /**
@@ -39,6 +45,26 @@ public class Robot extends IterativeRobot {
 		oi = new OI();
         // instantiate the command used for the autonomous period
         autonomousCommand = new ExampleCommand();
+        
+        switch (currentMode){
+        
+        case CANNON_MODE:
+        	cannonShooterMotorRight = new CANTalon(2);
+        	cannonShooterMotorLeft = new CANTalon(3);
+        	break;
+        
+        case NEW_TALON_TANK_MODE:
+        	tankDriveRight = new CANTalon(2);
+        	tankDriveLeft = new CANTalon(3);
+        	break;
+        	
+        case OLD_TALON_TANK_MODE:
+        	tankDriveLeftOld = new Talon(1);
+            tankDriveRightOld = new Talon(0);
+        	break;
+        	
+        }
+        
     }
 	
 	public void disabledPeriodic() {
