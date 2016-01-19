@@ -13,7 +13,6 @@ public class XboxController extends Joystick {
 
 	/**
 	 * Constructor which takes the XBox Controller port and calls super class.
-	 * 
 	 * @param port that Xbox Controller is configured on.
 	 */
 	public XboxController(int port) {
