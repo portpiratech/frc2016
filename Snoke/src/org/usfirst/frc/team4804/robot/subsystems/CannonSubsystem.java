@@ -15,8 +15,8 @@ public class CannonSubsystem extends Subsystem {
 	// public static final double LOAD_SPEED = -0.1;
 	// public static final double LAUNCH_SPEED = 0.2;
 	
-	public static final double LOAD_SPEED_L = -1.0;
-	public static final double LOAD_SPEED_R = -1.0;
+	public static final double LOAD_SPEED_L = -0.05;
+	public static final double LOAD_SPEED_R = -0.05;
 	public static final double LAUNCH_SPEED_L = 1.0;
 	public static final double LAUNCH_SPEED_R = 1.0;
 	
@@ -49,6 +49,7 @@ public class CannonSubsystem extends Subsystem {
     public void setMotor(String side, double speed) {
     	// side "L" = left
     	// side "R" = right1
+    		
     	switch(side) {
     		case "L": Robot.cannonShooterMotorLeft.set(speed); // check if this is the right method
     		case "R": Robot.cannonShooterMotorRight.set(speed);

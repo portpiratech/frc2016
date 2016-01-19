@@ -3,7 +3,6 @@ package org.usfirst.frc.team4804.robot;
 
 import org.usfirst.frc.team4804.robot.commands.ExampleCommand;
 import org.usfirst.frc.team4804.robot.subsystems.CannonSubsystem;
-import org.usfirst.frc.team4804.robot.subsystems.ExampleSubsystem;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -21,9 +20,9 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
  */
 public class Robot extends IterativeRobot {
 
-	public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
-	public static OI oi;
-	public static CannonSubsystem cannonSubsystem;
+	//public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
+	public static OI oi = new OI();
+	public static CannonSubsystem cannonSubsystem = new CannonSubsystem();
 	
 	public static Talon tankDriveLeftOld;
 	public static Talon tankDriveRightOld;
@@ -31,11 +30,33 @@ public class Robot extends IterativeRobot {
 	public static CANTalon tankDriveRight;
 	public static CANTalon cannonShooterMotorRight;
 	public static CANTalon cannonShooterMotorLeft;
-	public static CANTalon cannonTiltMotor = new CANTalon(5);
+	public static CANTalon cannonTiltMotor; //= new CANTalon(5);
 
 	public static RobotModes currentMode = RobotModes.CANNON_MODE;
 	
     Command autonomousCommand;
+    /*
+    CameraServer server;
+    
+    public Robot() {
+        server = CameraServer.getInstance();
+        server.setQuality(50);
+        //the camera name (ex "cam0") can be found through the roborio web interface
+        server.startAutomaticCapture("cam0");
+    }
+    
+    /**
+     * start up automatic capture you should see the video stream from the
+     * webcam in your FRC PC Dashboard.
+     */
+    /*public void operatorControl() {
+
+        while (isOperatorControl() && isEnabled()) {
+            // robot code here!
+            Timer.delay(0.005);		// wait for a motor update time
+        }
+    }
+    */
 
     /**
      * This function is run when the robot is first started up and should be
@@ -111,6 +132,7 @@ public class Robot extends IterativeRobot {
      */
     public void testPeriodic() {
         LiveWindow.run();
+        
     }
     
     
