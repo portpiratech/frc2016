@@ -21,8 +21,9 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 public class Robot extends IterativeRobot {
 
 	//public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
-	public static OI oi = new OI();
+	
 	public static CannonSubsystem cannonSubsystem = new CannonSubsystem();
+	public static OI oi = new OI();
 	
 	public static Talon tankDriveLeftOld;
 	public static Talon tankDriveRightOld;

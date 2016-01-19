@@ -2,6 +2,7 @@ package org.usfirst.frc.team4804.robot;
 
 import org.usfirst.frc.team4804.robot.commands.CannonLaunch;
 import org.usfirst.frc.team4804.robot.commands.CannonLoad;
+import org.usfirst.frc.team4804.robot.commands.CannonStop;
 
 import com.portpiratech.xbox360.XboxController;
 
@@ -49,8 +50,9 @@ public class OI {
 	
 	public OI() {
         // Connect the buttons to commands
-		operatorController.getAButton().whenPressed(new CannonLoad());
-		operatorController.getBButton().whenPressed(new CannonLaunch());
+		operatorController.getLeftBumper().whenPressed(new CannonLoad());
+		operatorController.getRightBumper().whenPressed(new CannonLaunch());
+		operatorController.getYButton().whenPressed(new CannonStop());
 	}
 }
 
