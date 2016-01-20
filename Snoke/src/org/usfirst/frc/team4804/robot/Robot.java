@@ -3,10 +3,15 @@ package org.usfirst.frc.team4804.robot;
 
 import org.usfirst.frc.team4804.robot.commands.ExampleCommand;
 import org.usfirst.frc.team4804.robot.subsystems.CannonSubsystem;
+import org.usfirst.frc.team4804.robot.subsystems.PistonSubsystem;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -23,20 +28,24 @@ public class Robot extends IterativeRobot {
 	//public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 	
 	public static CannonSubsystem cannonSubsystem = new CannonSubsystem();
+	public static PistonSubsystem pistonSubsystem = new PistonSubsystem();
 	public static OI oi = new OI();
 	
 	public static Talon tankDriveLeftOld;
 	public static Talon tankDriveRightOld;
 	public static CANTalon tankDriveLeft;
 	public static CANTalon tankDriveRight;
-	public static CANTalon cannonShooterMotorRight;
-	public static CANTalon cannonShooterMotorLeft;
+	public static CANTalon cannonLauncherMotorRight;
+	public static CANTalon cannonLauncherMotorLeft;
 	public static CANTalon cannonTiltMotor; //= new CANTalon(5);
+	public static Compressor cannonCompressor;
+	public static DoubleSolenoid cannonSolenoid;
+	public static DoubleSolenoid solenoid2;
 
 	public static RobotModes currentMode = RobotModes.CANNON_MODE;
 	
     Command autonomousCommand;
-    /*
+    
     CameraServer server;
     
     public Robot() {
@@ -50,14 +59,14 @@ public class Robot extends IterativeRobot {
      * start up automatic capture you should see the video stream from the
      * webcam in your FRC PC Dashboard.
      */
-    /*public void operatorControl() {
+    public void operatorControl() {
 
         while (isOperatorControl() && isEnabled()) {
             // robot code here!
             Timer.delay(0.005);		// wait for a motor update time
         }
     }
-    */
+    
 
     /**
      * This function is run when the robot is first started up and should be
@@ -65,14 +74,18 @@ public class Robot extends IterativeRobot {
      */
     public void robotInit() {
 		oi = new OI();
+		
         // instantiate the command used for the autonomous period
         autonomousCommand = new ExampleCommand();
         
         switch (currentMode){
         
         case CANNON_MODE:
-        	cannonShooterMotorRight = new CANTalon(2);
-        	cannonShooterMotorLeft = new CANTalon(3);
+        	cannonLauncherMotorRight = new CANTalon(OI.CANNON_LAUNCHER_RIGHT_ID); //2
+        	cannonLauncherMotorLeft = new CANTalon(OI.CANNON_LAUNCHER_LEFT_ID); //3
+        	cannonSolenoid = new DoubleSolenoid(OI.SOLENOID1_PORT1, OI.SOLENOID1_PORT2);
+        	cannonCompressor = new Compressor(1);
+        	cannonCompressor.setClosedLoopControl(true);
         	break;
         
         case NEW_TALON_TANK_MODE:

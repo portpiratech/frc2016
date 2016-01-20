@@ -21,7 +21,7 @@ public class XboxController extends Joystick {
 	}
 	
 	/**
-	 * 
+	 * This method returns the value of the Left Stick X Axis on the XBox Controller.
 	 * @return a double value representing the horizontal position of the Left Stick on the XBox Controller.
 	 */
 	public double getLeftStickXAxis() {
@@ -30,7 +30,7 @@ public class XboxController extends Joystick {
 	}
 	
 	/**
-	 * 
+	 * This method returns the value of the Left Stick Y Axis on the XBox Controller.
 	 * @return a double value representing the vertical position of the Left Stick on the XBox Controller.
 	 */
 	public double getLeftStickYAxis() {
@@ -39,7 +39,7 @@ public class XboxController extends Joystick {
 	}
 	
 	/**
-	 * 
+	 * This method returns the value of the Left Trigger on the Xbox Controller.
 	 * @return a double value representing the position of the Left Trigger on the XBox Controller.
 	 */
 	public double getLeftTriggerAxis() {
@@ -47,7 +47,7 @@ public class XboxController extends Joystick {
 	}
 	
 	/**
-	 * 
+	 * This method returns the value of the Right Trigger on the XBox Controller.
 	 * @return a double value representing the position of the Right Trigger on the XBox Controller.
 	 */
 	public double getRightTriggerAxis() {
@@ -55,7 +55,7 @@ public class XboxController extends Joystick {
 	}
 	
 	/**
-	 * 
+	 * This method returns the value of the Right Stick X Axis on the XBox Controller.
 	 * @return a double value representing the horizontal position of the Right Stick on the XBox Controller.
 	 */
 	public double getRightStickXAxis() {
@@ -63,7 +63,7 @@ public class XboxController extends Joystick {
 	}
 	
 	/**
-	 * 
+	 * This method returns the value of the Right Stick Y Axis on the XBox Controller.
 	 * @return a double value representing the vertical position of the Right Stick on the XBox Controller.
 	 */
 	public double getRightStickYAxis() {
@@ -72,7 +72,7 @@ public class XboxController extends Joystick {
 	
 	/**
 	 * This method returns the A Button from the XBox Controller
-	 * @return
+	 * @return JoystickButton Mapped to Button A on Xbox Controller
 	 */
 	public JoystickButton getAButton() {
 		return new JoystickButton(this,1);
@@ -103,7 +103,7 @@ public class XboxController extends Joystick {
 	}
 	
 	/**
-	 * This method returns the left bumper button from the XBox Controller
+	 * This method returns the Left Bumper button from the XBox Controller
 	 * @return JoystickButton Mapped to button left bumper on Xbox Controller
 	 */
 	public JoystickButton getLeftBumper() {
@@ -111,7 +111,7 @@ public class XboxController extends Joystick {
 	}
 	
 	/**
-	 * This method returns the right bumper button from the XBox Controller
+	 * This method returns the Right Bumper button from the XBox Controller
 	 * @return JoystickButton Mapped to button right bumper on Xbox Controller
 	 */
 	public JoystickButton getRightBumper() {
@@ -119,7 +119,7 @@ public class XboxController extends Joystick {
 	}
 	
 	/**
-	 * This method returns the select button from the XBox Controller
+	 * This method returns the Select button from the XBox Controller
 	 * @return JoystickButton Mapped to button select on Xbox Controller
 	 */
 	public JoystickButton getSelect() {
@@ -127,7 +127,7 @@ public class XboxController extends Joystick {
 	}
 	
 	/**
-	 * This method returns the start button from the XBox Controller
+	 * This method returns the Start button from the XBox Controller
 	 * @return JoystickButton Mapped to button start on Xbox Controller
 	 */
 	public JoystickButton getStart() {

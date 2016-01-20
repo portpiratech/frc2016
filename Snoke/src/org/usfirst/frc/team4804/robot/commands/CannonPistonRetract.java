@@ -8,11 +8,11 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class CannonLoad extends Command {
-	
-    public CannonLoad() {
+public class CannonPistonRetract extends Command {
+
+    public CannonPistonRetract() {
         // Use requires() here to declare subsystem dependencies
-        requires(Robot.cannonSubsystem);
+        requires(Robot.pistonSubsystem);
     }
 
     // Called just before this Command runs the first time
@@ -21,7 +21,7 @@ public class CannonLoad extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.cannonSubsystem.motorLoad();
+    	Robot.pistonSubsystem.retractLauncher();
     }
 
     // Make this return true when this Command no longer needs to run execute()

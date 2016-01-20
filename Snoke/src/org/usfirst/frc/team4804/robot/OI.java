@@ -1,8 +1,11 @@
 package org.usfirst.frc.team4804.robot;
 
-import org.usfirst.frc.team4804.robot.commands.CannonLaunch;
-import org.usfirst.frc.team4804.robot.commands.CannonLoad;
-import org.usfirst.frc.team4804.robot.commands.CannonStop;
+import org.usfirst.frc.team4804.robot.commands.CannonPistonExtend;
+import org.usfirst.frc.team4804.robot.commands.CannonPistonRetract;
+import org.usfirst.frc.team4804.robot.commands.CannonPistonStop;
+import org.usfirst.frc.team4804.robot.commands.CannonWheelLaunch;
+import org.usfirst.frc.team4804.robot.commands.CannonWheelLoad;
+import org.usfirst.frc.team4804.robot.commands.CannonWheelStop;
 
 import com.portpiratech.xbox360.XboxController;
 
@@ -43,16 +46,32 @@ public class OI {
 	private XboxController driverController = new XboxController(DRIVER_CONTROLLER_PORT);
     private XboxController operatorController = new XboxController(OPERATOR_CONTROLLER_PORT);
     
-	public static final int TANKDRIVE_LEFT_ID = 2; // TalonSRX
-	public static final int TANKDRIVE_RIGHT_ID = 3; // TalonSRX
-	public static final int CANNONMOTOR_ID = 4; // TalonSRX
-	public static final int CANNONPOSITION_ID = 5; // TalonSRX
+    // Device IDs
+    public static final int OLD_TANKDRIVE_LEFT_ID = 0; //Talon
+	public static final int OLD_TANKDRIVE_RIGHT_ID = 1; //Talon
+    public static final int NEW_TANKDRIVE_LEFT_ID = 2; //CAN Talon SRX
+	public static final int NEW_TANKDRIVE_RIGHT_ID = 3; //CAN Talon SRX
+	public static final int CANNON_LAUNCHER_RIGHT_ID = 2; //CAN Talon SRX
+	public static final int CANNON_LAUNCHER_LEFT_ID = 3; //CAN Talon SRX
+	public static final int SOLENOID1_PORT1 = 0; //DoubleSolenoid
+    public static final int SOLENOID1_PORT2 = 1; //DoubleSolenoid
+    public static final int SOLENOID2_PORT1 = 2; //DoubleSolenoid
+    public static final int SOLENOID2_PORT2 = 3; //DoubleSolenoid
+    // Do we need a PCM ID?
 	
 	public OI() {
         // Connect the buttons to commands
-		operatorController.getLeftBumper().whenPressed(new CannonLoad());
-		operatorController.getRightBumper().whenPressed(new CannonLaunch());
-		operatorController.getYButton().whenPressed(new CannonStop());
+		
+		// Driver: Tank drive
+		
+		// Operator: Cannon/piston controls
+		operatorController.getLeftBumper().whenPressed(new CannonWheelLoad());
+		operatorController.getRightBumper().whenPressed(new CannonWheelLaunch());
+		operatorController.getYButton().whenPressed(new CannonWheelStop());
+		
+		operatorController.getAButton().whenPressed(new CannonPistonExtend());
+		operatorController.getBButton().whenPressed(new CannonPistonRetract());
+		operatorController.getXButton().whenPressed(new CannonPistonStop());
 	}
 }
 
