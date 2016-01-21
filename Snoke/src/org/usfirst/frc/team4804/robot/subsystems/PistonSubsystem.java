@@ -14,7 +14,6 @@ public class PistonSubsystem extends Subsystem {
 
 	public PistonSubsystem() {
 		super();
-		//solenoid2 = new DoubleSolenoid(OI.SOLENOID2_PORT1,OI.SOLENOID2_PORT2); move to Robot.java when we have a use for this
 	}
 
 

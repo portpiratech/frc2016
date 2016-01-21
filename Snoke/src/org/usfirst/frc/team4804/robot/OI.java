@@ -9,6 +9,8 @@ import org.usfirst.frc.team4804.robot.commands.CannonWheelStop;
 
 import com.portpiratech.xbox360.XboxController;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the commands and command groups that allow control of the robot.
@@ -53,10 +55,11 @@ public class OI {
 	public static final int NEW_TANKDRIVE_RIGHT_ID = 3; //CAN Talon SRX
 	public static final int CANNON_LAUNCHER_RIGHT_ID = 2; //CAN Talon SRX
 	public static final int CANNON_LAUNCHER_LEFT_ID = 3; //CAN Talon SRX
-	public static final int SOLENOID1_PORT1 = 0; //DoubleSolenoid
-    public static final int SOLENOID1_PORT2 = 1; //DoubleSolenoid
-    public static final int SOLENOID2_PORT1 = 2; //DoubleSolenoid
-    public static final int SOLENOID2_PORT2 = 3; //DoubleSolenoid
+	public static final int SOLENOID1_PORT1 = 1; //DoubleSolenoid
+    public static final int SOLENOID1_PORT2 = 2; //DoubleSolenoid
+    public static final int SOLENOID2_PORT1 = 3; //DoubleSolenoid
+    public static final int SOLENOID2_PORT2 = 4; //DoubleSolenoid
+    public static final int COMPRESSOR_ID = 1; //
     // Do we need a PCM ID?
 	
 	public OI() {
@@ -72,6 +75,11 @@ public class OI {
 		operatorController.getAButton().whenPressed(new CannonPistonExtend());
 		operatorController.getBButton().whenPressed(new CannonPistonRetract());
 		operatorController.getXButton().whenPressed(new CannonPistonStop());
+		
+		// SmartDashboard commands
+		/*SmartDashboard.putData("Cannon Piston Extend", new CannonPistonExtend());
+		SmartDashboard.putData("Cannon Piston Retract", new CannonPistonRetract());
+		SmartDashboard.putData("Cannon Piston Stop", new CannonPistonStop());*/
 	}
 }
 

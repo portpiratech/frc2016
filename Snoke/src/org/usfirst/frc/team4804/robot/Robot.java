@@ -83,7 +83,7 @@ public class Robot extends IterativeRobot {
         case CANNON_MODE:
         	cannonLauncherMotorRight = new CANTalon(OI.CANNON_LAUNCHER_RIGHT_ID); //2
         	cannonLauncherMotorLeft = new CANTalon(OI.CANNON_LAUNCHER_LEFT_ID); //3
-        	cannonSolenoid = new DoubleSolenoid(OI.SOLENOID1_PORT1, OI.SOLENOID1_PORT2);
+        	cannonSolenoid = new DoubleSolenoid(OI.SOLENOID1_PORT1, OI.SOLENOID1_PORT2); //1,2
         	cannonCompressor = new Compressor(1);
         	cannonCompressor.setClosedLoopControl(true);
         	break;
