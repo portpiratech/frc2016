@@ -59,7 +59,7 @@ public class CannonSubsystem extends Subsystem {
     
     // Positioning
     public void setCannonPosition(double position) {
-    	Robot.cannonTiltMotor.set(position); // check if this is the right method
+//    	Robot.cannonTiltMotor.set(position); // check if this is the right method
     }
     
     

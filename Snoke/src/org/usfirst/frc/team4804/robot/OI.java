@@ -55,12 +55,12 @@ public class OI {
 	public static final int NEW_TANKDRIVE_RIGHT_ID = 3; //CAN Talon SRX
 	public static final int CANNON_LAUNCHER_RIGHT_ID = 2; //CAN Talon SRX
 	public static final int CANNON_LAUNCHER_LEFT_ID = 3; //CAN Talon SRX
-	public static final int SOLENOID1_PORT1 = 1; //DoubleSolenoid
-    public static final int SOLENOID1_PORT2 = 2; //DoubleSolenoid
-    public static final int SOLENOID2_PORT1 = 3; //DoubleSolenoid
-    public static final int SOLENOID2_PORT2 = 4; //DoubleSolenoid
-    public static final int COMPRESSOR_ID = 1; //
-    // Do we need a PCM ID?
+	public static final int SOLENOID1_PORT1 = 0; //DoubleSolenoid
+    public static final int SOLENOID1_PORT2 = 1; //DoubleSolenoid
+    public static final int SOLENOID2_PORT1 = 2; //DoubleSolenoid
+    public static final int SOLENOID2_PORT2 = 3; //DoubleSolenoid
+    public static final int COMPRESSOR_ID = 1; //Compressor
+    public static final int PCM_ID = 1; //PCM (used for DoubleSolenoids)
 	
 	public OI() {
         // Connect the buttons to commands

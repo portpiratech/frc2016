@@ -8,7 +8,6 @@ import org.usfirst.frc.team4804.robot.subsystems.PistonSubsystem;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
@@ -27,9 +26,9 @@ public class Robot extends IterativeRobot {
 
 	//public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 	
-	public static CannonSubsystem cannonSubsystem = new CannonSubsystem();
-	public static PistonSubsystem pistonSubsystem = new PistonSubsystem();
-	public static OI oi = new OI();
+	public static CannonSubsystem cannonSubsystem;
+	public static PistonSubsystem pistonSubsystem;
+	public static OI oi;
 	
 	public static Talon tankDriveLeftOld;
 	public static Talon tankDriveRightOld;
@@ -37,10 +36,8 @@ public class Robot extends IterativeRobot {
 	public static CANTalon tankDriveRight;
 	public static CANTalon cannonLauncherMotorRight;
 	public static CANTalon cannonLauncherMotorLeft;
-	public static CANTalon cannonTiltMotor; //= new CANTalon(5);
+	//public static CANTalon cannonTiltMotor; //= new CANTalon(5);
 	public static Compressor cannonCompressor;
-	public static DoubleSolenoid cannonSolenoid;
-	public static DoubleSolenoid solenoid2;
 
 	public static RobotModes currentMode = RobotModes.CANNON_MODE;
 	
@@ -73,17 +70,14 @@ public class Robot extends IterativeRobot {
      * used for any initialization code.
      */
     public void robotInit() {
-		oi = new OI();
-		
-        // instantiate the command used for the autonomous period
-        autonomousCommand = new ExampleCommand();
-        
+    	
         switch (currentMode){
         
         case CANNON_MODE:
+        	cannonSubsystem = new CannonSubsystem();
+        	pistonSubsystem = new PistonSubsystem();
         	cannonLauncherMotorRight = new CANTalon(OI.CANNON_LAUNCHER_RIGHT_ID); //2
         	cannonLauncherMotorLeft = new CANTalon(OI.CANNON_LAUNCHER_LEFT_ID); //3
-        	cannonSolenoid = new DoubleSolenoid(OI.SOLENOID1_PORT1, OI.SOLENOID1_PORT2); //1,2
         	cannonCompressor = new Compressor(1);
         	cannonCompressor.setClosedLoopControl(true);
         	break;
@@ -100,6 +94,10 @@ public class Robot extends IterativeRobot {
         	
         }
         
+        oi = new OI();
+        
+     // instantiate the command used for the autonomous period
+        autonomousCommand = new ExampleCommand();
     }
 	
 	public void disabledPeriodic() {

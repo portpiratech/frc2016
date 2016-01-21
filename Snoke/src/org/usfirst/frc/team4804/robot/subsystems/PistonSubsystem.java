@@ -1,8 +1,10 @@
 package org.usfirst.frc.team4804.robot.subsystems;
 
+import org.usfirst.frc.team4804.robot.OI;
 import org.usfirst.frc.team4804.robot.Robot;
 import org.usfirst.frc.team4804.robot.commands.CannonPistonStop;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
@@ -11,9 +13,12 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  * pneumatics control module (PCM).
  */
 public class PistonSubsystem extends Subsystem {
-
+	
+	private DoubleSolenoid cannonSolenoid;
+	
 	public PistonSubsystem() {
 		super();
+		cannonSolenoid = new DoubleSolenoid(OI.PCM_ID, OI.SOLENOID1_PORT1, OI.SOLENOID1_PORT2); //PCM ID 1, Solenoid ports 0,1
 	}
 
 
@@ -30,15 +35,15 @@ public class PistonSubsystem extends Subsystem {
 	
 	// Cannon solenoid (Launcher)
 	public void extendLauncher() {
-		Robot.cannonSolenoid.set(Value.kForward);
+		cannonSolenoid.set(Value.kForward);
 	}
 	
 	public void retractLauncher(){
-		Robot.cannonSolenoid.set(Value.kReverse);
+		cannonSolenoid.set(Value.kReverse);
 	}
 	
 	public void stopLauncher() {
-		Robot.cannonSolenoid.set(Value.kOff);
+		cannonSolenoid.set(Value.kOff);
 	}
 	
 	/* last year's code
