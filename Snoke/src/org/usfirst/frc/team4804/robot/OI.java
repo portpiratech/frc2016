@@ -1,15 +1,11 @@
 package org.usfirst.frc.team4804.robot;
 
-import org.usfirst.frc.team4804.robot.commands.CannonPistonExtend;
-import org.usfirst.frc.team4804.robot.commands.CannonPistonRetract;
-import org.usfirst.frc.team4804.robot.commands.CannonPistonStop;
+import org.usfirst.frc.team4804.robot.commands.CannonPistonFire;
 import org.usfirst.frc.team4804.robot.commands.CannonWheelLaunch;
 import org.usfirst.frc.team4804.robot.commands.CannonWheelLoad;
 import org.usfirst.frc.team4804.robot.commands.CannonWheelStop;
 
 import com.portpiratech.xbox360.XboxController;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -72,14 +68,12 @@ public class OI {
 		operatorController.getRightBumper().whenPressed(new CannonWheelLaunch());
 		operatorController.getYButton().whenPressed(new CannonWheelStop());
 		
-		operatorController.getAButton().whenPressed(new CannonPistonExtend());
-		operatorController.getBButton().whenPressed(new CannonPistonRetract());
-		operatorController.getXButton().whenPressed(new CannonPistonStop());
+		operatorController.getXButton().whenPressed(new CannonPistonFire());
+		
+		//operatorController.getLeftStickYAxis().whenPressed()
 		
 		// SmartDashboard commands
-		/*SmartDashboard.putData("Cannon Piston Extend", new CannonPistonExtend());
-		SmartDashboard.putData("Cannon Piston Retract", new CannonPistonRetract());
-		SmartDashboard.putData("Cannon Piston Stop", new CannonPistonStop());*/
+		// SmartDashboard.putData("Cannon Piston Extend", new CannonPistonExtend());
 	}
 }
 

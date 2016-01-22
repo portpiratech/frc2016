@@ -3,6 +3,7 @@ package org.usfirst.frc.team4804.robot;
 
 import org.usfirst.frc.team4804.robot.commands.ExampleCommand;
 import org.usfirst.frc.team4804.robot.subsystems.CannonSubsystem;
+import org.usfirst.frc.team4804.robot.subsystems.DriveTrainSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.PistonSubsystem;
 
 import edu.wpi.first.wpilibj.CANTalon;
@@ -28,6 +29,7 @@ public class Robot extends IterativeRobot {
 	
 	public static CannonSubsystem cannonSubsystem;
 	public static PistonSubsystem pistonSubsystem;
+	public static DriveTrainSubsystem driveTrainSubsystem;
 	public static OI oi;
 	
 	public static Talon tankDriveLeftOld;
@@ -83,6 +85,7 @@ public class Robot extends IterativeRobot {
         	break;
         
         case NEW_TALON_TANK_MODE:
+        	driveTrainSubsystem = new DriveTrainSubsystem();
         	tankDriveRight = new CANTalon(2);
         	tankDriveLeft = new CANTalon(3);
         	break;

@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.command.Command;
  *
  */
 public class CannonPistonStop extends Command {
-
+	
     public CannonPistonStop() {
         // Use requires() here to declare subsystem dependencies
         requires(Robot.pistonSubsystem);

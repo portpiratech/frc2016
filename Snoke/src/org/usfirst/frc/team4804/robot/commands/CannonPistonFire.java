@@ -3,14 +3,18 @@ package org.usfirst.frc.team4804.robot.commands;
 
 import org.usfirst.frc.team4804.robot.Robot;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
  */
-public class CannonPistonRetract extends Command {
-
-    public CannonPistonRetract() {
+public class CannonPistonFire extends Command {
+	
+	boolean finished = false;
+	
+    public CannonPistonFire() {
         // Use requires() here to declare subsystem dependencies
         requires(Robot.pistonSubsystem);
     }
@@ -21,16 +25,28 @@ public class CannonPistonRetract extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+    	//Extend piston, wait, retract
+    	SmartDashboard.putString("In execute:","CannonPistonFire");
+    	
+    	SmartDashboard.putNumber("Timer", 0.5);
+    	Robot.pistonSubsystem.extendLauncher();
+    	Timer.delay(Robot.pistonSubsystem.firingDelay); //delay for 1 sec
+    	
+    	SmartDashboard.putNumber("Timer", 1);
     	Robot.pistonSubsystem.retractLauncher();
+    	Timer.delay(Robot.pistonSubsystem.firingDelay); //delay for 1 sec
+    	
+    	finished = true;
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+        return finished;
     }
 
     // Called once after isFinished returns true
     protected void end() {
+    	Robot.pistonSubsystem.stopLauncher();
     }
 
     // Called when another command which requires one or more of the same

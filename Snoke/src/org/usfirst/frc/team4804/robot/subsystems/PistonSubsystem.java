@@ -1,7 +1,6 @@
 package org.usfirst.frc.team4804.robot.subsystems;
 
 import org.usfirst.frc.team4804.robot.OI;
-import org.usfirst.frc.team4804.robot.Robot;
 import org.usfirst.frc.team4804.robot.commands.CannonPistonStop;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -15,6 +14,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 public class PistonSubsystem extends Subsystem {
 	
 	private DoubleSolenoid cannonSolenoid;
+	public double firingDelay = 0.5;
 	
 	public PistonSubsystem() {
 		super();
