@@ -14,10 +14,10 @@ public class CannonSubsystem extends Subsystem {
 	
 	// Wheel launcher variables
 	public static double motorSpeed = 0;
-	public static final double LOAD_SPEED_L = -0.2;
-	public static final double LOAD_SPEED_R = -1*LOAD_SPEED_L; // = -0.2;
+	public static final double LOAD_SPEED_L = -0.3;
+	public static final double LOAD_SPEED_R = -1*LOAD_SPEED_L;
 	public static final double LAUNCH_SPEED_L = 1.0;
-	public static final double LAUNCH_SPEED_R = -1*LAUNCH_SPEED_L; // = 0.5;
+	public static final double LAUNCH_SPEED_R = -1*LAUNCH_SPEED_L;
 	
 	// Cannon positioning variables
 	public static double tiltAngle = 0;
