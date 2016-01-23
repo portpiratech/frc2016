@@ -4,6 +4,7 @@ package org.usfirst.frc.team4804.robot.commands;
 import org.usfirst.frc.team4804.robot.Robot;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
@@ -21,6 +22,8 @@ public class DriveCommand extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+    	SmartDashboard.putNumber("POV state:", Robot.oi.driverController.getPOV(0));
+    	SmartDashboard.putNumber("POV count:", Robot.oi.driverController.getPOVCount());
     	Robot.driveTrainSubsystem.drive(Robot.oi.driverController);
     }
 

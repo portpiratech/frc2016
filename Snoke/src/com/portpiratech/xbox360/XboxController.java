@@ -2,6 +2,7 @@ package com.portpiratech.xbox360;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Class which adds helper methods to better use an XBox Controller without having
@@ -148,6 +149,47 @@ public class XboxController extends Joystick {
 	 */
 	public JoystickButton getRStickButton() {
 		return new JoystickButton(this, 10);
+	}
+	
+	public int getDPad(){
+		int rawValue = this.getPOV(0);
+		int dpad = 0;
+		
+		switch(rawValue) {
+		
+		// -1 means not pressed. angles are measured from vertical, moving clockwise
+		case -1: 
+			dpad = -1;
+			break;
+		case 0: 
+			dpad = 0;
+			break;
+		case 45: 
+			dpad = 1;
+			break;
+		case 90: 
+			dpad = 2;
+			break;
+		case 135: 
+			dpad = 3;
+			break;
+		case 180: 
+			dpad = 4;
+			break;
+		case 225: 
+			dpad = 5;
+			break;
+		case 270: 
+			dpad = 6;
+			break;
+		case 315: 
+			dpad = 7;
+			break;
+		default: SmartDashboard.putString("getDPad", "DPad Error");
+		
+		}
+		SmartDashboard.putNumber("actualDpad", dpad);
+		return dpad;
 	}
 
 }
