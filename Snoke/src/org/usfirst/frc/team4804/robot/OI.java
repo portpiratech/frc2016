@@ -50,6 +50,7 @@ public class OI {
     public static final int NEW_TANKDRIVE_RIGHT_ID = 3; //CAN Talon SRX
 	public static final int NEW_TANKDRIVE_LEFT_ID = 4; //CAN Talon SRX
 	public static final int CANNON_LAUNCHER_ID = 2; //CAN Talon SRX
+	public static final int CANNON_TILT_MOTOR_ID = 5; //CAN Talon SRX
 	//public static final int CANNON_LAUNCHER_RIGHT_ID = 2; //CAN Talon SRX
 	//public static final int CANNON_LAUNCHER_LEFT_ID = 3; //CAN Talon SRX
 	public static final int SOLENOID1_PORT1 = 0; //DoubleSolenoid
@@ -57,6 +58,7 @@ public class OI {
     public static final int SOLENOID2_PORT1 = 2; //DoubleSolenoid
     public static final int SOLENOID2_PORT2 = 3; //DoubleSolenoid
     public static final int PCM_ID = 1; //Compressor/Pneumatics Control Module (used for DoubleSolenoids)
+    
 	
 	public OI() {
         // Connect the buttons to commands
