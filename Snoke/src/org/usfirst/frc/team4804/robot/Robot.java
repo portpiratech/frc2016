@@ -39,7 +39,7 @@ public class Robot extends IterativeRobot {
 	public static CANTalon cannonLauncherMotors;
 	//public static CANTalon cannonLauncherMotorRight;
 	//public static CANTalon cannonLauncherMotorLeft;
-	//public static CANTalon cannonTiltMotor; //= new CANTalon(5);
+	public static CANTalon cannonTiltMotor;
 	public static Compressor cannonCompressor;
 
 	public static RobotModes currentMode = RobotModes.NEW_ROBOT_MODE;
@@ -90,6 +90,8 @@ public class Robot extends IterativeRobot {
         	driveTrainSubsystem = new DriveTrainSubsystem();
         	tankDriveRight = new CANTalon(OI.NEW_TANKDRIVE_RIGHT_ID);
         	tankDriveLeft = new CANTalon(OI.NEW_TANKDRIVE_LEFT_ID);
+        	
+        	cannonTiltMotor = new CANTalon(OI.CANNON_TILT_MOTOR_ID);
         	break;
         	
         case OLD_TALON_TANK_MODE:

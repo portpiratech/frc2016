@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class DriveTrainSubsystem extends Subsystem {
     
 	public static final double DRIVE_SPEED = 0.15;	// maximum drive speed; scales other speeds to this
-	public static final double DPAD_MULT = 0.5;		// multiplier for dpad speed controls.
+	public static final double DPAD_MULT = 0.8;		// multiplier for dpad speed controls.
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
 
@@ -56,14 +56,14 @@ public class DriveTrainSubsystem extends Subsystem {
     	setMotor("R", rightY*DRIVE_SPEED);
     }
     
-    // uses one joystick, left stick y-axis for magnitude, left stick x-axis for direction
+    // uses one joystick, left stick y-axis for magnitude, x-axis for direction. car style
     public void jonnyDrive(double leftY, double leftX, int dpad){ //left stick's y value and left stick's x value
     											//xSpeed and ySpeed range from -1 to 1 based on % of max speed
     	if (dpad == -1){
 	    	double leftMotorSpeed = leftY;
 	    	double rightMotorSpeed = leftY;
 	    	
-	    	if (leftY < 0){                   //increments turning
+	    	if (leftY < 0){                   //increments motor speeds for turning
 	    		leftMotorSpeed += -leftX;
 	        	rightMotorSpeed += leftX;
 	    	}else{
@@ -82,26 +82,26 @@ public class DriveTrainSubsystem extends Subsystem {
     		switch(dpad){ //default dpad directions (perfectly straight, back, cw, ccw);
     					  //negative is forward specifically here... for some reason...
     		case 0: //forward
-    			setMotor("L", -DRIVE_SPEED);
-    			setMotor("R", -DRIVE_SPEED);
+    			setMotor("L", -DRIVE_SPEED*DPAD_MULT);
+    			setMotor("R", -DRIVE_SPEED*DPAD_MULT);
     			break;
     		case 2: //cw
-    			setMotor("L", -DRIVE_SPEED);
-    			setMotor("R", DRIVE_SPEED);
+    			setMotor("L", -DRIVE_SPEED*DPAD_MULT);
+    			setMotor("R", DRIVE_SPEED*DPAD_MULT);
     			break;
     		case 4: //backward
-    			setMotor("L", DRIVE_SPEED);
-    			setMotor("R", DRIVE_SPEED);
+    			setMotor("L", DRIVE_SPEED*DPAD_MULT);
+    			setMotor("R", DRIVE_SPEED*DPAD_MULT);
     			break;
     		case 6: //ccw
-    			setMotor("L", DRIVE_SPEED);
-    			setMotor("R", -DRIVE_SPEED);
+    			setMotor("L", DRIVE_SPEED*DPAD_MULT);
+    			setMotor("R", -DRIVE_SPEED*DPAD_MULT);
     			break;
     		}
     	}
     }
     
-    // uses one joystick, left stick x- and y-axis
+    // uses one joystick, left stick x- and y-axis, vector style
     public void tommyDrive(double leftX, double leftY, int dpad) {
     	
     	leftX *= -1; //corrects input value
