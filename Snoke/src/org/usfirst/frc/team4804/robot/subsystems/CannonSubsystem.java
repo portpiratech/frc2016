@@ -4,6 +4,7 @@ package org.usfirst.frc.team4804.robot.subsystems;
 import org.usfirst.frc.team4804.robot.Robot;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
@@ -14,10 +15,12 @@ public class CannonSubsystem extends Subsystem {
 	
 	// Wheel launcher variables
 	public static double motorSpeed = 0;
-	public static final double LOAD_SPEED_L = -0.3;
+	public static final double LOAD_SPEED = -0.3;
+	public static final double LAUNCH_SPEED = 1.0;
+	/*public static final double LOAD_SPEED_L = -0.3;
 	public static final double LOAD_SPEED_R = -1*LOAD_SPEED_L;
 	public static final double LAUNCH_SPEED_L = 1.0;
-	public static final double LAUNCH_SPEED_R = -1*LAUNCH_SPEED_L;
+	public static final double LAUNCH_SPEED_R = -1*LAUNCH_SPEED_L;*/
 	
 	// Cannon positioning variables
 	public static double tiltAngle = 0;
@@ -32,34 +35,42 @@ public class CannonSubsystem extends Subsystem {
     
     // Loading/Launching the ball
     public void motorLoad() {
-    	setMotor("L", LOAD_SPEED_L);
-    	setMotor("R", LOAD_SPEED_R);
+    	setMotor(LOAD_SPEED);
+    	/*setMotor("L", LOAD_SPEED_L);
+    	setMotor("R", LOAD_SPEED_R);*/
     }
     
     public void motorLaunch() {
-    	setMotor("L", LAUNCH_SPEED_L);
-    	setMotor("R", LAUNCH_SPEED_R);
+    	setMotor(LAUNCH_SPEED);
+    	/*setMotor("L", LAUNCH_SPEED_L);
+    	setMotor("R", LAUNCH_SPEED_R);*/
     }
     
     public void motorStop() {
-    	setMotor("L", 0);
-    	setMotor("R", 0);
+    	setMotor(0);
+    	/*setMotor("L", 0);
+    	setMotor("R", 0);*/
     }
     
-    public void setMotor(String side, double speed) {
-    	// side "L" = left
+    public void setMotor(double speed) { //setMotor(String side, double speed)
+    // single CANTalon:
+    	Robot.cannonLauncherMotors.set(speed);
+    	SmartDashboard.putNumber("Cannon Launcher Speed", speed);
+    	
+    // independent CANTalons:
+    /*	// side "L" = left
     	// side "R" = right1
     		
     	switch(side) {
     		case "L": Robot.cannonLauncherMotorLeft.set(speed); // check if this is the right method
     		case "R": Robot.cannonLauncherMotorRight.set(speed);
-    	}
+    	} */
     }
     
     
     // Positioning
     public void setCannonPosition(double position) {
-//    	Robot.cannonTiltMotor.set(position); // check if this is the right method
+    	//Robot.cannonTiltMotor.set(position); // need to set CANTalon to correct mode
     }
     
     

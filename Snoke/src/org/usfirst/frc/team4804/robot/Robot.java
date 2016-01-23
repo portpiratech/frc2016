@@ -36,12 +36,13 @@ public class Robot extends IterativeRobot {
 	public static Talon tankDriveRightOld;
 	public static CANTalon tankDriveLeft;
 	public static CANTalon tankDriveRight;
-	public static CANTalon cannonLauncherMotorRight;
-	public static CANTalon cannonLauncherMotorLeft;
+	public static CANTalon cannonLauncherMotors;
+	//public static CANTalon cannonLauncherMotorRight;
+	//public static CANTalon cannonLauncherMotorLeft;
 	//public static CANTalon cannonTiltMotor; //= new CANTalon(5);
 	public static Compressor cannonCompressor;
 
-	public static RobotModes currentMode = RobotModes.CANNON_MODE;
+	public static RobotModes currentMode = RobotModes.NEW_ROBOT_MODE;
 	
     Command autonomousCommand;
     
@@ -75,26 +76,26 @@ public class Robot extends IterativeRobot {
     	
         switch (currentMode){
         
-        case CANNON_MODE:
+        case NEW_ROBOT_MODE:
         	cannonSubsystem = new CannonSubsystem();
         	pistonSubsystem = new PistonSubsystem();
-        	cannonLauncherMotorRight = new CANTalon(OI.CANNON_LAUNCHER_RIGHT_ID); //2
-        	cannonLauncherMotorLeft = new CANTalon(OI.CANNON_LAUNCHER_LEFT_ID); //3
-        	cannonCompressor = new Compressor(1);
+        	
+        	cannonLauncherMotors = new CANTalon(OI.CANNON_LAUNCHER_ID); //2
+        	//cannonLauncherMotorRight = new CANTalon(OI.CANNON_LAUNCHER_RIGHT_ID); //2
+        	//cannonLauncherMotorLeft = new CANTalon(OI.CANNON_LAUNCHER_LEFT_ID); //3
+        	
+        	cannonCompressor = new Compressor(OI.PCM_ID);
         	cannonCompressor.setClosedLoopControl(true);
-        	break;
-        
-        case NEW_TALON_TANK_MODE:
+        	
         	driveTrainSubsystem = new DriveTrainSubsystem();
-        	tankDriveRight = new CANTalon(2);
-        	tankDriveLeft = new CANTalon(3);
+        	tankDriveRight = new CANTalon(OI.NEW_TANKDRIVE_RIGHT_ID);
+        	tankDriveLeft = new CANTalon(OI.NEW_TANKDRIVE_LEFT_ID);
         	break;
         	
         case OLD_TALON_TANK_MODE:
         	tankDriveLeftOld = new Talon(1);
             tankDriveRightOld = new Talon(0);
         	break;
-        	
         }
         
         oi = new OI();

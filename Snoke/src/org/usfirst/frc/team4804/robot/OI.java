@@ -41,29 +41,29 @@ public class OI {
 	
 	private static final int OPERATOR_CONTROLLER_PORT = 1;
 	private static final int DRIVER_CONTROLLER_PORT = 0;
-	private XboxController driverController = new XboxController(DRIVER_CONTROLLER_PORT);
-    private XboxController operatorController = new XboxController(OPERATOR_CONTROLLER_PORT);
+	public XboxController driverController = new XboxController(DRIVER_CONTROLLER_PORT);
+	public XboxController operatorController = new XboxController(OPERATOR_CONTROLLER_PORT);
     
     // Device IDs
     public static final int OLD_TANKDRIVE_LEFT_ID = 0; //Talon
 	public static final int OLD_TANKDRIVE_RIGHT_ID = 1; //Talon
-    public static final int NEW_TANKDRIVE_LEFT_ID = 2; //CAN Talon SRX
-	public static final int NEW_TANKDRIVE_RIGHT_ID = 3; //CAN Talon SRX
-	public static final int CANNON_LAUNCHER_RIGHT_ID = 2; //CAN Talon SRX
-	public static final int CANNON_LAUNCHER_LEFT_ID = 3; //CAN Talon SRX
+    public static final int NEW_TANKDRIVE_RIGHT_ID = 3; //CAN Talon SRX
+	public static final int NEW_TANKDRIVE_LEFT_ID = 4; //CAN Talon SRX
+	public static final int CANNON_LAUNCHER_ID = 2; //CAN Talon SRX
+	//public static final int CANNON_LAUNCHER_RIGHT_ID = 2; //CAN Talon SRX
+	//public static final int CANNON_LAUNCHER_LEFT_ID = 3; //CAN Talon SRX
 	public static final int SOLENOID1_PORT1 = 0; //DoubleSolenoid
     public static final int SOLENOID1_PORT2 = 1; //DoubleSolenoid
     public static final int SOLENOID2_PORT1 = 2; //DoubleSolenoid
     public static final int SOLENOID2_PORT2 = 3; //DoubleSolenoid
-    public static final int COMPRESSOR_ID = 1; //Compressor
-    public static final int PCM_ID = 1; //PCM (used for DoubleSolenoids)
+    public static final int PCM_ID = 1; //Compressor/Pneumatics Control Module (used for DoubleSolenoids)
 	
 	public OI() {
         // Connect the buttons to commands
 		
-		// Driver: Tank drive
+	// Driver: Tank drive
 		
-		// Operator: Cannon/piston controls
+	// Operator: Cannon/piston controls
 		operatorController.getLeftBumper().whenPressed(new CannonWheelLoad());
 		operatorController.getRightBumper().whenPressed(new CannonWheelLaunch());
 		operatorController.getYButton().whenPressed(new CannonWheelStop());
@@ -72,7 +72,8 @@ public class OI {
 		
 		//operatorController.getLeftStickYAxis().whenPressed()
 		
-		// SmartDashboard commands
+		
+	// SmartDashboard commands
 		// SmartDashboard.putData("Cannon Piston Extend", new CannonPistonExtend());
 	}
 }

@@ -3,6 +3,7 @@ package org.usfirst.frc.team4804.robot.commands;
 
 import org.usfirst.frc.team4804.robot.Robot;
 
+import edu.wpi.first.wpilibj.Joystick.RumbleType;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -23,8 +24,8 @@ public class CannonWheelLaunch extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	Robot.cannonSubsystem.motorLaunch();
-    	SmartDashboard.putNumber("Cannon Launcher Speed L", Robot.cannonLauncherMotorLeft.get());
-    	SmartDashboard.putNumber("Cannon Launcher Speed R", Robot.cannonLauncherMotorRight.get());
+    	Robot.oi.operatorController.setRumble(RumbleType.kLeftRumble, (float)0);
+    	Robot.oi.operatorController.setRumble(RumbleType.kRightRumble, (float)0.5);
     }
 
     // Make this return true when this Command no longer needs to run execute()
