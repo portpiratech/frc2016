@@ -5,6 +5,7 @@ import org.usfirst.frc.team4804.robot.commands.ExampleCommand;
 import org.usfirst.frc.team4804.robot.subsystems.CannonSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.DriveTrainSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.PistonSubsystem;
+import org.usfirst.frc.team4804.robot.subsystems.ServoSubsystem;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CameraServer;
@@ -30,6 +31,8 @@ public class Robot extends IterativeRobot {
 	public static CannonSubsystem cannonSubsystem;
 	public static PistonSubsystem pistonSubsystem;
 	public static DriveTrainSubsystem driveTrainSubsystem;
+	public static ServoSubsystem servoSubsystem;
+	
 	public static OI oi;
 	
 	public static Talon tankDriveLeftOld;
@@ -79,6 +82,7 @@ public class Robot extends IterativeRobot {
         case NEW_ROBOT_MODE:
         	cannonSubsystem = new CannonSubsystem();
         	pistonSubsystem = new PistonSubsystem();
+        	servoSubsystem = new ServoSubsystem();
         	
         	cannonLauncherMotors = new CANTalon(OI.CANNON_LAUNCHER_ID); //2
         	//cannonLauncherMotorRight = new CANTalon(OI.CANNON_LAUNCHER_RIGHT_ID); //2
