@@ -4,6 +4,7 @@ package org.usfirst.frc.team4804.robot;
 import org.usfirst.frc.team4804.robot.commands.ExampleCommand;
 import org.usfirst.frc.team4804.robot.subsystems.CannonSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.DriveTrainSubsystem;
+import org.usfirst.frc.team4804.robot.subsystems.EncoderSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.PistonSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.ServoSubsystem;
 
@@ -32,6 +33,7 @@ public class Robot extends IterativeRobot {
 	public static PistonSubsystem pistonSubsystem;
 	public static DriveTrainSubsystem driveTrainSubsystem;
 	public static ServoSubsystem servoSubsystem;
+	public static EncoderSubsystem encoderSubsystem;
 	
 	public static OI oi;
 	
@@ -83,6 +85,7 @@ public class Robot extends IterativeRobot {
         	cannonSubsystem = new CannonSubsystem();
         	pistonSubsystem = new PistonSubsystem();
         	servoSubsystem = new ServoSubsystem();
+        	encoderSubsystem = new EncoderSubsystem();
         	
         	cannonLauncherMotors = new CANTalon(OI.CANNON_LAUNCHER_ID); //2
         	//cannonLauncherMotorRight = new CANTalon(OI.CANNON_LAUNCHER_RIGHT_ID); //2
