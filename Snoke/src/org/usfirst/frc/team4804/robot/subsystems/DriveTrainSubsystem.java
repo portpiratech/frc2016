@@ -16,6 +16,7 @@ public class DriveTrainSubsystem extends Subsystem {
     
 	public static final double DRIVE_SPEED = 0.15;	// maximum drive speed; scales other speeds to this
 	public static final double DPAD_MULT = 0.8;		// multiplier for dpad speed controls.
+	public static final double SPEED_TOLERANCE = 0.05; // can't be too close to 0
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
 
@@ -30,7 +31,7 @@ public class DriveTrainSubsystem extends Subsystem {
     	// side "L" = left
     	// side "R" = right
     	
-    	if (Math.abs(speed) < .05) speed = 0; //controller axis always returns insignificant values, fixes creeping
+    	if (Math.abs(speed) < SPEED_TOLERANCE) speed = 0; //controller axis always returns insignificant values, fixes creeping
     		
     	switch(side) { //CANTalons are hooked up pos-pos && neg-neg
     		case "L":

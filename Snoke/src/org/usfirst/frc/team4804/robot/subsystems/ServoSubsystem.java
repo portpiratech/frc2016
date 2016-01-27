@@ -10,8 +10,9 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class ServoSubsystem extends Subsystem {
 	
-	public static final double BASE_ANGLE = 5; //base angle increment
-	public static final double MULTIPLIER_THRESHOLD = 0.1; //value is between -1 and 1, but cannot be too close to 0
+	public static final double BASE_ANGLE = 1; //base angle increment
+	public static final double MAX_ANGLE = 30; //in either direction. might only be positive later
+	public static final double JOYSTICK_TOLERANCE = 0.1; //value is between -1 and 1, but cannot be too close to 0
 	private Servo cannonSwivel; 
 	
 	
@@ -21,6 +22,7 @@ public class ServoSubsystem extends Subsystem {
 	public ServoSubsystem() {
 		super();
 		cannonSwivel = new Servo(OI.CANNON_SWIVEL_SERVO_CHANNEL); 
+		cannonSwivel.setAngle(0); //resets servo. probably temporary.
 	}
 	
     public void initDefaultCommand() {
@@ -33,14 +35,29 @@ public class ServoSubsystem extends Subsystem {
     }
     
     public void turnAngle(double angleMultiplier) {
-    	if( Math.abs(angleMultiplier) > MULTIPLIER_THRESHOLD ) {
-    		double currentAngle = cannonSwivel.getAngle();		//reads value from servo
-	    	double angleChange = angleMultiplier*BASE_ANGLE;	//scales value of joystick to the base angle change
-	    	
-	    	double newAngle = currentAngle + angleChange;			//calculates new value from old value
-	    	
+    	double currentAngle = 0;
+    	double angleChange = 0;
+    	double newAngle = 0;
+    	
+    	//controller axis always returns insignificant values, fixes creeping
+    	if( Math.abs(angleMultiplier) > JOYSTICK_TOLERANCE ) {
+    		
+    		currentAngle = cannonSwivel.getAngle();		//reads value from servo
+    		angleChange = angleMultiplier*BASE_ANGLE;	//scales value of joystick to the base angle change
+    		
+    		// if already at or above max angle, and trying to move further in that direction, don't do anything.
+    		if(Math.abs(currentAngle) >= MAX_ANGLE && Math.signum(currentAngle) == Math.signum(angleChange)) {
+    			// keep angle constant.
+    			newAngle = currentAngle;
+    		}else{
+    			// otherwise, update the angle.
+    			newAngle = currentAngle + angleChange;
+    		}
+    		
 	    	cannonSwivel.setAngle(newAngle);
+	    	
     	}
+    	
     }
 	
 }
