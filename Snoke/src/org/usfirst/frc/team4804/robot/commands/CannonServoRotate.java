@@ -6,43 +6,33 @@ import edu.wpi.first.wpilibj.command.Command;
 
 public class CannonServoRotate extends Command {
 	
-	public CannonServoRotate()
-	{
-		
+	public CannonServoRotate() {
+        // Use requires() here to declare subsystem dependencies
 		requires(Robot.servoSubsystem);
-		
 	}
 	
-	@Override
+    // Called just before this Command runs the first time
 	protected void initialize() {
-		// TODO Auto-generated method stub
-		
 	}
 
-	@Override
+    // Called repeatedly when this Command is scheduled to run
 	protected void execute() {
-		// TODO Auto-generated method stub
-		
-		
+		Robot.servoSubsystem.turn(Robot.oi.operatorController);
 		
 	}
 
-	@Override
+    // Make this return true when this Command no longer needs to run execute()
 	protected boolean isFinished() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
+    // Called once after isFinished returns true
 	protected void end() {
-		// TODO Auto-generated method stub
-		
 	}
 
-	@Override
+    // Called when another command which requires one or more of the same
+    // subsystems is scheduled to run
 	protected void interrupted() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	
