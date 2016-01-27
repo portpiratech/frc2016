@@ -1,12 +1,14 @@
 package org.usfirst.frc.team4804.robot.subsystems;
 
 import org.usfirst.frc.team4804.robot.OI;
+import org.usfirst.frc.team4804.robot.Robot;
 import org.usfirst.frc.team4804.robot.commands.CannonServoRotate;
 
 import com.portpiratech.xbox360.XboxController;
 
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ServoSubsystem extends Subsystem {
 	
@@ -55,6 +57,7 @@ public class ServoSubsystem extends Subsystem {
     		}
     		
 	    	cannonSwivel.setAngle(newAngle);
+	    	SmartDashboard.putNumber("Cannon Swivel Angle:", cannonSwivel.getAngle());
 	    	
     	}
     	
