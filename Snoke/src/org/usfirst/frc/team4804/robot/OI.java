@@ -44,7 +44,7 @@ public class OI {
 	public XboxController driverController = new XboxController(DRIVER_CONTROLLER_PORT);
 	public XboxController operatorController = new XboxController(OPERATOR_CONTROLLER_PORT);
     
-    // Device IDs
+    // CAN Device IDs
     public static final int OLD_TANKDRIVE_LEFT_ID = 0; //Talon
 	public static final int OLD_TANKDRIVE_RIGHT_ID = 1; //Talon
     public static final int NEW_TANKDRIVE_RIGHT_ID = 3; //CAN Talon SRX
@@ -58,6 +58,9 @@ public class OI {
     public static final int SOLENOID2_PORT1 = 2; //DoubleSolenoid
     public static final int SOLENOID2_PORT2 = 3; //DoubleSolenoid
     public static final int PCM_ID = 1; //Compressor/Pneumatics Control Module (used for DoubleSolenoids)
+    
+    // PWM Device Channels
+    public static final int CANNON_SWIVEL_SERVO_CHANNEL = 0;
     
 	
 	public OI() {
