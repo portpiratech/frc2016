@@ -22,6 +22,8 @@ public class EncoderSubsystem extends Subsystem {
 	public final double PULSES_PER_REVOLUTION = 360 / 497;
 	public final double MOVE_SPEED = 0.5;
 	
+	double positionTarget = 0;
+	
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
 
@@ -36,11 +38,27 @@ public class EncoderSubsystem extends Subsystem {
         setDefaultCommand(new CannonEncoderMove());
     }
     
+    //basic move command based on speed from joystick
     public void move(XboxController xbox){
     	double speed = -xbox.getRightStickYAxis()*MOVE_SPEED;
     	setMotor(speed);
     }
     
+    //use triggers to set target position. automatically correct position
+    public void moveWithTriggers(XboxController xbox){
+    	double currentPosition = encoder.getRaw();
+    	
+    	double rTrigger = xbox.getRightTriggerAxis();
+    	double lTrigger = xbox.getLeftTriggerAxis();
+    	
+    	if(rTrigger >= 0.05){
+    		positionTarget = currentPosition + rTrigger;
+    	}else if(lTrigger >= 0.05){
+    		positionTarget = currentPosition - lTrigger;
+    	}else{
+    		positionTarget = currentPosition;
+    	}
+    }
     
     
     //LAST YEAR'S CODE
