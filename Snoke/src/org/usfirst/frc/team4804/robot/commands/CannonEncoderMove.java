@@ -4,16 +4,15 @@ package org.usfirst.frc.team4804.robot.commands;
 import org.usfirst.frc.team4804.robot.Robot;
 
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
  */
-public class DriveCommand extends Command {
+public class CannonEncoderMove extends Command {
 
-    public DriveCommand() {
+    public CannonEncoderMove() {
         // Use requires() here to declare subsystem dependencies
-        requires(Robot.driveTrainSubsystem);
+        requires(Robot.encoderSubsystem);
     }
 
     // Called just before this Command runs the first time
@@ -22,7 +21,7 @@ public class DriveCommand extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.driveTrainSubsystem.drive(Robot.oi.driverController);
+    	Robot.encoderSubsystem.move(Robot.oi.operatorController);
     }
 
     // Make this return true when this Command no longer needs to run execute()

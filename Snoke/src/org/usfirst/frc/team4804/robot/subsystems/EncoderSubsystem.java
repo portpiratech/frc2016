@@ -2,11 +2,14 @@
 package org.usfirst.frc.team4804.robot.subsystems;
 
 import org.usfirst.frc.team4804.robot.OI;
-import org.usfirst.frc.team4804.robot.commands.ExampleCommand;
+import org.usfirst.frc.team4804.robot.Robot;
+import org.usfirst.frc.team4804.robot.commands.CannonEncoderMove;
 
+import com.portpiratech.xbox360.XboxController;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
@@ -14,18 +17,30 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class EncoderSubsystem extends Subsystem {
     
 	private Encoder encoder;
+	private DigitalInput inputA = new DigitalInput(OI.CANNON_ENCODER_CHANNEL_A); //The inputs on the ROBORIO DIO
+	private DigitalInput inputB = new DigitalInput(OI.CANNON_ENCODER_CHANNEL_B);
+	public final double PULSES_PER_REVOLUTION = 360 / 497;
+	public final double MOVE_SPEED = 0.5;
 	
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
 
 	public EncoderSubsystem() {
-		//encoder = new Encoder(OI.CANNON_TILT_MOTOR_ID); 			DOESN'T WORK
+		encoder = new Encoder(inputA, inputB);
+		encoder.setDistancePerPulse(PULSES_PER_REVOLUTION);
+
 	}
 	
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        //setDefaultCommand(new ExampleCommand());
+        setDefaultCommand(new CannonEncoderMove());
     }
+    
+    public void move(XboxController xbox){
+    	double speed = -xbox.getRightStickYAxis()*MOVE_SPEED;
+    	setMotor(speed);
+    }
+    
     
     
     //LAST YEAR'S CODE
@@ -81,15 +96,15 @@ public class EncoderSubsystem extends Subsystem {
     	}
     	SmartDashboard.putString("Lock Speed Command", "idle");
     	return;
-    }
+    }*/
 
-	private void setMotorSpeed(double speed) {
-		encoder.set(speed);
+	private void setMotor(double speed) {
+		Robot.cannonEncoderMotor.set(speed);
 	}
 
 	private double getMotorSpeed() {
-		return encoder.getSpeed();
-	}*/
+		return encoder.getRate(); //we still need to set the distance per pulse
+	}
 }
 
 

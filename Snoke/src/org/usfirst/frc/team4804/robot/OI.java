@@ -50,18 +50,21 @@ public class OI {
     public static final int NEW_TANKDRIVE_RIGHT_ID = 3; //CAN Talon SRX
 	public static final int NEW_TANKDRIVE_LEFT_ID = 4; //CAN Talon SRX
 	public static final int CANNON_LAUNCHER_ID = 2; //CAN Talon SRX
-	public static final int CANNON_TILT_MOTOR_ID = 5; //CAN Talon SRX
-	//public static final int CANNON_LAUNCHER_RIGHT_ID = 2; //CAN Talon SRX
-	//public static final int CANNON_LAUNCHER_LEFT_ID = 3; //CAN Talon SRX
-	public static final int SOLENOID1_PORT1 = 0; //DoubleSolenoid
+	public static final int CANNON_ENCODER_ID = 5; //CAN Talon SRX
+    public static final int PCM_ID = 1; //Compressor/Pneumatics Control Module (used for DoubleSolenoids)
+    
+    // PCM (Pneumatics Control Module) Channels
+    public static final int SOLENOID1_PORT1 = 0; //DoubleSolenoid
     public static final int SOLENOID1_PORT2 = 1; //DoubleSolenoid
     public static final int SOLENOID2_PORT1 = 2; //DoubleSolenoid
     public static final int SOLENOID2_PORT2 = 3; //DoubleSolenoid
-    public static final int PCM_ID = 1; //Compressor/Pneumatics Control Module (used for DoubleSolenoids)
     
-    // PWM Device Channels
-    public static final int CANNON_SWIVEL_SERVO_CHANNEL = 0;
+    // PWM (Pulse Width Modulation--on roboRIO) Device Channels
+    public static final int CANNON_SWIVEL_SERVO_CHANNEL = 0; // Servo
     
+    // DIO (Digital Input/Output--on roboRIO) Channels
+    public static final int CANNON_ENCODER_CHANNEL_A = 0; // DigitalInput
+    public static final int CANNON_ENCODER_CHANNEL_B = 1; // DigitalInput
 	
 	public OI() {
         // Connect the buttons to commands

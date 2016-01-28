@@ -33,7 +33,7 @@ public class ServoSubsystem extends Subsystem {
     }
     
     public void turn(XboxController xbox) {
-    	turnAngle(xbox.getRightStickXAxis()); //x-axis value is a multiplier
+    	turnAngle(xbox.getLeftStickXAxis()); //x-axis value is a multiplier
     }
     
     public void turnAngle(double angleMultiplier) {
