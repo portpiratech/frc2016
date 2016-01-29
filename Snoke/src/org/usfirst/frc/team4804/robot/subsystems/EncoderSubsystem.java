@@ -9,7 +9,9 @@ import com.portpiratech.xbox360.XboxController;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
@@ -19,8 +21,12 @@ public class EncoderSubsystem extends Subsystem {
 	private Encoder encoder;
 	private DigitalInput inputA = new DigitalInput(OI.CANNON_ENCODER_CHANNEL_A); //The inputs on the ROBORIO DIO
 	private DigitalInput inputB = new DigitalInput(OI.CANNON_ENCODER_CHANNEL_B);
-	public final double PULSES_PER_REVOLUTION = 360 / 497;
-	public final double MOVE_SPEED = 0.5;
+	public final double DEGREES_PER_PULSE = 360 / 497;
+	public final double TRIGGER_TOLERANCE = 0.05;
+	public final double POSITION_TOLERANCE = 1;
+	public final double POSITION_MAX = 90;
+	public final double SPEED_TOLERANCE = 0.01;
+	public final double SPEED_MAX = 0.3;
 	
 	double positionTarget = 0;
 	
@@ -29,8 +35,7 @@ public class EncoderSubsystem extends Subsystem {
 
 	public EncoderSubsystem() {
 		encoder = new Encoder(inputA, inputB);
-		encoder.setDistancePerPulse(PULSES_PER_REVOLUTION);
-
+		encoder.setDistancePerPulse(DEGREES_PER_PULSE);
 	}
 	
     public void initDefaultCommand() {
@@ -40,24 +45,57 @@ public class EncoderSubsystem extends Subsystem {
     
     //basic move command based on speed from joystick
     public void move(XboxController xbox){
-    	double speed = -xbox.getRightStickYAxis()*MOVE_SPEED;
+    	double speed = -xbox.getRightStickYAxis()*SPEED_MAX;
     	setMotor(speed);
     }
     
-    //use triggers to set target position. automatically correct position
+    //use triggers to set target position, automatically correct speed (see last year's code for template)
     public void moveWithTriggers(XboxController xbox){
     	double currentPosition = encoder.getRaw();
+    	double currentSpeed = encoder.getRate();
     	
     	double rTrigger = xbox.getRightTriggerAxis();
     	double lTrigger = xbox.getLeftTriggerAxis();
     	
-    	if(rTrigger >= 0.05){
+    	if(rTrigger >= TRIGGER_TOLERANCE && positionTarget <= POSITION_MAX){
     		positionTarget = currentPosition + rTrigger;
-    	}else if(lTrigger >= 0.05){
+    	}else if(lTrigger >= TRIGGER_TOLERANCE && positionTarget >= 0){
     		positionTarget = currentPosition - lTrigger;
     	}else{
     		positionTarget = currentPosition;
     	}
+    	
+    //check position
+    	double positionError = currentPosition - positionTarget;
+    	double finalSpeed = 0;
+    	
+    	if(positionError >= POSITION_TOLERANCE) {
+    		// increase speed toward floor if current position is too high up
+    		SmartDashboard.putString("Lock Speed Command", "Accelerating toward floor");
+    		finalSpeed = currentSpeed + Math.abs(positionError);
+    		finalSpeed = finalSpeed * Math.abs(positionError/SPEED_MAX);
+    	}
+    	if(positionError <= -POSITION_TOLERANCE) {
+    		// increase speed away from floor if current position is too low
+    		SmartDashboard.putString("Lock Speed Command", "Accelerating away from floor");
+    		finalSpeed = currentSpeed - Math.abs(positionError);
+    		finalSpeed = finalSpeed * Math.abs(positionError/SPEED_MAX);
+    	}
+    	if(Math.abs(positionError) < POSITION_TOLERANCE) {
+    		// do nothing if the current position is within reasonable bounds of target
+    		finalSpeed = currentSpeed;
+    		if (finalSpeed >= 0) SmartDashboard.putString("Lock Speed Command", "Moving constantly toward floor");
+    		if (finalSpeed < 0) SmartDashboard.putString("Lock Speed Command", "Moving constantly away from floor");
+    	}
+    	
+    //set final speed
+    	if(Math.abs(finalSpeed) > SPEED_MAX) {
+    		setMotor(Math.signum(finalSpeed)*SPEED_MAX);
+    	}else{
+    		setMotor(finalSpeed);
+    	}
+    	
+    	Timer.delay(0.005);
     }
     
     

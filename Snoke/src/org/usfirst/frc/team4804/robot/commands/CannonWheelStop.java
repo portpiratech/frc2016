@@ -5,7 +5,6 @@ import org.usfirst.frc.team4804.robot.Robot;
 
 import edu.wpi.first.wpilibj.Joystick.RumbleType;
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
@@ -24,6 +23,8 @@ public class CannonWheelStop extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	Robot.cannonSubsystem.motorStop();
+
+    	// set rumble
     	Robot.oi.operatorController.setRumble(RumbleType.kLeftRumble, (float)0);
     	Robot.oi.operatorController.setRumble(RumbleType.kRightRumble, (float)0);
     }
