@@ -8,6 +8,9 @@ import org.usfirst.frc.team4804.robot.subsystems.EncoderSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.PistonSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.ServoSubsystem;
 
+import com.ni.vision.NIVision;
+import com.ni.vision.NIVision.Image;
+
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
@@ -52,6 +55,8 @@ public class Robot extends IterativeRobot {
     Command autonomousCommand;
     
     CameraServer server;
+    int session;
+    Image frame;
     
     public Robot() {
         server = CameraServer.getInstance();
@@ -109,8 +114,17 @@ public class Robot extends IterativeRobot {
         
         oi = new OI();
         
-     // instantiate the command used for the autonomous period
+    // instantiate the command used for the autonomous period
         autonomousCommand = new ExampleCommand();
+        
+        
+//    // camera stuff
+//        frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
+//
+//        // the camera name (ex "cam0") can be found through the roborio web interface
+//        session = NIVision.IMAQdxOpenCamera("cam0",
+//                NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+//        NIVision.IMAQdxConfigureGrab(session);
     }
 	
 	public void disabledPeriodic() {

@@ -14,9 +14,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class DriveTrainSubsystem extends Subsystem {
     
-	public static final double DRIVE_SPEED = 0.15;	// maximum drive speed; scales other speeds to this
-	public static final double DPAD_MULT = 0.8;		// multiplier for dpad speed controls.
-	public static final double SPEED_TOLERANCE = 0.05; // can't be too close to 0
+	public static final double DRIVE_SPEED = 0.35;	// maximum drive speed; scales other speeds to this
+	public static final double DPAD_MULT = 0.75;		// multiplier for dpad speed controls.
+	public static final double SPEED_TOLERANCE = 0.1; // can't be too close to 0
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
 
@@ -47,8 +47,8 @@ public class DriveTrainSubsystem extends Subsystem {
     
     public void drive(XboxController xbox) {
     	//standardDrive(xbox.getLeftStickYAxis(), xbox.getRightStickYAxis());
-    	jonnyDrive(xbox.getLeftStickYAxis(), xbox.getLeftStickXAxis(), xbox.getDPad());
-    	//tommyDrive(xbox.getLeftStickXAxis(), xbox.getLeftStickYAxis(), xbox.getDPad());
+    	//jonnyDrive(xbox.getLeftStickYAxis(), xbox.getLeftStickXAxis(), xbox.getDPad());
+    	tommyDrive(xbox.getLeftStickXAxis(), xbox.getLeftStickYAxis(), xbox.getDPad());
     }
     
     // uses two joysticks, left stick y-axis and right stick y-axis

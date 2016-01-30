@@ -33,34 +33,46 @@ public class ServoSubsystem extends Subsystem {
     }
     
     public void turn(XboxController xbox) {
-    	turnAngle(xbox.getLeftStickXAxis()); //x-axis value is a multiplier
+    	turnAngle(xbox.getLeftStickXAxis(), xbox.getDPad()); //x-axis value is a multiplier
     }
     
-    public void turnAngle(double angleMultiplier) {
-    	double currentAngle = 0;
+    public void turnAngle(double angleMultiplier, int dpad) {
+    	double currentAngle = cannonSwivel.getAngle();		//reads value from servo
     	double angleChange = 0;
     	double newAngle = 0;
     	
-    	//controller axis always returns insignificant values, fixes creeping
-    	if( Math.abs(angleMultiplier) > JOYSTICK_TOLERANCE ) {
-    		
-    		currentAngle = cannonSwivel.getAngle();		//reads value from servo
-    		angleChange = angleMultiplier*BASE_ANGLE;	//scales value of joystick to the base angle change
-    		
-    		// if already at or above max angle, and trying to move further in that direction, don't do anything.
-    		if(Math.abs(currentAngle) >= MAX_ANGLE && Math.signum(currentAngle) == Math.signum(angleChange)) {
-    			// keep angle constant.
-    			newAngle = currentAngle;
-    		}else{
-    			// otherwise, update the angle.
-    			newAngle = currentAngle + angleChange;
-    		}
-    		
-	    	cannonSwivel.setAngle(newAngle);
-	    	SmartDashboard.putNumber("Cannon Swivel Angle:", cannonSwivel.getAngle());
-	    	
-    	}
+    	switch(dpad) {
     	
+    	case -1:
+	    	//controller axis always returns insignificant values, fixes creeping
+	    	if( Math.abs(angleMultiplier) > JOYSTICK_TOLERANCE ) {
+	    		
+	    		currentAngle = cannonSwivel.getAngle();		//reads value from servo
+	    		angleChange = angleMultiplier*BASE_ANGLE;	//scales value of joystick to the base angle change
+	    		
+	    		// if already at or above max angle, and trying to move further in that direction, don't do anything.
+	    		if(Math.abs(currentAngle) >= MAX_ANGLE && Math.signum(currentAngle) == Math.signum(angleChange)) {
+	    			// keep angle constant.
+	    			newAngle = currentAngle;
+	    		}else{
+	    			// otherwise, update the angle.
+	    			newAngle = currentAngle + angleChange;
+	    		}
+	    	}
+	    	break;
+	    	
+    	case 2:
+    		//right
+    		//if(currentAngle<=MAX_ANGLE) positionTarget = Math.round(currentPosition/10.0)+10.0;
+    		break;
+    		
+    	case 6:
+    		//left
+    		
+    		break;
+    	}
+    	cannonSwivel.setAngle(newAngle);
+    	SmartDashboard.putNumber("Cannon Swivel Angle:", cannonSwivel.getAngle());
     }
 	
 }

@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class EncoderSubsystem extends Subsystem {
     
 	private Encoder encoder;
-	private DigitalInput inputA = new DigitalInput(OI.CANNON_ENCODER_CHANNEL_A); //The inputs on the ROBORIO DIO
+	private DigitalInput inputA = new DigitalInput(OI.CANNON_ENCODER_CHANNEL_A); //The inputs on the RoboRIO DIO
 	private DigitalInput inputB = new DigitalInput(OI.CANNON_ENCODER_CHANNEL_B);
 	public final double DEGREES_PER_PULSE = 360 / 497;
 	public final double TRIGGER_TOLERANCE = 0.05;
