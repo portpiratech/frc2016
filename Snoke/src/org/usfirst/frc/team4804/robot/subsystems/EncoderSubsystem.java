@@ -54,18 +54,34 @@ public class EncoderSubsystem extends Subsystem {
     	double currentPosition = encoder.getRaw();
     	double currentSpeed = encoder.getRate();
     	
+    	int dpad = xbox.getDPad();
     	double rTrigger = xbox.getRightTriggerAxis();
     	double lTrigger = xbox.getLeftTriggerAxis();
     	
-    	if(rTrigger >= TRIGGER_TOLERANCE && positionTarget <= POSITION_MAX){
-    		positionTarget = currentPosition + rTrigger;
-    	}else if(lTrigger >= TRIGGER_TOLERANCE && positionTarget >= 0){
-    		positionTarget = currentPosition - lTrigger;
-    	}else{
-    		positionTarget = currentPosition;
+    //find target position
+    	switch(dpad){
+    	
+    	case 0:
+    		//dpad up
+    		if(currentPosition<=POSITION_MAX) positionTarget = Math.round(currentPosition/10.0)+10.0;
+    		break;
+    		
+    	case 4:
+    		//dpad down
+    		if(currentPosition>=10.0) positionTarget = Math.round(currentPosition/10.0)-10.0;
+    		break;
+    	
+    	default:
+	    	if(rTrigger >= TRIGGER_TOLERANCE && positionTarget <= POSITION_MAX){
+	    		positionTarget = currentPosition + rTrigger;
+	    	}else if(lTrigger >= TRIGGER_TOLERANCE && positionTarget >= 0){
+	    		positionTarget = currentPosition - lTrigger;
+	    	}else{
+	    		positionTarget = currentPosition;
+	    	}
     	}
     	
-    //check position
+    //check position & calculate speed
     	double positionError = currentPosition - positionTarget;
     	double finalSpeed = 0;
     	
@@ -90,12 +106,14 @@ public class EncoderSubsystem extends Subsystem {
     	
     //set final speed
     	if(Math.abs(finalSpeed) > SPEED_MAX) {
+    		//make sure speed isn't out of bounds
     		setMotor(Math.signum(finalSpeed)*SPEED_MAX);
     	}else{
     		setMotor(finalSpeed);
     	}
     	
     	Timer.delay(0.005);
+    	
     }
     
     
