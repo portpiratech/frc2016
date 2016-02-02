@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class DriveTrainSubsystem extends Subsystem {
     
-	public static final double DRIVE_SPEED = 0.35;	// maximum drive speed; scales other speeds to this
+	public static double DRIVE_SPEED = 0.35;	// maximum drive speed; scales other speeds to this
 	public static final double DPAD_MULT = 0.75;		// multiplier for dpad speed controls.
 	public static final double SPEED_TOLERANCE = 0.1; // can't be too close to 0
     // Put methods for controlling this subsystem
