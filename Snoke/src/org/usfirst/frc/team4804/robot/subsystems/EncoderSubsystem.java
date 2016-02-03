@@ -18,9 +18,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class EncoderSubsystem extends Subsystem {
     
+   //objects
 	private Encoder encoder;
 	private DigitalInput inputA = new DigitalInput(OI.CANNON_ENCODER_CHANNEL_A); //The inputs on the RoboRIO DIO
 	private DigitalInput inputB = new DigitalInput(OI.CANNON_ENCODER_CHANNEL_B);
+	
+   //constants
 	public final double DEGREES_PER_PULSE = 360 / 497;
 	public final double TRIGGER_TOLERANCE = 0.05;
 	public final double POSITION_TOLERANCE = 1;
@@ -30,35 +33,59 @@ public class EncoderSubsystem extends Subsystem {
 	
 	double positionTarget = 0;
 	
-    // Put methods for controlling this subsystem
-    // here. Call these from Commands.
-
+    // Constructor
 	public EncoderSubsystem() {
 		encoder = new Encoder(inputA, inputB);
 		encoder.setDistancePerPulse(DEGREES_PER_PULSE);
 	}
-	
+	// Default command
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
         setDefaultCommand(new CannonEncoderMove());
     }
     
-    //basic move command based on speed from joystick
-    public void move(XboxController xbox){
-    	double speed = -xbox.getRightStickYAxis()*SPEED_MAX;
-    	setMotor(speed);
+    
+    // Put methods for controlling this subsystem
+    // here. Call these from Commands.
+    
+  //Basic Encoder Motor speed/position methods
+    private void setMotorSpeed(double speed) {
+		Robot.cannonEncoderMotor.set(speed);
+	}
+
+	private double getMotorSpeed() {
+		return encoder.getRate(); //we still need to set the distance per pulse
+	}
+	
+	private void resetMotor() {
+		Robot.cannonEncoderMotor.reset();
+	}
+    
+  //Position calculation/movement/math methods
+   //basic move commands
+    public void moveManual(XboxController xbox){
+    	//double speed = -xbox.getRightStickYAxis()*SPEED_MAX;
+    	//setMotorSpeed(speed);
+    	targetPositionWithTriggers(xbox);
+    	move();
     }
     
-    //use triggers to set target position, automatically correct speed (see last year's code for template)
-    public void moveWithTriggers(XboxController xbox){
+    public void moveAuto(double distance){ //feed "distance" from an analog input
+    	positionTarget = launchAngle(distance);
+    	move();
+    }
+    
+   //use triggers to set target position, automatically correct speed (see last year's code for template)
+    public void targetPositionWithTriggers(XboxController xbox){
+       //read encoder position
     	double currentPosition = encoder.getRaw();
-    	double currentSpeed = encoder.getRate();
     	
+       //read xbox controller
     	int dpad = xbox.getDPad();
     	double rTrigger = xbox.getRightTriggerAxis();
     	double lTrigger = xbox.getLeftTriggerAxis();
     	
-    //find target position
+       //calculate target position
     	switch(dpad){
     	
     	case 0:
@@ -72,6 +99,7 @@ public class EncoderSubsystem extends Subsystem {
     		break;
     	
     	default:
+    		//dpad not pressed, calculate from triggers
 	    	if(rTrigger >= TRIGGER_TOLERANCE && positionTarget <= POSITION_MAX){
 	    		positionTarget = currentPosition + rTrigger;
 	    	}else if(lTrigger >= TRIGGER_TOLERANCE && positionTarget >= 0){
@@ -79,9 +107,16 @@ public class EncoderSubsystem extends Subsystem {
 	    	}else{
 	    		positionTarget = currentPosition;
 	    	}
+	    	break;
     	}
+    }
+    
+   //move and regulate position
+    public void move() {
+    	double currentPosition = encoder.getRaw();
+    	double currentSpeed = encoder.getRate();
     	
-    //check position & calculate speed
+       //check position & calculate speed
     	double positionError = currentPosition - positionTarget;
     	double finalSpeed = 0;
     	
@@ -104,81 +139,36 @@ public class EncoderSubsystem extends Subsystem {
     		if (finalSpeed < 0) SmartDashboard.putString("Lock Speed Command", "Moving constantly away from floor");
     	}
     	
-    //set final speed
+       //set final speed
     	if(Math.abs(finalSpeed) > SPEED_MAX) {
     		//make sure speed isn't out of bounds
-    		setMotor(Math.signum(finalSpeed)*SPEED_MAX);
+    		setMotorSpeed(Math.signum(finalSpeed)*SPEED_MAX);
     	}else{
-    		setMotor(finalSpeed);
+    		setMotorSpeed(finalSpeed);
     	}
     	
     	Timer.delay(0.005);
-    	
     }
     
+   //calculate the angle the encoder should be
+    public double launchAngle(double distance) {
+    	final double g = 9.81; 	//acceleration due to gravity. (m/s^2)
+    	
+       //constants
+    	double v = 6; 			//initial velocity. need to test more to calculate. (m/s)
+    	double height = 2; 		//height of target. (m) might need to make variable based on angle?
+    	
+       //optimum launch angle so that ball passes through target at peak of trajectory
+    	double numerator = pow(v, 2) + sqrt( pow(v, 4) - g*(g*pow(distance,2) + 2*height*pow(v,2)) );
+    	double denominator = g*distance;
+    	double launchAngle = atan(numerator/denominator);
+    	return launchAngle;
+    }
     
-    //LAST YEAR'S CODE
-    
-    /*public void moveTowardTargetPosition() {
-    	double currentSpeed = 1;
-    	double finalSpeed = 0;
-    	double posError = 10;
-    	SmartDashboard.putString("Encoder Command", "Lock Speed Mode");
-
-    	currentSpeed = getMotorSpeed();
-    	posError = getTargetPosition() - encoder.getRaw();
-        if (posError != 0.0) {
-	    	currentSpeed = getMotorSpeed();
-	    	posError = getTargetPosition() - encoder.getRaw();
-	    	SmartDashboard.putNumber("Position Error", posError);
-	    		    	
-	    	if(posError >= posTolerance) {
-	    		// increase speed toward floor if current position is lower than target (too close to the robot)
-	    		SmartDashboard.putString("Lock Speed Command", "Incrementing Speed");
-	    		finalSpeed = (currentSpeed + incGain*Math.abs(posError));
-	    		finalSpeed = (finalSpeed * Math.abs(posError/(maxSpeed*100)));
-	    	}
-  
-	    	if(posError <= -posTolerance) {
-	    		// increase speed toward robot if current position is greater than target (too close to the floor)
-	    		SmartDashboard.putString("Lock Speed Command", "Decrementing Speed");
-	    		finalSpeed = (currentSpeed - incGain*Math.abs(posError));
-	    		finalSpeed = (finalSpeed * Math.abs(posError/(maxSpeed*100)));
-
-	    	}
-	    	
-	    	if(Math.abs(posError) < posTolerance) {
-	    		// do nothing if the current position is within reasonable bounds
-	    		SmartDashboard.putString("Lock Speed Command", "Doing Nothing");
-	    		finalSpeed = currentSpeed;
-	    	}
-	    	
-	    	SmartDashboard.putString("Lock Speed Command", "Setting Speed");
-	    	if(Math.abs(finalSpeed) > maxSpeed) {
-	    		int sign = (int) (Math.abs(finalSpeed)/finalSpeed);
-	    		setMotorSpeed(sign*maxSpeed);
-	    	}else{
-	    		setMotorSpeed(finalSpeed);
-	    	}
-	    	
-	    	//Timer.delay(0.005);
-	    	
-	    	SmartDashboard.putNumber("Final Speed", finalSpeed);
-	    	SmartDashboard.putNumber("Encoder Position Actual", readEncoder());
-	    	SmartDashboard.putNumber("Encoder Position Target", getTargetPosition());
-	    	SmartDashboard.putString("Lock Speed Command", "Looping");
-    	}
-    	SmartDashboard.putString("Lock Speed Command", "idle");
-    	return;
-    }*/
-
-	private void setMotor(double speed) {
-		Robot.cannonEncoderMotor.set(speed);
-	}
-
-	private double getMotorSpeed() {
-		return encoder.getRate(); //we still need to set the distance per pulse
-	}
+   //convenient math methods (see launchAngle())
+    double atan(double x) { return Math.atan(x); }
+    double pow(double x, double y) { return Math.pow(x, y); }
+    double sqrt(double x) { return Math.sqrt(x); }
 }
 
 

@@ -21,7 +21,8 @@ public class CannonEncoderMove extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.encoderSubsystem.move(Robot.oi.operatorController);
+    	Robot.encoderSubsystem.moveManual(Robot.oi.operatorController);
+//    	Robot.encoderSubsystem.moveAuto(distance);
     }
 
     // Make this return true when this Command no longer needs to run execute()
