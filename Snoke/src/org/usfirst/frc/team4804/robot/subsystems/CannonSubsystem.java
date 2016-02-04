@@ -3,6 +3,8 @@ package org.usfirst.frc.team4804.robot.subsystems;
 
 import org.usfirst.frc.team4804.robot.Robot;
 
+import com.portpiratech.xbox360.XboxController;
+
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -14,19 +16,8 @@ public class CannonSubsystem extends Subsystem {
 	// Put important variables and objects for this subsystem here.
 	
 	// Wheel launcher variables
-	public static double motorSpeed = 0;
-	public static final double LOAD_SPEED = -0.3;
-	public static final double LAUNCH_SPEED = 1.0;
-	/*public static final double LOAD_SPEED_L = -0.3;
-	public static final double LOAD_SPEED_R = -1*LOAD_SPEED_L;
-	public static final double LAUNCH_SPEED_L = 1.0;
-	public static final double LAUNCH_SPEED_R = -1*LAUNCH_SPEED_L;*/
-	
-	// Cannon positioning variables
-	public static double tiltAngle = 0;
-	public static double tiltSpeed = 0;
-	public static final double LOADING_POSITION = 0;
-	public static final double LAUNCHING_POSITION = 0;
+	public static double LOAD_SPEED = -0.35;
+	public static double LAUNCH_SPEED = 1.0;
 	
 	
     // Put methods for controlling this subsystem
@@ -39,11 +30,17 @@ public class CannonSubsystem extends Subsystem {
     	/*setMotor("L", LOAD_SPEED_L);
     	setMotor("R", LOAD_SPEED_R);*/
     }
+    public void motorLoad(XboxController xbox) {
+    	setMotor(-LOAD_SPEED*Math.abs(xbox.getRightStickYAxis()));
+    }
     
     public void motorLaunch() {
     	setMotor(LAUNCH_SPEED);
     	/*setMotor("L", LAUNCH_SPEED_L);
     	setMotor("R", LAUNCH_SPEED_R);*/
+    }
+    public void motorLaunch(XboxController xbox) {
+    	setMotor(-LAUNCH_SPEED*Math.abs(xbox.getRightStickYAxis()));
     }
     
     public void motorStop() {

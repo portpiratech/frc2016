@@ -22,7 +22,7 @@ public class CannonWheelLaunch extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.cannonSubsystem.motorLaunch();
+    	Robot.cannonSubsystem.motorLaunch(Robot.oi.operatorController);
     	
     	// set rumble
     	Robot.oi.operatorController.setRumble(RumbleType.kLeftRumble, (float)0);

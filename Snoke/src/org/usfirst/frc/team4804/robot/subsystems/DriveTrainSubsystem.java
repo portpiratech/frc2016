@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class DriveTrainSubsystem extends Subsystem {
     
-	public static double DRIVE_SPEED = 0.35;	// maximum drive speed; scales other speeds to this
-	public static final double DPAD_MULT = 0.75;		// multiplier for dpad speed controls.
+	public static double DRIVE_SPEED = 1.0;	// maximum drive speed; scales other speeds to this
+	public static final double DPAD_MULT = 0.25;		// multiplier for dpad speed controls.
 	public static final double SPEED_TOLERANCE = 0.1; // can't be too close to 0
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
@@ -35,24 +35,24 @@ public class DriveTrainSubsystem extends Subsystem {
     		
     	switch(side) { //CANTalons are hooked up pos-pos && neg-neg
     		case "L":
-    			Robot.tankDriveLeft.set(-speed);
+    			Robot.tankDriveLeft.set(speed);
     			SmartDashboard.putNumber("Drive train left:", -speed);
     			break;
     		case "R": 
-    			Robot.tankDriveRight.set(speed);
+    			Robot.tankDriveRight.set(-speed);
     			SmartDashboard.putNumber("Drive train right:", speed);
     			break;
     	}
     }
     
     public void drive(XboxController xbox) {
-    	//standardDrive(xbox.getLeftStickYAxis(), xbox.getRightStickYAxis());
+    	tankDrive(xbox.getLeftStickYAxis(), xbox.getRightStickYAxis());
     	//jonnyDrive(xbox.getLeftStickYAxis(), xbox.getLeftStickXAxis(), xbox.getDPad());
-    	tommyDrive(xbox.getLeftStickXAxis(), xbox.getLeftStickYAxis(), xbox.getDPad());
+    	//tommyDrive(xbox.getLeftStickXAxis(), xbox.getLeftStickYAxis(), xbox.getDPad());
     }
     
     // uses two joysticks, left stick y-axis and right stick y-axis
-    public void standardDrive(double leftY, double rightY) {
+    public void tankDrive(double leftY, double rightY) {
     	setMotor("L", leftY*DRIVE_SPEED);
     	setMotor("R", rightY*DRIVE_SPEED);
     }

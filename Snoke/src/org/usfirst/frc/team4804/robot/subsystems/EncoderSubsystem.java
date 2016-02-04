@@ -27,7 +27,7 @@ public class EncoderSubsystem extends Subsystem {
 	public final double DEGREES_PER_PULSE = 360 / 497;
 	public final double TRIGGER_TOLERANCE = 0.05;
 	public final double POSITION_TOLERANCE = 1;
-	public final double POSITION_MAX = 90;
+	public final double POSITION_MAX = 1000;
 	public final double SPEED_TOLERANCE = 0.01;
 	public final double SPEED_MAX = 0.3;
 	
@@ -90,12 +90,12 @@ public class EncoderSubsystem extends Subsystem {
     	
     	case 0:
     		//dpad up
-    		if(currentPosition<=POSITION_MAX) positionTarget = Math.round(currentPosition/10.0)+10.0;
+    		if(currentPosition<=POSITION_MAX) positionTarget = Math.floor(currentPosition/10.0)+10.0;
     		break;
     		
     	case 4:
     		//dpad down
-    		if(currentPosition>=10.0) positionTarget = Math.round(currentPosition/10.0)-10.0;
+    		if(currentPosition>=10.0) positionTarget = Math.ceil(currentPosition/10.0)-10.0;
     		break;
     	
     	default:
@@ -147,7 +147,7 @@ public class EncoderSubsystem extends Subsystem {
     		setMotorSpeed(finalSpeed);
     	}
     	
-    	Timer.delay(0.005);
+    	Timer.delay(0.010);	//test different values
     }
     
    //calculate the angle the encoder should be

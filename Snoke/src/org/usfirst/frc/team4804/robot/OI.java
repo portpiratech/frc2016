@@ -42,6 +42,8 @@ public class OI {
     // until it is finished as determined by it's isFinished method.
     // button.whenReleased(new ExampleCommand());
 	
+  //ROBOT MAP
+	// Xbox Controllers
 	private static final int OPERATOR_CONTROLLER_PORT = 1;
 	private static final int DRIVER_CONTROLLER_PORT = 0;
 	public XboxController driverController = new XboxController(DRIVER_CONTROLLER_PORT);
@@ -54,6 +56,7 @@ public class OI {
 	public static final int NEW_TANKDRIVE_LEFT_ID = 4; //CAN Talon SRX
 	public static final int CANNON_LAUNCHER_ID = 2; //CAN Talon SRX
 	public static final int CANNON_ENCODER_ID = 5; //CAN Talon SRX
+    public static final int CANNON_SWIVEL_MOTOR_CHANNEL = 6; //CAN Talon SRX
     public static final int PCM_ID = 1; //Compressor/Pneumatics Control Module (used for DoubleSolenoids)
     
     // PCM (Pneumatics Control Module) Channels
@@ -63,28 +66,27 @@ public class OI {
     public static final int SOLENOID2_PORT2 = 3; //DoubleSolenoid
     
     // PWM (Pulse Width Modulation--on roboRIO) Device Channels
-    public static final int CANNON_SWIVEL_SERVO_CHANNEL = 0; // Servo
     
     // DIO (Digital Input/Output--on roboRIO) Channels
     public static final int CANNON_ENCODER_CHANNEL_A = 0; // DigitalInput
     public static final int CANNON_ENCODER_CHANNEL_B = 1; // DigitalInput
+    public static final int LIMIT_LEFT_ID = 9;            // DigitalInput (limit switch for swivel)
+    public static final int LIMIT_RIGHT_ID = 8;			  // DigitalInput
 	
+  //CONSTRUCTOR/COMMANDS
 	public OI() {
         // Connect the buttons to commands
 		
-	// Driver: Tank drive
+	// Driver commands:
+		//---
 		
-	// Operator: Cannon/piston controls
+	// Operator commands: Cannon/piston controls
 		operatorController.getLeftBumper().whenPressed(new CannonWheelLoad());
 		operatorController.getRightBumper().whenPressed(new CannonWheelLaunch());
 		operatorController.getYButton().whenPressed(new CannonWheelStop());
-		
 		operatorController.getXButton().whenPressed(new CannonPistonFire());
 		
-		//operatorController.getLeftStickYAxis().whenPressed()
-		
-		
-	// SmartDashboard commands
+	// SmartDashboard commands?
 		// SmartDashboard.putData("Cannon Piston Extend", new CannonPistonExtend());
 	}
 }

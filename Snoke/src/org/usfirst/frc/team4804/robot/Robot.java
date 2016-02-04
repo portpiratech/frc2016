@@ -6,10 +6,11 @@ import org.usfirst.frc.team4804.robot.subsystems.CannonSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.DriveTrainSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.EncoderSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.PistonSubsystem;
-import org.usfirst.frc.team4804.robot.subsystems.ServoSubsystem;
+import org.usfirst.frc.team4804.robot.subsystems.SwivelSubsystem;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
@@ -31,7 +32,7 @@ public class Robot extends IterativeRobot {
 	public static CannonSubsystem cannonSubsystem;
 	public static PistonSubsystem pistonSubsystem;
 	public static DriveTrainSubsystem driveTrainSubsystem;
-	public static ServoSubsystem servoSubsystem;
+	public static SwivelSubsystem swivelSubsystem;
 	public static EncoderSubsystem encoderSubsystem;
 	
    //Other classes
@@ -44,6 +45,7 @@ public class Robot extends IterativeRobot {
 	public static CANTalon tankDriveRight;
 	public static CANTalon cannonLauncherMotors;
 	public static CANTalon cannonEncoderMotor;
+	public static CANTalon cannonSwivelMotor;
 	public static Compressor cannonCompressor;
 	
    //Switching robot mode
@@ -51,6 +53,10 @@ public class Robot extends IterativeRobot {
 	
    //Autonomous command
     Command autonomousCommand;
+    
+   //sensors
+    public static DigitalInput limitLeft;
+    public static DigitalInput limitRight;
     
     /*
   //VISION
@@ -136,20 +142,27 @@ public class Robot extends IterativeRobot {
            //Subsystems
         	cannonSubsystem = new CannonSubsystem();
         	pistonSubsystem = new PistonSubsystem();
-        	servoSubsystem = new ServoSubsystem();
+        	swivelSubsystem = new SwivelSubsystem();
         	encoderSubsystem = new EncoderSubsystem();
         	driveTrainSubsystem = new DriveTrainSubsystem();
         	
            //Motors controllers and objects
-        	cannonLauncherMotors = new CANTalon(OI.CANNON_LAUNCHER_ID); //2
+        	cannonLauncherMotors = new CANTalon(OI.CANNON_LAUNCHER_ID);
         	cannonCompressor = new Compressor(OI.PCM_ID);
         	cannonCompressor.setClosedLoopControl(true);
         	cannonEncoderMotor = new CANTalon(OI.CANNON_ENCODER_ID);
         	tankDriveRight = new CANTalon(OI.NEW_TANKDRIVE_RIGHT_ID);
         	tankDriveLeft = new CANTalon(OI.NEW_TANKDRIVE_LEFT_ID);
+        	cannonSwivelMotor = new CANTalon(OI.CANNON_SWIVEL_MOTOR_CHANNEL);
+        	
+        	//sensors
+        	limitLeft = new DigitalInput(OI.LIMIT_LEFT_ID);
+        	limitRight = new DigitalInput(OI.LIMIT_RIGHT_ID);
         	
            //SmartDashboard inputs? Need to test these
-        	DriveTrainSubsystem.DRIVE_SPEED = (double)SmartDashboard.getNumber("Drive Speed Max", DriveTrainSubsystem.DRIVE_SPEED);
+        	/*DriveTrainSubsystem.DRIVE_SPEED = (double)SmartDashboard.getNumber("Drive Speed Max", DriveTrainSubsystem.DRIVE_SPEED);
+        	CannonSubsystem.LOAD_SPEED = (double)SmartDashboard.getNumber("Cannon Load Speed", CannonSubsystem.LOAD_SPEED);
+        	CannonSubsystem.LAUNCH_SPEED = (double)SmartDashboard.getNumber("Cannon Launch Speed", CannonSubsystem.LAUNCH_SPEED);*/
         	break;
         	
         case OLD_TALON_TANK_MODE:
@@ -332,6 +345,9 @@ public class Robot extends IterativeRobot {
      */
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
+        DriveTrainSubsystem.DRIVE_SPEED = (double)SmartDashboard.getNumber("Drive Speed Max", DriveTrainSubsystem.DRIVE_SPEED);
+    	CannonSubsystem.LOAD_SPEED = (double)SmartDashboard.getNumber("Cannon Load Speed", CannonSubsystem.LOAD_SPEED);
+    	CannonSubsystem.LAUNCH_SPEED = (double)SmartDashboard.getNumber("Cannon Launch Speed", CannonSubsystem.LAUNCH_SPEED);
     }
     
     /**

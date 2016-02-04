@@ -4,11 +4,11 @@ import org.usfirst.frc.team4804.robot.Robot;
 
 import edu.wpi.first.wpilibj.command.Command;
 
-public class CannonServoRotate extends Command {
+public class CannonSwivelRotate extends Command {
 	
-	public CannonServoRotate() {
+	public CannonSwivelRotate() {
         // Use requires() here to declare subsystem dependencies
-		requires(Robot.servoSubsystem);
+		requires(Robot.swivelSubsystem);
 	}
 	
     // Called just before this Command runs the first time
@@ -17,7 +17,7 @@ public class CannonServoRotate extends Command {
 
     // Called repeatedly when this Command is scheduled to run
 	protected void execute() {
-		Robot.servoSubsystem.turn(Robot.oi.operatorController);
+		Robot.swivelSubsystem.turn(Robot.oi.operatorController);
 	}
 
     // Make this return true when this Command no longer needs to run execute()
