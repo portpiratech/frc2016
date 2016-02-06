@@ -10,9 +10,11 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class ExampleCommand extends Command {
 
+	boolean finished = false;
+	
     public ExampleCommand() {
         // Use requires() here to declare subsystem dependencies
-        requires(Robot.cannonSubsystem);
+        requires(Robot.driveTrainSubsystem);
     }
 
     // Called just before this Command runs the first time
@@ -21,12 +23,11 @@ public class ExampleCommand extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+        return finished;
     }
 
     // Called once after isFinished returns true

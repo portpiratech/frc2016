@@ -26,10 +26,10 @@ public class EncoderSubsystem extends Subsystem {
    //constants
 	public final double DEGREES_PER_PULSE = 360 / 497;
 	public final double TRIGGER_TOLERANCE = 0.05;
-	public final double POSITION_TOLERANCE = 1;
+	public final double POSITION_TOLERANCE = 10;
 	public final double POSITION_MAX = 1000;
-	public final double SPEED_TOLERANCE = 0.01;
-	public final double SPEED_MAX = 0.3;
+	public final double SPEED_TOLERANCE = 0.03;
+	public final double SPEED_MAX = 1;
 	
 	double positionTarget = 0;
 	
@@ -49,12 +49,13 @@ public class EncoderSubsystem extends Subsystem {
     // here. Call these from Commands.
     
   //Basic Encoder Motor speed/position methods
-    private void setMotorSpeed(double speed) {
+    private void setMotor(double speed) {
+    	if (Math.abs(speed) < SPEED_TOLERANCE) speed = 0;
 		Robot.cannonEncoderMotor.set(speed);
 	}
 
 	private double getMotorSpeed() {
-		return encoder.getRate(); //we still need to set the distance per pulse
+		return encoder.getRate(); //we still need to set the distance per pulse <--(I think we already did?)
 	}
 	
 	private void resetMotor() {
@@ -64,10 +65,10 @@ public class EncoderSubsystem extends Subsystem {
   //Position calculation/movement/math methods
    //basic move commands
     public void moveManual(XboxController xbox){
-    	//double speed = -xbox.getRightStickYAxis()*SPEED_MAX;
-    	//setMotorSpeed(speed);
+    	//double speed = -xbox.getLeftStickYAxis()*SPEED_MAX;
+    	//setMotor(speed);
     	targetPositionWithTriggers(xbox);
-    	move();
+    	move2();
     }
     
     public void moveAuto(double distance){ //feed "distance" from an analog input
@@ -85,30 +86,34 @@ public class EncoderSubsystem extends Subsystem {
     	double rTrigger = xbox.getRightTriggerAxis();
     	double lTrigger = xbox.getLeftTriggerAxis();
     	
-       //calculate target position
+       //calculate target position             Tommy: Let's not set the position target equal to any variant of its current position
     	switch(dpad){
     	
     	case 0:
     		//dpad up
-    		if(currentPosition<=POSITION_MAX) positionTarget = Math.floor(currentPosition/10.0)+10.0;
+    		if(currentPosition<=POSITION_MAX) //positionTarget = Math.floor(currentPosition/10.0)+10.0;
+    			positionTarget += 10;
     		break;
     		
     	case 4:
     		//dpad down
-    		if(currentPosition>=10.0) positionTarget = Math.ceil(currentPosition/10.0)-10.0;
+    		if(currentPosition>=10.0) //positionTarget = Math.ceil(currentPosition/10.0)-10.0;
+    			positionTarget -= 10;
     		break;
     	
-    	default:
+    	/*default:
     		//dpad not pressed, calculate from triggers
 	    	if(rTrigger >= TRIGGER_TOLERANCE && positionTarget <= POSITION_MAX){
 	    		positionTarget = currentPosition + rTrigger;
 	    	}else if(lTrigger >= TRIGGER_TOLERANCE && positionTarget >= 0){
 	    		positionTarget = currentPosition - lTrigger;
 	    	}else{
-	    		positionTarget = currentPosition;
+	    		//positionTarget = currentPosition;
 	    	}
-	    	break;
+	    	break;*/
     	}
+    	
+    	if (positionTarget > POSITION_MAX) positionTarget = POSITION_MAX;
     }
     
    //move and regulate position
@@ -142,12 +147,47 @@ public class EncoderSubsystem extends Subsystem {
        //set final speed
     	if(Math.abs(finalSpeed) > SPEED_MAX) {
     		//make sure speed isn't out of bounds
-    		setMotorSpeed(Math.signum(finalSpeed)*SPEED_MAX);
+    		setMotor(Math.signum(finalSpeed)*SPEED_MAX);
     	}else{
-    		setMotorSpeed(finalSpeed);
+    		setMotor(finalSpeed);
     	}
     	
     	Timer.delay(0.010);	//test different values
+    }
+    
+    public void move2(){
+    	double currentPosition = encoder.getRaw();
+    	double currentSpeed = encoder.getRate();
+    	
+    	double positionError = currentPosition - positionTarget;
+    	double speed;
+    	if (Math.abs(positionError) >= 200){ //sets the speed to travel faster toward the target position when further away
+    		speed = SPEED_MAX;
+    	}else if (Math.abs(positionError) >= 100){
+    		speed = SPEED_MAX*.6;
+    	}else if (Math.abs(positionError) >= 50){
+    		speed = SPEED_MAX*.3;
+    	}else{
+    		speed = SPEED_MAX*.1;
+    	}
+    	SmartDashboard.putNumber("Position Error", positionError);
+    	SmartDashboard.putNumber("Speed: ", speed);
+    	
+    	if (currentPosition > positionTarget && Math.abs(positionError) > POSITION_TOLERANCE){
+    		setMotor(speed);
+    		SmartDashboard.putString("Motor set: ", "negative");
+    	}else if (currentPosition < positionTarget && Math.abs(positionError) > POSITION_TOLERANCE){
+    		setMotor(-speed);
+    		SmartDashboard.putString("Motor set: ", "positive");
+    	}else{ //will only run this if the current position = the target or the error < the tolerance
+    		setMotor(0);
+    		SmartDashboard.putString("Motor set: ", "nothing");
+    	}
+    	
+    	SmartDashboard.putNumber("CURRENT POSITION", currentPosition);
+    	SmartDashboard.putNumber("TARGET POSITION",  positionTarget);
+    	
+    	Timer.delay(0.010);
     }
     
    //calculate the angle the encoder should be

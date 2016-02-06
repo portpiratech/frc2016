@@ -17,6 +17,7 @@ public class DriveTrainSubsystem extends Subsystem {
 	public static double DRIVE_SPEED = 1.0;	// maximum drive speed; scales other speeds to this
 	public static final double DPAD_MULT = 0.25;		// multiplier for dpad speed controls.
 	public static final double SPEED_TOLERANCE = 0.1; // can't be too close to 0
+	int driveSetting = 2; //0 is tank, 1 is Jonnydrive, 2 is Tommydrive
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
 
@@ -46,9 +47,28 @@ public class DriveTrainSubsystem extends Subsystem {
     }
     
     public void drive(XboxController xbox) {
-    	tankDrive(xbox.getLeftStickYAxis(), xbox.getRightStickYAxis());
-    	//jonnyDrive(xbox.getLeftStickYAxis(), xbox.getLeftStickXAxis(), xbox.getDPad());
-    	//tommyDrive(xbox.getLeftStickXAxis(), xbox.getLeftStickYAxis(), xbox.getDPad());
+    	
+    	switch(driveSetting){
+    	case 0:
+    		tankDrive(xbox.getLeftStickYAxis(), xbox.getRightStickYAxis());
+    		SmartDashboard.putString("Drive Setting", "Tank Drive");
+    		break;
+    	case 1:
+    		jonnyDrive(xbox.getLeftStickYAxis(), xbox.getLeftStickXAxis(), xbox.getDPad(), xbox.getRightStickXAxis());
+    		SmartDashboard.putString("Drive Setting", "Jonny Drive");
+    		break;
+    	case 2:
+    		tommyDrive(xbox.getLeftStickXAxis(), xbox.getLeftStickYAxis(), xbox.getDPad());
+    		SmartDashboard.putString("Drive Setting", "Tommy Drive");
+    		break;
+    	}
+    }
+    
+    public void toggleDriveSetting(){ //mapped to A button on driver's controller
+    	driveSetting++;
+    	if (driveSetting >= 3){
+    		driveSetting = 0;
+    	}
     }
     
     // uses two joysticks, left stick y-axis and right stick y-axis
@@ -58,13 +78,13 @@ public class DriveTrainSubsystem extends Subsystem {
     }
     
     // uses one joystick, left stick y-axis for magnitude, x-axis for direction. car style
-    public void jonnyDrive(double leftY, double leftX, int dpad){ //left stick's y value and left stick's x value
+    public void jonnyDrive(double leftY, double leftX, int dpad, double rightX){ //left stick's y value and left stick's x value
     											//xSpeed and ySpeed range from -1 to 1 based on % of max speed
     	if (dpad == -1){
 	    	double leftMotorSpeed = leftY;
 	    	double rightMotorSpeed = leftY;
 	    	
-	    	if (leftY < 0){                   //increments motor speeds for turning
+	    	if (true){                   //increments motor speeds for turning
 	    		leftMotorSpeed += -leftX;
 	        	rightMotorSpeed += leftX;
 	    	}else{
@@ -76,6 +96,11 @@ public class DriveTrainSubsystem extends Subsystem {
 	    	if (leftMotorSpeed < -1.0) leftMotorSpeed = -1.0;
 	    	if (rightMotorSpeed > 1.0)  rightMotorSpeed =  1.0;
 	    	if (rightMotorSpeed < -1.0) rightMotorSpeed = -1.0;
+	    	
+	    	if (Math.abs(leftMotorSpeed) < SPEED_TOLERANCE && Math.abs(rightMotorSpeed) < SPEED_TOLERANCE){ //use the right stick for miniscule turning
+	    		leftMotorSpeed = -rightX * DPAD_MULT;
+	    		rightMotorSpeed = rightX * DPAD_MULT;
+	    	}
 	    	
 	    	setMotor("L", leftMotorSpeed*DRIVE_SPEED);
 	    	setMotor("R", rightMotorSpeed*DRIVE_SPEED);

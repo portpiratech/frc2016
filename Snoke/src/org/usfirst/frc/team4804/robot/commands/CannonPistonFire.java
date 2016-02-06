@@ -17,6 +17,7 @@ public class CannonPistonFire extends Command {
     public CannonPistonFire() {
         // Use requires() here to declare subsystem dependencies
         requires(Robot.pistonSubsystem);
+        requires(Robot.cannonSubsystem);
     }
 
     // Called just before this Command runs the first time
@@ -25,14 +26,15 @@ public class CannonPistonFire extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	//Extend piston, wait, retract
+    	//Set cannons to launch mode, extend piston, wait, retract, stop cannons
     	SmartDashboard.putString("In execute:","CannonPistonFire");
     	
-    	SmartDashboard.putNumber("Timer", 0.5);
+    	Robot.cannonSubsystem.motorLaunch();
+    	Timer.delay(4); //delay for 4 seconds
+    	
     	Robot.pistonSubsystem.extendLauncher();
     	Timer.delay(Robot.pistonSubsystem.firingDelay); //delay for 1 sec
     	
-    	SmartDashboard.putNumber("Timer", 1);
     	Robot.pistonSubsystem.retractLauncher();
     	Timer.delay(Robot.pistonSubsystem.firingDelay); //delay for 1 sec
     	
@@ -47,6 +49,7 @@ public class CannonPistonFire extends Command {
     // Called once after isFinished returns true
     protected void end() {
     	Robot.pistonSubsystem.stopLauncher();
+    	Robot.cannonSubsystem.motorStop();
     }
 
     // Called when another command which requires one or more of the same

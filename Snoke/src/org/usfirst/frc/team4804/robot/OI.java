@@ -4,11 +4,9 @@ import org.usfirst.frc.team4804.robot.commands.CannonPistonFire;
 import org.usfirst.frc.team4804.robot.commands.CannonWheelLaunch;
 import org.usfirst.frc.team4804.robot.commands.CannonWheelLoad;
 import org.usfirst.frc.team4804.robot.commands.CannonWheelStop;
-import org.usfirst.frc.team4804.robot.subsystems.DriveTrainSubsystem;
+import org.usfirst.frc.team4804.robot.commands.DriveToggle;
 
 import com.portpiratech.xbox360.XboxController;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -78,13 +76,16 @@ public class OI {
         // Connect the buttons to commands
 		
 	// Driver commands:
-		//---
+		driverController.getAButton().whenPressed(new DriveToggle());
+		//Left stick for driving, left + right stick when in tank drive
 		
 	// Operator commands: Cannon/piston controls
 		operatorController.getLeftBumper().whenPressed(new CannonWheelLoad());
 		operatorController.getRightBumper().whenPressed(new CannonWheelLaunch());
 		operatorController.getYButton().whenPressed(new CannonWheelStop());
 		operatorController.getXButton().whenPressed(new CannonPistonFire());
+		//right stick y axis used temporarily for controlling launch speed
+		//left stick y axis used temporarily for the encoder motor
 		
 	// SmartDashboard commands?
 		// SmartDashboard.putData("Cannon Piston Extend", new CannonPistonExtend());

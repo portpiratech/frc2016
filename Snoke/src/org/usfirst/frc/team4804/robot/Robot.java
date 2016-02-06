@@ -1,6 +1,9 @@
 
 package org.usfirst.frc.team4804.robot;
 
+import java.util.Comparator;
+import java.util.Vector;
+
 import org.usfirst.frc.team4804.robot.commands.ExampleCommand;
 import org.usfirst.frc.team4804.robot.subsystems.CannonSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.DriveTrainSubsystem;
@@ -8,12 +11,28 @@ import org.usfirst.frc.team4804.robot.subsystems.EncoderSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.PistonSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.SwivelSubsystem;
 
+import com.ni.vision.NIVision;
+import com.ni.vision.NIVision.CurveOptions;
+import com.ni.vision.NIVision.DetectLinesResult;
+import com.ni.vision.NIVision.DrawMode;
+import com.ni.vision.NIVision.EdgeFilterSize;
+import com.ni.vision.NIVision.ExtractionMode;
+import com.ni.vision.NIVision.Image;
+import com.ni.vision.NIVision.ImageType;
+import com.ni.vision.NIVision.LineDescriptor;
+import com.ni.vision.NIVision.MaskToROIResult;
+import com.ni.vision.NIVision.ROI;
+import com.ni.vision.NIVision.RangeFloat;
+import com.ni.vision.NIVision.ShapeDetectionOptions;
+import com.ni.vision.NIVision.ShapeMode;
+
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Joystick.RumbleType;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -58,7 +77,7 @@ public class Robot extends IterativeRobot {
     public static DigitalInput limitLeft;
     public static DigitalInput limitRight;
     
-    /*
+    
   //VISION
    //A structure to hold measurements of a particle
   	public class ParticleReport implements Comparator<ParticleReport>, Comparable<ParticleReport>{
@@ -92,42 +111,35 @@ public class Robot extends IterativeRobot {
   	int session;
 	
    //Constants
-  	NIVision.Range TOTE_HUE_RANGE = new NIVision.Range(101, 64);	//Default hue range for yellow tote
-  	NIVision.Range TOTE_SAT_RANGE = new NIVision.Range(88, 255);	//Default saturation range for yellow tote
-  	NIVision.Range TOTE_VAL_RANGE = new NIVision.Range(134, 255);	//Default value range for yellow tote
+  	NIVision.Range TOTE_HUE_RANGE = new NIVision.Range(100, 180);	//Default hue range for green-cyan LED
+  	NIVision.Range TOTE_SAT_RANGE = new NIVision.Range(0, 255);	//Default saturation range for green-cyan LED
+  	NIVision.Range TOTE_VAL_RANGE = new NIVision.Range(128, 255);	//Default value range for green-cyan LED
   	double AREA_MINIMUM = 0.5; //Default Area minimum for particle as a percentage of total image area
   	double LONG_RATIO = 2.22; //Tote long side = 26.9 / Tote height = 12.1 = 2.22
   	double SHORT_RATIO = 1.4; //Tote short side = 16.9 / Tote height = 12.1 = 1.4
   	double SCORE_MIN = 75.0;  //Minimum score to be considered a tote
-  	double VIEW_ANGLE = 49.4; //View angle fo camera, set to Axis m1011 by default, 64 for m1013, 51.7 for 206, 52 for HD3000 square, 60 for HD3000 640x480
+  	double VIEW_ANGLE = 60; //View angle fo camera, set to Axis m1011 by default, 64 for m1013, 51.7 for 206, 52 for HD3000 square, 60 for HD3000 640x480
   	NIVision.ParticleFilterCriteria2 criteria[] = new NIVision.ParticleFilterCriteria2[1];
   	NIVision.ParticleFilterOptions2 filterOptions = new NIVision.ParticleFilterOptions2(0,0,1,1);
   	Scores scores = new Scores();
     
    //Vision
-    CameraServer server;
+    //CameraServer server;
     //int session;
     //Image frame;
     
    //Constructor
     public Robot() {
-        server = CameraServer.getInstance();
-        server.setQuality(50);
-        //the camera name (ex "cam0") can be found through the roborio web interface
-        server.startAutomaticCapture("cam0");
-    }*/
+        //server = CameraServer.getInstance();
+        //server.setQuality(50);
+        ////the camera name (ex "cam0") can be found through the roborio web interface
+        //server.startAutomaticCapture("cam0");
+    }
     
     /**
      * start up automatic capture you should see the video stream from the
      * webcam in your FRC PC Dashboard.
      */
-    public void operatorControl() {
-
-        while (isOperatorControl() && isEnabled()) {
-            // robot code here!
-            Timer.delay(0.005);		// wait for a motor update time
-        }
-    }
     
 
     /**
@@ -172,39 +184,41 @@ public class Robot extends IterativeRobot {
         	break;
         }
         
-       //other classes
+       //other important classes
         oi = new OI();
         
        //instantiate the command used for the autonomous period
         autonomousCommand = new ExampleCommand();
        
-      //VISION
-       // create images
-     	/*frame = NIVision.imaqCreateImage(ImageType.IMAGE_RGB, 0);
-     	binaryFrame = NIVision.imaqCreateImage(ImageType.IMAGE_U8, 0);
-     	criteria[0] = new NIVision.ParticleFilterCriteria2(NIVision.MeasurementType.MT_AREA_BY_IMAGE_AREA, AREA_MINIMUM, 100.0, 0, 0);
-
-       //Put default values to SmartDashboard so fields will appear
-     	SmartDashboard.putNumber("Tote hue min", TOTE_HUE_RANGE.minValue);
-     	SmartDashboard.putNumber("Tote hue max", TOTE_HUE_RANGE.maxValue);
-     	SmartDashboard.putNumber("Tote sat min", TOTE_SAT_RANGE.minValue);
-     	SmartDashboard.putNumber("Tote sat max", TOTE_SAT_RANGE.maxValue);
-     	SmartDashboard.putNumber("Tote val min", TOTE_VAL_RANGE.minValue);
-     	SmartDashboard.putNumber("Tote val max", TOTE_VAL_RANGE.maxValue);
-     	SmartDashboard.putNumber("Area min %", AREA_MINIMUM);
-     			
-     	session = NIVision.IMAQdxOpenCamera("cam0",
-     	          NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-     	NIVision.IMAQdxConfigureGrab(session);*/
-        
-//    // camera stuff
-//        frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
-//
-//        // the camera name (ex "cam0") can be found through the roborio web interface
-//        session = NIVision.IMAQdxOpenCamera("cam0",
-//                NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-//        NIVision.IMAQdxConfigureGrab(session);
+      visionInit();
     }
+
+	private void visionInit() {
+		// create images
+		frame = NIVision.imaqCreateImage(ImageType.IMAGE_RGB, 0);
+		binaryFrame = NIVision.imaqCreateImage(ImageType.IMAGE_U8, 0);
+		criteria[0] = new NIVision.ParticleFilterCriteria2(NIVision.MeasurementType.MT_AREA_BY_IMAGE_AREA, AREA_MINIMUM, 100.0, 0, 0);
+
+		//Put default values to SmartDashboard so fields will appear
+		SmartDashboard.putNumber("Tote hue min", TOTE_HUE_RANGE.minValue);
+		SmartDashboard.putNumber("Tote hue max", TOTE_HUE_RANGE.maxValue);
+		SmartDashboard.putNumber("Tote sat min", TOTE_SAT_RANGE.minValue);
+		SmartDashboard.putNumber("Tote sat max", TOTE_SAT_RANGE.maxValue);
+		SmartDashboard.putNumber("Tote val min", TOTE_VAL_RANGE.minValue);
+		SmartDashboard.putNumber("Tote val max", TOTE_VAL_RANGE.maxValue);
+		SmartDashboard.putNumber("Area min %", AREA_MINIMUM);
+		 			
+		session = NIVision.IMAQdxOpenCamera("cam0",
+		          NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+		NIVision.IMAQdxConfigureGrab(session);
+		 	
+//		// old SimpleVision stuff
+//	    frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
+//	    // the camera name (ex "cam0") can be found through the roborio web interface
+//	    session = NIVision.IMAQdxOpenCamera("cam0",
+//	             NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+//	    NIVision.IMAQdxConfigureGrab(session);
+	}
 	
 	public void disabledPeriodic() {
 		Scheduler.getInstance().run();
@@ -228,8 +242,30 @@ public class Robot extends IterativeRobot {
         // continue until interrupted by another command, remove
         // this line or comment it out.
         if (autonomousCommand != null) autonomousCommand.cancel();
+    }
+
+    /**
+     * This function is called when the disabled button is hit.
+     * You can use it to reset subsystems before shutting down.
+     */
+    public void disabledInit(){
+    	//disable rumble
+    	Robot.oi.operatorController.setRumble(RumbleType.kLeftRumble, (float)0);
+    	Robot.oi.operatorController.setRumble(RumbleType.kRightRumble, (float)0);
+    	Robot.oi.driverController.setRumble(RumbleType.kLeftRumble, (float)0);
+    	Robot.oi.driverController.setRumble(RumbleType.kRightRumble, (float)0);
+    }
+
+    /**
+     * This function is called periodically during operator control
+     */
+    public void teleopPeriodic() {
+        Scheduler.getInstance().run();
+        DriveTrainSubsystem.DRIVE_SPEED = (double)SmartDashboard.getNumber("Drive Speed Max", DriveTrainSubsystem.DRIVE_SPEED);
+    	CannonSubsystem.LOAD_SPEED = (double)SmartDashboard.getNumber("Cannon Load Speed", CannonSubsystem.LOAD_SPEED);
+    	CannonSubsystem.LAUNCH_SPEED = (double)SmartDashboard.getNumber("Cannon Launch Speed", CannonSubsystem.LAUNCH_SPEED);
         
-        /*while (! && isEnabled()) {
+        //while (isOperatorControl() && isEnabled()) {
 			//read file in from disk. For this example to run you need to copy image.jpg from the SampleImages folder to the
 			//directory shown below using FTP or SFTP: http://wpilib.screenstepslive.com/s/4485/m/24166/l/282299-roborio-ftp
 			
@@ -244,7 +280,7 @@ public class Robot extends IterativeRobot {
 			TOTE_VAL_RANGE.minValue = (int)SmartDashboard.getNumber("Tote val min", TOTE_VAL_RANGE.minValue);
 			TOTE_VAL_RANGE.maxValue = (int)SmartDashboard.getNumber("Tote val max", TOTE_VAL_RANGE.maxValue);
 
-			//Threshold the image looking for yellow (tote color)
+			//Threshold the image looking for threshold values
 			NIVision.imaqColorThreshold(binaryFrame, frame, 255, NIVision.ColorMode.HSV, TOTE_HUE_RANGE, TOTE_SAT_RANGE, TOTE_VAL_RANGE);
 
 			//Send particle count to dashboard
@@ -264,13 +300,11 @@ public class Robot extends IterativeRobot {
 			numParticles = NIVision.imaqCountParticles(binaryFrame, 1);
 			SmartDashboard.putNumber("Filtered particles", numParticles);
 
-			if(numParticles > 0)
-			{
+			if(numParticles > 0) {
 				
 				//Measure particles and sort by particle size
 				Vector<ParticleReport> particles = new Vector<ParticleReport>();
-				for(int particleIndex = 0; particleIndex < numParticles; particleIndex++)
-				{
+				for(int particleIndex = 0; particleIndex < numParticles; particleIndex++) {
 					ParticleReport par = new ParticleReport();
 					par.PercentAreaToImageArea = NIVision.imaqMeasureParticle(binaryFrame, particleIndex, 0, NIVision.MeasurementType.MT_AREA_BY_IMAGE_AREA);
 					par.Area = NIVision.imaqMeasureParticle(binaryFrame, particleIndex, 0, NIVision.MeasurementType.MT_AREA);
@@ -279,7 +313,6 @@ public class Robot extends IterativeRobot {
 					par.BoundingRectBottom = NIVision.imaqMeasureParticle(binaryFrame, particleIndex, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_BOTTOM);
 					par.BoundingRectRight = NIVision.imaqMeasureParticle(binaryFrame, particleIndex, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_RIGHT);
 					particles.add(par);
-		
 				}
 				particles.sort(null);
 
@@ -296,59 +329,59 @@ public class Robot extends IterativeRobot {
 				SmartDashboard.putBoolean("IsTote", isTote);
 				SmartDashboard.putNumber("Distance", computeDistance(binaryFrame, particles.elementAt(0)));
 				
-				//Drawing a rectangle
-					//particles(0).Area
-					//particles(0).BoundingRectLeft
-				//NIVision.Rect(int top, int left, int height, int width);
+				//Bounding rectangle params
 				int top = (int)particles.elementAt(0).BoundingRectTop;
 				int left = (int)particles.elementAt(0).BoundingRectLeft;
 				int bottom = (int)particles.elementAt(0).BoundingRectBottom;
 				int right = (int)particles.elementAt(0).BoundingRectRight;
-				
 				int width = right - left;
 				int height = bottom - top;
 				
-				int r = 255;
-				int g = 0;
+				//Pick a colour
+				int r = 0;
+				int g = 255;
 				int b = 0;
 				float color = color(r, g, b);
 				
-				NIVision.Rect rect = new NIVision.Rect(top, left, height, width);
-				NIVision.Rect rectBig = new NIVision.Rect(top-1, left-1, height+2, width+2);
-				
-				NIVision.imaqDrawShapeOnImage(frame, frame, rect,
-	                    DrawMode.DRAW_VALUE, ShapeMode.SHAPE_RECT, color);
-				NIVision.imaqDrawShapeOnImage(frame, frame, rectBig,
-	                    DrawMode.DRAW_VALUE, ShapeMode.SHAPE_RECT, color);
+				drawRectangle(top, left, width, height, color, 4, frame);
 			} else {
 				SmartDashboard.putBoolean("IsTote", false);
 			}
 			
+			
+			
 			CameraServer.getInstance().setImage(frame);
 				
-			Timer.delay(0.005);				// wait for a motor update time
+			//Timer.delay(0.005);				// wait for a motor update time
+				 
+		//}
+    }
+
+	/**
+	 * @param top Top bound of rectangle
+	 * @param left Left bound of rectangle
+	 * @param width Width of rectangle
+	 * @param height Height of rectangle
+	 * @param color RGB color value
+	 * @param thickness Border thickness in pixels (use values >1 for best results)
+	 * @param image Image to draw on
+	 */
+	private void drawRectangle(int top, int left, int width, int height, float color, int thickness, Image image) {
+		for(int i=1; i<=thickness; i++){
+			//define bounds
+			NIVision.Rect rect = new NIVision.Rect(top, left, height, width);
 			
-			 
-		}*/
-    }
-
-    /**
-     * This function is called when the disabled button is hit.
-     * You can use it to reset subsystems before shutting down.
-     */
-    public void disabledInit(){
-
-    }
-
-    /**
-     * This function is called periodically during operator control
-     */
-    public void teleopPeriodic() {
-        Scheduler.getInstance().run();
-        DriveTrainSubsystem.DRIVE_SPEED = (double)SmartDashboard.getNumber("Drive Speed Max", DriveTrainSubsystem.DRIVE_SPEED);
-    	CannonSubsystem.LOAD_SPEED = (double)SmartDashboard.getNumber("Cannon Load Speed", CannonSubsystem.LOAD_SPEED);
-    	CannonSubsystem.LAUNCH_SPEED = (double)SmartDashboard.getNumber("Cannon Launch Speed", CannonSubsystem.LAUNCH_SPEED);
-    }
+			//draw on image
+			NIVision.imaqDrawShapeOnImage(frame, frame, rect,
+			        DrawMode.DRAW_VALUE, ShapeMode.SHAPE_RECT, color);
+			
+			//set up bounds for next largest rectangle
+			top--;
+			left--;
+			height += 2;
+			width += 2;
+		}
+	}
     
     /**
      * This function is called periodically during test mode
@@ -357,7 +390,7 @@ public class Robot extends IterativeRobot {
         LiveWindow.run();
     }
     
-    /*
+    
   //VISION
     //Comparator function for sorting particles. Returns true if particle 1 is larger
   	static boolean CompareParticleSizes(ParticleReport particle1, ParticleReport particle2){
@@ -368,7 +401,7 @@ public class Robot extends IterativeRobot {
  	 * Converts a ratio with ideal value of 1 to a score. The resulting function is piecewise
  	 * linear going from (0,0) to (1,100) to (2,0) and is 0 for all inputs outside the range 0-2
  	 */
-/*	double ratioToScore(double ratio) {
+	double ratioToScore(double ratio) {
   		return (Math.max(0, Math.min(100*(1-Math.abs(1-ratio)), 100)));
   	}
 
@@ -381,10 +414,11 @@ public class Robot extends IterativeRobot {
  	/**
  	 * Method to score if the aspect ratio of the particle appears to match the retro-reflective target. Target is 7"x7" so aspect should be 1
   	 */
-/* 	double AspectScore(ParticleReport report)
+ 	double AspectScore(ParticleReport report)
   	{
   		return ratioToScore(((report.BoundingRectRight-report.BoundingRectLeft)/(report.BoundingRectBottom-report.BoundingRectTop)));
   	}
+ 	
   	/**
   	 * Computes the estimated distance to a target using the width of the particle in the image. For more information and graphics
   	 * showing the math behind this approach see the Vision Processing section of the ScreenStepsLive documentation.
@@ -394,13 +428,13 @@ public class Robot extends IterativeRobot {
   	 * @param isLong Boolean indicating if the target is believed to be the long side of a tote
   	 * @return The estimated distance to the target in feet.
   	 */
-/* 	double computeDistance (Image image, ParticleReport report) {
+ 	double computeDistance (Image image, ParticleReport report) {
   		double normalizedWidth, targetWidth;
   		NIVision.GetImageSizeResult size;
 
   		size = NIVision.imaqGetImageSize(image);
   		normalizedWidth = 2*(report.BoundingRectRight - report.BoundingRectLeft)/size.width;
-  		targetWidth = 7;
+  		targetWidth = 20;	//inches?
 		return  targetWidth/(normalizedWidth*12*Math.tan(VIEW_ANGLE*Math.PI/(180*2)));
   	}
   		
@@ -408,6 +442,5 @@ public class Robot extends IterativeRobot {
   		// each color value input is between 0-255
   		return (float)(blue*256*256 + green*256 + red);
   	}
-    */
 }
 

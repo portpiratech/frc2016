@@ -151,12 +151,15 @@ public class XboxController extends Joystick {
 		return new JoystickButton(this, 10);
 	}
 	
+	/**
+	 * This method returns the value of the D-Pad from the XBox Controller.
+	 * @return -1 (if not pressed), 0,1,2,3,4,5,6,7 (position relative to straight up, clockwise)
+	 */
 	public int getDPad(){
 		int rawValue = this.getPOV(0);
 		int dpad = 0;
 		
 		switch(rawValue) {
-		
 		// -1 means not pressed. angles are measured from vertical, moving clockwise
 		case -1: 
 			dpad = -1;
@@ -184,11 +187,8 @@ public class XboxController extends Joystick {
 			break;
 		case 315: 
 			dpad = 7;
-			break;
-		default: SmartDashboard.putString("getDPad", "DPad Error");
-		
+			break;		
 		}
-		SmartDashboard.putNumber("actualDpad", dpad);
 		return dpad;
 	}
 
