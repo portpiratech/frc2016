@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
- *
+ * Subsystem for controlling drive motors.
  */
 public class DriveTrainSubsystem extends Subsystem {
     
@@ -27,7 +27,11 @@ public class DriveTrainSubsystem extends Subsystem {
     }
     
  // Methods
-    
+    /**
+	 * Sets motor speeds.
+	 * @param side String, either "L" or "R"
+	 * @param speed Speed in range [-1,1]
+	 */
     public void setMotor(String side, double speed) {
     	// side "L" = left
     	// side "R" = right
@@ -46,6 +50,10 @@ public class DriveTrainSubsystem extends Subsystem {
     	}
     }
     
+    /**
+     * Runs the robot from the xbox controller.
+     * @param xbox Xbox controller input.
+     */
     public void drive(XboxController xbox) {
     	
     	switch(driveSetting){
@@ -64,6 +72,9 @@ public class DriveTrainSubsystem extends Subsystem {
     	}
     }
     
+    /**
+     * Changes the drive mode. 0=tank, 1=jonny, 2=tommy.
+     */
     public void toggleDriveSetting(){ //mapped to A button on driver's controller
     	driveSetting++;
     	if (driveSetting >= 3){
@@ -72,12 +83,24 @@ public class DriveTrainSubsystem extends Subsystem {
     }
     
     // uses two joysticks, left stick y-axis and right stick y-axis
+    /**
+     * Tank-style driving method.
+     * @param leftY Left joystick's y-value. Speed in range [-1,1] controlling the left motors
+     * @param rightY Right joystick's y-value. Speed in range [-1,1] controlling the right motors
+     */
     public void tankDrive(double leftY, double rightY) {
     	setMotor("L", leftY*DRIVE_SPEED);
     	setMotor("R", rightY*DRIVE_SPEED);
     }
     
     // uses one joystick, left stick y-axis for magnitude, x-axis for direction. car style
+    /**
+     * Jonny's custom drive method. 
+     * @param leftY Left joystick's y-value (in range [-1,1]).
+     * @param leftX Left joystick's x-value (in range [-1,1]).
+     * @param dpad Dpad input value 0, 2, 4, or 6. Strict directional driving (forward, turn right, backward, turn left).
+     * @param rightX Right joystick's x-value. Speed in range [-1,1] controlling miniscule turning.
+     */
     public void jonnyDrive(double leftY, double leftX, int dpad, double rightX){ //left stick's y value and left stick's x value
     											//xSpeed and ySpeed range from -1 to 1 based on % of max speed
     	if (dpad == -1){
@@ -128,6 +151,12 @@ public class DriveTrainSubsystem extends Subsystem {
     }
     
     // uses one joystick, left stick x- and y-axis, vector style
+    /**
+     * Tommy's custom drive method. Vector-style driving (based on angle + magnitude of the left joystick).
+     * @param leftX Left joystick's x-value (in range [-1,1]).
+     * @param leftY Left joystick's y-value (in range [-1,1]).
+     * @param dpad Dpad input value 0, 2, 4, or 6. Strict directional driving (forward, turn right, backward, turn left).
+     */
     public void tommyDrive(double leftX, double leftY, int dpad) {
     	
     	leftX *= -1; //corrects input value

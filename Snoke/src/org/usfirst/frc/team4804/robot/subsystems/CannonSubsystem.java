@@ -35,12 +35,13 @@ public class CannonSubsystem extends Subsystem {
     }
     
     public void motorLaunch() {
-    	setMotor(LAUNCH_SPEED);
+    	setMotor(-LAUNCH_SPEED);
     	/*setMotor("L", LAUNCH_SPEED_L);
     	setMotor("R", LAUNCH_SPEED_R);*/
     }
     public void motorLaunch(XboxController xbox) {
     	setMotor(-LAUNCH_SPEED*Math.abs(xbox.getRightStickYAxis()));
+    	
     }
     
     public void motorStop() {

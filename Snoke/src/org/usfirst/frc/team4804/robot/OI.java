@@ -51,10 +51,10 @@ public class OI {
     public static final int OLD_TANKDRIVE_LEFT_ID = 0; //Talon
 	public static final int OLD_TANKDRIVE_RIGHT_ID = 1; //Talon
     public static final int NEW_TANKDRIVE_RIGHT_ID = 3; //CAN Talon SRX
-	public static final int NEW_TANKDRIVE_LEFT_ID = 4; //CAN Talon SRX
+	public static final int NEW_TANKDRIVE_LEFT_ID = 6; //CAN Talon SRX
 	public static final int CANNON_LAUNCHER_ID = 2; //CAN Talon SRX
 	public static final int CANNON_ENCODER_ID = 5; //CAN Talon SRX
-    public static final int CANNON_SWIVEL_MOTOR_CHANNEL = 6; //CAN Talon SRX
+    public static final int CANNON_SWIVEL_MOTOR_CHANNEL = 4; //CAN Talon SRX
     public static final int PCM_ID = 1; //Compressor/Pneumatics Control Module (used for DoubleSolenoids)
     
     // PCM (Pneumatics Control Module) Channels
