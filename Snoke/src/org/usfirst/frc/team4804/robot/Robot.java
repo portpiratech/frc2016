@@ -140,8 +140,6 @@ public class Robot extends IterativeRobot {
         
        //instantiate the command used for the autonomous period
         autonomousCommand = new ExampleCommand();
-       
-        vision.visionInit();
     }
 	
 	public void disabledPeriodic() {

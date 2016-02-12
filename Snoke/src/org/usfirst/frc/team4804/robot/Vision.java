@@ -67,7 +67,7 @@ public class Vision {
   	/**
   	 * Initializes vision system
   	 */
-  	public void visionInit() {
+  	public Vision() {
 		// create images
 		frame = NIVision.imaqCreateImage(ImageType.IMAGE_RGB, 0);
 		binaryFrame = NIVision.imaqCreateImage(ImageType.IMAGE_U8, 0);
