@@ -14,11 +14,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class SwivelSubsystem extends Subsystem {
     
-	//Currently using: WINDSHIELD MOTOR
+	//Currently using: WINDSHIELD WIPER MOTOR (No encoding)
 	
   //Constants:
-	public static final double SPEED = .1;
-	public static final double ANGULAR_DISPLACEMENT = 10; //angle between limit switches, degrees
+	public static double speed = .1;
+	public static final double ANGULAR_DISPLACEMENT = 10; //angle between limit switches, degrees. Needs to be measured
 	
   //Initialization:
     public void initDefaultCommand() {
@@ -36,19 +36,24 @@ public class SwivelSubsystem extends Subsystem {
     
    //turn motor using xbox input
     public void turn(XboxController xbox){
-    	setMotor(xbox.getRightStickXAxis()*SPEED);
+    	setMotor(xbox.getRightStickXAxis()*speed);
     }
     
    //check if limit switch is pressed
-    public boolean limitSwitchPressed(String side) {
+    /**
+     * Check if a limit switch is pressed.
+     * @param side String: "right" or "left"
+     * @return true if not pressed, false if pressed
+     */
+    public boolean isLimitSwitchPressed(String side) {
     	switch(side) {
     	
     	case "left":
     		SmartDashboard.putBoolean("Swivel Right Limit Switch", Robot.limitLeft.get());
-    		return !Robot.limitLeft.get();
+    		return Robot.limitLeft.get();
     	case "right":
     		SmartDashboard.putBoolean("Swivel Left Limit Switch", Robot.limitRight.get());
-    		return !Robot.limitRight.get();
+    		return Robot.limitRight.get();
     	default: return false;
     	}
     }
@@ -56,13 +61,29 @@ public class SwivelSubsystem extends Subsystem {
     
    //calibrate motor--experimentally determine angular velocity with given angular displacement, measuring elapsed time
     public void calculateSpeed(){
-    	double time0 = System.currentTimeMillis();
-    	setMotor(SPEED);
-    	while(!limitSwitchPressed("right")) {}
+    	//rotate left until left limit switch is hit to reset
+    	setMotor(-speed);
+    	while(!isLimitSwitchPressed("left")) {}
     	
+    	//stop motor
+    	setMotor(0);
+    	
+    	//record time and rotate right until right limit switch is hit
+    	double time0 = System.currentTimeMillis();
+    	setMotor(speed);
+    	while(!isLimitSwitchPressed("right")) {}
+    	
+    	//record time and rotate left until left limit switch is hit
     	double time1 = System.currentTimeMillis();
-    	double elapsedTime = time1 - time0; //don't feed the robots past midnight
-    	double angularVelocity = ANGULAR_DISPLACEMENT / elapsedTime;
+    	setMotor(-speed);
+    	while(!isLimitSwitchPressed("left")) {}
+    	
+    	double time2 = System.currentTimeMillis();
+    	
+    	double elapsedTimeLR = time1 - time0; //don't feed the robots past midnight
+    	double elapsedTimeRL = time2 - time1;
+    	double angularVelocityLR = ANGULAR_DISPLACEMENT / elapsedTimeLR;
+    	double angularVelocityRL = ANGULAR_DISPLACEMENT / elapsedTimeRL;
     }
     
     

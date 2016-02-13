@@ -5,8 +5,11 @@ import org.usfirst.frc.team4804.robot.commands.CannonWheelLaunch;
 import org.usfirst.frc.team4804.robot.commands.CannonWheelLoad;
 import org.usfirst.frc.team4804.robot.commands.CannonWheelStop;
 import org.usfirst.frc.team4804.robot.commands.DriveToggle;
+import org.usfirst.frc.team4804.robot.commands.UpdateCamera;
 
 import com.portpiratech.xbox360.XboxController;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -84,11 +87,12 @@ public class OI {
 		operatorController.getRightBumper().whenPressed(new CannonWheelLaunch());
 		operatorController.getYButton().whenPressed(new CannonWheelStop());
 		operatorController.getXButton().whenPressed(new CannonPistonFire());
+		operatorController.getRightBumper().whenPressed(new UpdateCamera());
 		//right stick y axis used temporarily for controlling launch speed
 		//left stick y axis used temporarily for the encoder motor
 		
 	// SmartDashboard commands?
-		// SmartDashboard.putData("Cannon Piston Extend", new CannonPistonExtend());
+		SmartDashboard.putData("Cannon Piston Extend", new CannonPistonFire());
 	}
 }
 

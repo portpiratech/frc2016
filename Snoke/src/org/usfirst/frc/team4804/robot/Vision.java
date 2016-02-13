@@ -246,17 +246,17 @@ public class Vision {
   	 *
   	 * @param image The image to use for measuring the particle estimated rectangle
   	 * @param report The Particle Analysis Report for the particle
-  	 * @param isLong Boolean indicating if the target is believed to be the long side of a tote
   	 * @return The estimated distance to the target in feet.
   	 */
  	double computeDistance (Image image, ParticleReport report) {
-  		double normalizedWidth, targetWidth;
-  		NIVision.GetImageSizeResult size;
-
-  		size = NIVision.imaqGetImageSize(image);
-  		normalizedWidth = 2*(report.BoundingRectRight - report.BoundingRectLeft)/size.width;
-  		targetWidth = 20;	//inches?
-		return  targetWidth/(normalizedWidth*12*Math.tan(VIEW_ANGLE*Math.PI/(180*2)));
+  		double targetWidthFeet, targetWidthPixels, imageWidthPixels;
+  		NIVision.GetImageSizeResult size = NIVision.imaqGetImageSize(image);
+  		
+  		imageWidthPixels = size.width;
+  		targetWidthPixels = report.BoundingRectRight - report.BoundingRectLeft; //units are pixels. right edge - left edge
+  		targetWidthFeet = 5/3;	//units are feet. target is 20 inches wide, or 20/12 feet wide
+		
+  		return targetWidthFeet*imageWidthPixels/(targetWidthPixels*2*Math.tan(VIEW_ANGLE*Math.PI/(180))); //Math.tan() takes angle in radians
   	}
   		
   	float color(int red, int green, int blue) {
