@@ -229,6 +229,20 @@ public class DriveTrainSubsystem extends Subsystem {
 		}
     }
     
+    //crude camera centering method--need to test
+    public void autoCenterCamera() {
+    	double error = Robot.vision.errorAimingX;
+    	double speed = 0;
+    	
+    	//center at error=0
+    	
+    	if(Math.abs(error)>0.002) speed = error*DRIVE_SPEED*50; //if error<0, then speed<0. if error>0, then speed>0.
+    	if(Math.abs(speed)>1) speed = Math.signum(speed);
+    	
+    	setMotor("L", -speed);
+		setMotor("R", speed);
+    }
+    
 }
 
 

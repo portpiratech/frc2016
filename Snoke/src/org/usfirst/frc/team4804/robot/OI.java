@@ -73,6 +73,7 @@ public class OI {
     public static final int CANNON_ENCODER_CHANNEL_B = 1; // DigitalInput
     public static final int LIMIT_LEFT_ID = 9;            // DigitalInput (limit switch for swivel)
     public static final int LIMIT_RIGHT_ID = 8;			  // DigitalInput
+    public static final int LIMIT_CENTER_ID = 7;
 	
   //CONSTRUCTOR/COMMANDS
 	public OI() {

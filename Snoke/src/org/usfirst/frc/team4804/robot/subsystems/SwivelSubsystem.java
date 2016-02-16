@@ -20,6 +20,9 @@ public class SwivelSubsystem extends Subsystem {
 	public static double speed = .1;
 	public static final double ANGULAR_DISPLACEMENT = 10; //angle between limit switches, degrees. Needs to be measured
 	
+	static double angularVelocityLR;
+	static double angularVelocityRL;
+	
   //Initialization:
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
@@ -54,13 +57,16 @@ public class SwivelSubsystem extends Subsystem {
     	case "right":
     		SmartDashboard.putBoolean("Swivel Left Limit Switch", Robot.limitRight.get());
     		return Robot.limitRight.get();
+    	case "center":
+    		SmartDashboard.putBoolean("Swivel Center Limit Switch", Robot.limitCenter.get());
+    		return Robot.limitCenter.get();
     	default: return false;
     	}
     }
     
     
    //calibrate motor--experimentally determine angular velocity with given angular displacement, measuring elapsed time
-    public void calculateSpeed(){
+    public void calibrateSpeed() {
     	//rotate left until left limit switch is hit to reset
     	setMotor(-speed);
     	while(!isLimitSwitchPressed("left")) {}
@@ -82,8 +88,8 @@ public class SwivelSubsystem extends Subsystem {
     	
     	double elapsedTimeLR = time1 - time0; //don't feed the robots past midnight
     	double elapsedTimeRL = time2 - time1;
-    	double angularVelocityLR = ANGULAR_DISPLACEMENT / elapsedTimeLR;
-    	double angularVelocityRL = ANGULAR_DISPLACEMENT / elapsedTimeRL;
+    	angularVelocityLR = ANGULAR_DISPLACEMENT / elapsedTimeLR;
+    	angularVelocityRL = ANGULAR_DISPLACEMENT / elapsedTimeRL;
     }
     
     

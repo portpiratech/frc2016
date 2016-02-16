@@ -77,6 +77,7 @@ public class Robot extends IterativeRobot {
    //sensors
     public static DigitalInput limitLeft;
     public static DigitalInput limitRight;
+    public static DigitalInput limitCenter;
     
    //Constructor
     public Robot() {
@@ -120,6 +121,7 @@ public class Robot extends IterativeRobot {
         	//sensors
         	limitLeft = new DigitalInput(OI.LIMIT_LEFT_ID);
         	limitRight = new DigitalInput(OI.LIMIT_RIGHT_ID);
+        	limitCenter = new DigitalInput(OI.LIMIT_CENTER_ID);
         	
            //SmartDashboard inputs? Need to test these
         	/*DriveTrainSubsystem.DRIVE_SPEED = (double)SmartDashboard.getNumber("Drive Speed Max", DriveTrainSubsystem.DRIVE_SPEED);

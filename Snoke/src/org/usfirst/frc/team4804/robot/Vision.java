@@ -13,8 +13,9 @@ import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Vision {
-   //A structure to hold measurements of a particle
-  	public class ParticleReport implements Comparator<ParticleReport>, Comparable<ParticleReport>{
+	
+	//A structure to hold measurements of a particle
+  	public class ParticleReport implements Comparator<ParticleReport>, Comparable<ParticleReport> {
   		double PercentAreaToImageArea;
   		double Area;
   		double BoundingRectLeft;
@@ -39,20 +40,20 @@ public class Vision {
 
    //Images
   	Image frame;
-  	Image binaryFrame;
+  	public Image binaryFrame;
   	Image binaryFrameToDisplay;
   	int imaqError;
   	int session;
 	
    //Constants
-  	NIVision.Range TOTE_HUE_RANGE = new NIVision.Range(100, 180);	//Default hue range for green-cyan LED
+  	NIVision.Range TOTE_HUE_RANGE = new NIVision.Range(40, 180);	//Default hue range for green-cyan LED
   	NIVision.Range TOTE_SAT_RANGE = new NIVision.Range(0, 255);	//Default saturation range for green-cyan LED
-  	NIVision.Range TOTE_VAL_RANGE = new NIVision.Range(128, 255);	//Default value range for green-cyan LED
+  	NIVision.Range TOTE_VAL_RANGE = new NIVision.Range(200, 255);	//Default value range for green-cyan LED
   	double AREA_MINIMUM = 0.5; //Default Area minimum for particle as a percentage of total image area
   	double LONG_RATIO = 2.22; //Tote long side = 26.9 / Tote height = 12.1 = 2.22
   	double SHORT_RATIO = 1.4; //Tote short side = 16.9 / Tote height = 12.1 = 1.4
   	double SCORE_MIN = 75.0;  //Minimum score to be considered a tote
-  	double VIEW_ANGLE = 68.5; //View angle fo camera, set to Axis m1011 by default, 64 for m1013, 51.7 for 206, 52 for HD3000 square, 68.5 for HD3000 640x480
+  	double VIEW_ANGLE = 48.5; //View angle fo camera, set to Axis m1011 by default, 64 for m1013, 51.7 for 206, 52 for HD3000 square, 68.5 for HD3000 640x480
   	NIVision.ParticleFilterCriteria2 criteria[] = new NIVision.ParticleFilterCriteria2[1];
   	NIVision.ParticleFilterOptions2 filterOptions = new NIVision.ParticleFilterOptions2(0,0,1,1);
   	Scores scores = new Scores();
@@ -61,6 +62,8 @@ public class Vision {
     //CameraServer server;
     //int session;
     //Image frame;
+  	
+  	public double errorAimingX;
   	
   //methods
   	
@@ -102,7 +105,9 @@ public class Vision {
 		//directory shown below using FTP or SFTP: http://wpilib.screenstepslive.com/s/4485/m/24166/l/282299-roborio-ftp
 		
 		//NIVision.imaqReadFile(frame, "/home/lvuser/SampleImages/image.jpg");
-		NIVision.IMAQdxGrab(session, frame, 1);
+		NIVision.IMAQdxGrab(session,
+				frame,
+				1);
 
 		//Update threshold values from SmartDashboard. For performance reasons it is recommended to remove this after calibration is finished.
 		TOTE_HUE_RANGE.minValue = (int)SmartDashboard.getNumber("Tote hue min", TOTE_HUE_RANGE.minValue);
@@ -159,7 +164,11 @@ public class Vision {
 
 			//Send distance and tote status to dashboard. The bounding rect, particularly the horizontal center (left - right) may be useful for rotating/driving towards a tote
 			SmartDashboard.putBoolean("IsTote", isTote);
-			SmartDashboard.putNumber("Distance", computeDistance(binaryFrame, particles.elementAt(0)));
+			double distanceFeet = computeDistance(binaryFrame, particles.elementAt(0));
+			SmartDashboard.putNumber("Distance", distanceFeet);
+			SmartDashboard.putNumber("Distance (in)", distanceFeet * 12.0);
+			SmartDashboard.putNumber("Launch Angle", launchAngle(distanceFeet*0.3048)); //1 ft = 0.3048 m
+			errorAimingX = computeErrorAimingX(binaryFrame, particles.elementAt(0));
 			
 			//Bounding rectangle params
 			int top = (int)particles.elementAt(0).BoundingRectTop;
@@ -170,20 +179,17 @@ public class Vision {
 			int height = bottom - top;
 			
 			//Pick a colour
-			int r = 0;
-			int g = 255;
+			int r = 255;
+			int g = 0;
 			int b = 0;
 			float color = color(r, g, b);
 			
-			drawRectangle(top, left, width, height, color, 4, frame);
+			drawRectangle(top, left, width, height, color, 5, frame);
 		} else {
 			SmartDashboard.putBoolean("IsTote", false);
 		}
 		
-		
-		
 		CameraServer.getInstance().setImage(frame);
-			
 		//Timer.delay(0.005);				// wait for a motor update time
 	}
 	
@@ -214,7 +220,7 @@ public class Vision {
 	}
 	
     //Comparator function for sorting particles. Returns true if particle 1 is larger
-  	static boolean CompareParticleSizes(ParticleReport particle1, ParticleReport particle2){
+  	static boolean CompareParticleSizes(ParticleReport particle1, ParticleReport particle2) {
   		//we want descending sort order
   		return particle1.PercentAreaToImageArea > particle2.PercentAreaToImageArea;
   	}
@@ -226,8 +232,7 @@ public class Vision {
   		return (Math.max(0, Math.min(100*(1-Math.abs(1-ratio)), 100)));
   	}
 
-  	double AreaScore(ParticleReport report)
-  	{
+  	double AreaScore(ParticleReport report) {
   		double boundingArea = (report.BoundingRectBottom - report.BoundingRectTop) * (report.BoundingRectRight - report.BoundingRectLeft);
   		//Tape is 7" edge so 49" bounding rect. With 2" wide tape it covers 24" of the rect.
   		return ratioToScore((49/24)*report.Area/boundingArea);
@@ -235,12 +240,11 @@ public class Vision {
  	/**
  	 * Method to score if the aspect ratio of the particle appears to match the retro-reflective target. Target is 7"x7" so aspect should be 1
   	 */
- 	double AspectScore(ParticleReport report)
-  	{
+ 	double AspectScore(ParticleReport report) {
   		return ratioToScore(((report.BoundingRectRight-report.BoundingRectLeft)/(report.BoundingRectBottom-report.BoundingRectTop)));
   	}
  	
-  	/**
+ 	/**
   	 * Computes the estimated distance to a target using the width of the particle in the image. For more information and graphics
   	 * showing the math behind this approach see the Vision Processing section of the ScreenStepsLive documentation.
   	 *
@@ -248,16 +252,61 @@ public class Vision {
   	 * @param report The Particle Analysis Report for the particle
   	 * @return The estimated distance to the target in feet.
   	 */
- 	double computeDistance (Image image, ParticleReport report) {
-  		double targetWidthFeet, targetWidthPixels, imageWidthPixels;
+ 	public double computeDistance (Image image, ParticleReport report) {
+  		double targetWidthInches, targetWidthFeet, targetWidthPixels, imageWidthPixels;
   		NIVision.GetImageSizeResult size = NIVision.imaqGetImageSize(image);
   		
+  		double leftPixels = report.BoundingRectLeft;
+  		double rightPixels = report.BoundingRectRight;
+  		//double topPixels = report.BoundingRectTop;
+  		//double bottomPixels = report.BoundingRectBottom;
+  		
   		imageWidthPixels = size.width;
-  		targetWidthPixels = report.BoundingRectRight - report.BoundingRectLeft; //units are pixels. right edge - left edge
-  		targetWidthFeet = 5/3;	//units are feet. target is 20 inches wide, or 20/12 feet wide
-		
-  		return targetWidthFeet*imageWidthPixels/(targetWidthPixels*2*Math.tan(VIEW_ANGLE*Math.PI/(180))); //Math.tan() takes angle in radians
+  		targetWidthPixels = rightPixels - leftPixels; //units are pixels
+  		targetWidthInches = 20; //inches
+  		targetWidthFeet = targetWidthInches/12.0;	//units are feet. target is 20 inches wide, or 20/12 feet wide
+  		
+  		SmartDashboard.putNumber("PPI", targetWidthPixels / 20.0);
+  		SmartDashboard.putString("computeDistance", targetWidthFeet + "*" + imageWidthPixels + "/(" + targetWidthPixels + "*2*tan(" + VIEW_ANGLE + " * 3.14159/(180*2)))");
+  		
+  		return targetWidthFeet*imageWidthPixels/(targetWidthPixels*2*Math.tan(VIEW_ANGLE*Math.PI/(180*2))); //Math.tan() takes angle in radians
   	}
+ 	
+ 	double computeErrorAimingX (Image image, ParticleReport report) {
+  		NIVision.GetImageSizeResult size = NIVision.imaqGetImageSize(image);
+  		double imageWidthPixels = size.width;
+  		
+  		double leftPixels = report.BoundingRectLeft;
+  		double rightPixels = report.BoundingRectRight;
+  		
+  		double centerPixels = (leftPixels+rightPixels)/2.0;
+  		
+  		//Axy = (Pxy - res/2)/(res/2)
+  		double leftAiming = (leftPixels - imageWidthPixels/2.0)/(imageWidthPixels/2.0);
+  		double rightAiming = (rightPixels - imageWidthPixels/2.0)/(imageWidthPixels/2.0);
+  		
+  		double centerAiming = (leftAiming+rightAiming)/2.0;
+  		
+  		SmartDashboard.putNumber("centerPixels", centerPixels);
+  		SmartDashboard.putNumber("centerAiming", centerAiming);
+  		
+  		return centerAiming;
+ 	}
+ 	
+ 	//calculate the angle the encoder should be
+    public double launchAngle(double distance) {
+    	final double g = 9.81; 	//acceleration due to gravity. (m/s^2)
+    	
+       //constants
+    	double v = 6.26; 		//initial velocity. (m/s)	Roughly 14 mph = 6.26 m/s
+    	double height = 1.6002; 		//height of target. (m)		On old robot, roughly 63 inches
+    	
+       //optimum launch angle so that ball passes through target at peak of trajectory
+    	double numerator = Math.pow(v, 2) + Math.sqrt( Math.pow(v, 4) - g*(g*Math.pow(distance,2) + 2*height*Math.pow(v,2)) );
+    	double denominator = g*distance;
+    	double launchAngle = Math.atan(numerator/denominator);
+    	return launchAngle;
+    }
   		
   	float color(int red, int green, int blue) {
   		// each color value input is between 0-255
