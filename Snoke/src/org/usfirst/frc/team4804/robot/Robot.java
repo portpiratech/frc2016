@@ -1,9 +1,6 @@
 
 package org.usfirst.frc.team4804.robot;
 
-import java.util.Comparator;
-import java.util.Vector;
-
 import org.usfirst.frc.team4804.robot.commands.ExampleCommand;
 import org.usfirst.frc.team4804.robot.subsystems.CannonSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.DriveTrainSubsystem;
@@ -11,28 +8,12 @@ import org.usfirst.frc.team4804.robot.subsystems.EncoderSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.PistonSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.SwivelSubsystem;
 
-import com.ni.vision.NIVision;
-import com.ni.vision.NIVision.CurveOptions;
-import com.ni.vision.NIVision.DetectLinesResult;
-import com.ni.vision.NIVision.DrawMode;
-import com.ni.vision.NIVision.EdgeFilterSize;
-import com.ni.vision.NIVision.ExtractionMode;
-import com.ni.vision.NIVision.Image;
-import com.ni.vision.NIVision.ImageType;
-import com.ni.vision.NIVision.LineDescriptor;
-import com.ni.vision.NIVision.MaskToROIResult;
-import com.ni.vision.NIVision.ROI;
-import com.ni.vision.NIVision.RangeFloat;
-import com.ni.vision.NIVision.ShapeDetectionOptions;
-import com.ni.vision.NIVision.ShapeMode;
-
 import edu.wpi.first.wpilibj.CANTalon;
-import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Joystick.RumbleType;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -118,10 +99,10 @@ public class Robot extends IterativeRobot {
         	tankDriveLeft = new CANTalon(OI.NEW_TANKDRIVE_LEFT_ID);
         	cannonSwivelMotor = new CANTalon(OI.CANNON_SWIVEL_MOTOR_CHANNEL);
         	
-        	//sensors
-        	limitLeft = new DigitalInput(OI.LIMIT_LEFT_ID);
+           //sensors
+        	/*limitLeft = new DigitalInput(OI.LIMIT_LEFT_ID);
         	limitRight = new DigitalInput(OI.LIMIT_RIGHT_ID);
-        	limitCenter = new DigitalInput(OI.LIMIT_CENTER_ID);
+        	limitBottom = new DigitalInput(OI.LIMIT_TOP_ID);*/
         	
            //SmartDashboard inputs? Need to test these
         	/*DriveTrainSubsystem.DRIVE_SPEED = (double)SmartDashboard.getNumber("Drive Speed Max", DriveTrainSubsystem.DRIVE_SPEED);
@@ -185,7 +166,7 @@ public class Robot extends IterativeRobot {
      */
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
-        DriveTrainSubsystem.DRIVE_SPEED = (double)SmartDashboard.getNumber("Drive Speed Max", DriveTrainSubsystem.DRIVE_SPEED);
+        DriveTrainSubsystem.driveSpeed = (double)SmartDashboard.getNumber("Drive Speed Max", DriveTrainSubsystem.driveSpeed);
     	CannonSubsystem.LOAD_SPEED = (double)SmartDashboard.getNumber("Cannon Load Speed", CannonSubsystem.LOAD_SPEED);
     	CannonSubsystem.LAUNCH_SPEED = (double)SmartDashboard.getNumber("Cannon Launch Speed", CannonSubsystem.LAUNCH_SPEED);
         

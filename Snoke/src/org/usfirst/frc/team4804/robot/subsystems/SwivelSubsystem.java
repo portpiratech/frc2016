@@ -2,7 +2,7 @@
 package org.usfirst.frc.team4804.robot.subsystems;
 
 import org.usfirst.frc.team4804.robot.Robot;
-import org.usfirst.frc.team4804.robot.commands.CannonSwivelRotate;
+import org.usfirst.frc.team4804.robot.commands.CannonSwivelMove;
 
 import com.portpiratech.xbox360.XboxController;
 
@@ -19,14 +19,17 @@ public class SwivelSubsystem extends Subsystem {
   //Constants:
 	public static double speed = .1;
 	public static final double ANGULAR_DISPLACEMENT = 10; //angle between limit switches, degrees. Needs to be measured
+	public static final double SPEED_TOLERANCE = 0.1;
 	
 	static double angularVelocityLR;
 	static double angularVelocityRL;
 	
+	boolean calibrated = false;
+	
   //Initialization:
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        setDefaultCommand(new CannonSwivelRotate());
+        setDefaultCommand(new CannonSwivelMove());
     }
     
   // Put methods for controlling this subsystem
@@ -34,7 +37,12 @@ public class SwivelSubsystem extends Subsystem {
    
    //set motor speed
     public void setMotor(double speed){
+    	if (Math.abs(speed) < SPEED_TOLERANCE) speed = 0;
     	Robot.cannonSwivelMotor.set(speed);
+    }
+    
+    public void move(XboxController xbox) {
+    	setMotor(xbox.getRightStickXAxis());
     }
     
    //turn motor using xbox input
@@ -90,9 +98,20 @@ public class SwivelSubsystem extends Subsystem {
     	double elapsedTimeRL = time2 - time1;
     	angularVelocityLR = ANGULAR_DISPLACEMENT / elapsedTimeLR;
     	angularVelocityRL = ANGULAR_DISPLACEMENT / elapsedTimeRL;
+    	
+    	calibrated = true;
     }
     
-    
+    public void move(String direction) {
+    	switch(direction) {
+    	case "LR":
+    		setMotor(angularVelocityLR);
+    		break;
+    	case "RL":
+    		setMotor(angularVelocityRL);
+    		break;
+    	}
+    }
     
 }
 

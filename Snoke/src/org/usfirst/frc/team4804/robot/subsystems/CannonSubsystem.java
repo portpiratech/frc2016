@@ -16,8 +16,8 @@ public class CannonSubsystem extends Subsystem {
 	// Put important variables and objects for this subsystem here.
 	
 	// Wheel launcher variables
-	public static double LOAD_SPEED = -0.35;
-	public static double LAUNCH_SPEED = 1.0;
+	public static double LOAD_SPEED = 0.35;
+	public static double LAUNCH_SPEED = -1.0;
 	
 	
     // Put methods for controlling this subsystem
@@ -26,7 +26,7 @@ public class CannonSubsystem extends Subsystem {
     
     // Loading/Launching the ball
     public void motorLoad() {
-    	setMotor(LOAD_SPEED);
+    	setMotor(-LOAD_SPEED);
     	/*setMotor("L", LOAD_SPEED_L);
     	setMotor("R", LOAD_SPEED_R);*/
     }

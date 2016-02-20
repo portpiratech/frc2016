@@ -1,19 +1,15 @@
-
 package org.usfirst.frc.team4804.robot.commands;
 
-import org.usfirst.frc.team4804.robot.Robot;
-
-import edu.wpi.first.wpilibj.Joystick.RumbleType;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
  *
  */
-public class CannonWheelLoad extends Command {
-	
-    public CannonWheelLoad() {
+public class CameraUpdate extends Command {
+
+    public CameraUpdate() {
         // Use requires() here to declare subsystem dependencies
-        requires(Robot.cannonSubsystem);
+        // eg. requires(chassis);
     }
 
     // Called just before this Command runs the first time
@@ -22,11 +18,7 @@ public class CannonWheelLoad extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.cannonSubsystem.motorLoad();
-    	
-    	// set rumble
-    	//Robot.oi.operatorController.setRumble(RumbleType.kLeftRumble, (float)0.5);
-    	//Robot.oi.operatorController.setRumble(RumbleType.kRightRumble, (float)0);
+    
     }
 
     // Make this return true when this Command no longer needs to run execute()

@@ -1,11 +1,13 @@
 package org.usfirst.frc.team4804.robot;
 
+import org.usfirst.frc.team4804.robot.commands.CameraUpdate;
+import org.usfirst.frc.team4804.robot.commands.CannonPistonExtend;
 import org.usfirst.frc.team4804.robot.commands.CannonPistonFire;
+import org.usfirst.frc.team4804.robot.commands.CannonPistonRetract;
 import org.usfirst.frc.team4804.robot.commands.CannonWheelLaunch;
 import org.usfirst.frc.team4804.robot.commands.CannonWheelLoad;
 import org.usfirst.frc.team4804.robot.commands.CannonWheelStop;
 import org.usfirst.frc.team4804.robot.commands.DriveToggle;
-import org.usfirst.frc.team4804.robot.commands.UpdateCamera;
 
 import com.portpiratech.xbox360.XboxController;
 
@@ -53,10 +55,10 @@ public class OI {
     // CAN Device IDs
     public static final int OLD_TANKDRIVE_LEFT_ID = 0; //Talon
 	public static final int OLD_TANKDRIVE_RIGHT_ID = 1; //Talon
-    public static final int NEW_TANKDRIVE_RIGHT_ID = 3; //CAN Talon SRX
-	public static final int NEW_TANKDRIVE_LEFT_ID = 6; //CAN Talon SRX
-	public static final int CANNON_LAUNCHER_ID = 2; //CAN Talon SRX
-	public static final int CANNON_ENCODER_ID = 5; //CAN Talon SRX
+    public static final int NEW_TANKDRIVE_RIGHT_ID = 6; //CAN Talon SRX
+	public static final int NEW_TANKDRIVE_LEFT_ID = 3; //CAN Talon SRX
+	public static final int CANNON_LAUNCHER_ID = 5; //CAN Talon SRX
+	public static final int CANNON_ENCODER_ID = 2; //CAN Talon SRX
     public static final int CANNON_SWIVEL_MOTOR_CHANNEL = 4; //CAN Talon SRX
     public static final int PCM_ID = 1; //Compressor/Pneumatics Control Module (used for DoubleSolenoids)
     
@@ -86,9 +88,13 @@ public class OI {
 	// Operator commands: Cannon/piston controls
 		operatorController.getLeftBumper().whenPressed(new CannonWheelLoad());
 		operatorController.getRightBumper().whenPressed(new CannonWheelLaunch());
+		
 		operatorController.getYButton().whenPressed(new CannonWheelStop());
 		operatorController.getXButton().whenPressed(new CannonPistonFire());
-		operatorController.getRightBumper().whenPressed(new UpdateCamera());
+		
+		operatorController.getStart().whenPressed(new CannonPistonExtend());
+		operatorController.getSelect().whenPressed(new CannonPistonRetract());
+		operatorController.getRightBumper().whenPressed(new CameraUpdate());
 		//right stick y axis used temporarily for controlling launch speed
 		//left stick y axis used temporarily for the encoder motor
 		

@@ -3,17 +3,20 @@ package org.usfirst.frc.team4804.robot.commands;
 
 import org.usfirst.frc.team4804.robot.Robot;
 
-import edu.wpi.first.wpilibj.Joystick.RumbleType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
  */
-public class CannonWheelLoad extends Command {
+public class CannonPistonRetract extends Command {
 	
-    public CannonWheelLoad() {
+	boolean finished = false;
+	
+    public CannonPistonRetract() {
         // Use requires() here to declare subsystem dependencies
-        requires(Robot.cannonSubsystem);
+        requires(Robot.pistonSubsystem);
     }
 
     // Called just before this Command runs the first time
@@ -22,20 +25,23 @@ public class CannonWheelLoad extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.cannonSubsystem.motorLoad();
+    	//Set cannons to launch mode, extend piston, wait, retract, stop cannons
+    	SmartDashboard.putString("In execute:","CannonPistonRetract");
     	
-    	// set rumble
-    	//Robot.oi.operatorController.setRumble(RumbleType.kLeftRumble, (float)0.5);
-    	//Robot.oi.operatorController.setRumble(RumbleType.kRightRumble, (float)0);
+    	Robot.pistonSubsystem.retractLauncher();
+    	Timer.delay(0.5);
+    	
+    	finished = true;
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+        return finished;
     }
 
     // Called once after isFinished returns true
     protected void end() {
+    	Robot.pistonSubsystem.stopLauncher();
     }
 
     // Called when another command which requires one or more of the same

@@ -1,4 +1,3 @@
-
 package org.usfirst.frc.team4804.robot.subsystems;
 
 import org.usfirst.frc.team4804.robot.Robot;
@@ -6,20 +5,29 @@ import org.usfirst.frc.team4804.robot.commands.DriveCommand;
 
 import com.portpiratech.xbox360.XboxController;
 
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.command.PIDSubsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
- * Subsystem for controlling drive motors.
+ * Subsystem for controlling the two drive motors.
  */
-public class DriveTrainSubsystem extends Subsystem {
+public class DriveTrainSubsystem extends PIDSubsystem {
     
-	public static double DRIVE_SPEED = 1.0;	// maximum drive speed; scales other speeds to this
-	public static final double DPAD_MULT = 0.25;		// multiplier for dpad speed controls.
+	//multipliers
+	public static double driveSpeed = 1.0;	// maximum drive speed; scales other speeds to this
+	public static double dpadMult = 0.25;		// multiplier for dpad speed controls.
+	
 	public static final double SPEED_TOLERANCE = 0.1; // can't be too close to 0
-	int driveSetting = 2; //0 is tank, 1 is Jonnydrive, 2 is Tommydrive
-    // Put methods for controlling this subsystem
-    // here. Call these from Commands.
+	static int driveSetting = 2; //0 is tank, 1 is Jonnydrive, 2 is Tommydrive
+    
+	public double p, i, d;
+	
+	public DriveTrainSubsystem() {
+		super(0.1, 0.0, 0.0);	//initial PID constants
+		
+		getPIDController().setContinuous(false);
+		getPIDController().setAbsoluteTolerance(0.05);
+	}
 
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
@@ -89,8 +97,8 @@ public class DriveTrainSubsystem extends Subsystem {
      * @param rightY Right joystick's y-value. Speed in range [-1,1] controlling the right motors
      */
     public void tankDrive(double leftY, double rightY) {
-    	setMotor("L", leftY*DRIVE_SPEED);
-    	setMotor("R", rightY*DRIVE_SPEED);
+    	setMotor("L", leftY*driveSpeed);
+    	setMotor("R", rightY*driveSpeed);
     }
     
     // uses one joystick, left stick y-axis for magnitude, x-axis for direction. car style
@@ -121,30 +129,30 @@ public class DriveTrainSubsystem extends Subsystem {
 	    	if (rightMotorSpeed < -1.0) rightMotorSpeed = -1.0;
 	    	
 	    	if (Math.abs(leftMotorSpeed) < SPEED_TOLERANCE && Math.abs(rightMotorSpeed) < SPEED_TOLERANCE){ //use the right stick for miniscule turning
-	    		leftMotorSpeed = -rightX * DPAD_MULT;
-	    		rightMotorSpeed = rightX * DPAD_MULT;
+	    		leftMotorSpeed = -rightX * dpadMult;
+	    		rightMotorSpeed = rightX * dpadMult;
 	    	}
 	    	
-	    	setMotor("L", leftMotorSpeed*DRIVE_SPEED);
-	    	setMotor("R", rightMotorSpeed*DRIVE_SPEED);
+	    	setMotor("L", leftMotorSpeed*driveSpeed);
+	    	setMotor("R", rightMotorSpeed*driveSpeed);
     	}else{
     		switch(dpad){ //default dpad directions (perfectly straight, back, cw, ccw);
     					  //negative is forward specifically here... for some reason...
     		case 0: //forward
-    			setMotor("L", -DRIVE_SPEED*DPAD_MULT);
-    			setMotor("R", -DRIVE_SPEED*DPAD_MULT);
+    			setMotor("L", -driveSpeed*dpadMult);
+    			setMotor("R", -driveSpeed*dpadMult);
     			break;
     		case 2: //cw
-    			setMotor("L", -DRIVE_SPEED*DPAD_MULT);
-    			setMotor("R", DRIVE_SPEED*DPAD_MULT);
+    			setMotor("L", -driveSpeed*dpadMult);
+    			setMotor("R", driveSpeed*dpadMult);
     			break;
     		case 4: //backward
-    			setMotor("L", DRIVE_SPEED*DPAD_MULT);
-    			setMotor("R", DRIVE_SPEED*DPAD_MULT);
+    			setMotor("L", driveSpeed*dpadMult);
+    			setMotor("R", driveSpeed*dpadMult);
     			break;
     		case 6: //ccw
-    			setMotor("L", DRIVE_SPEED*DPAD_MULT);
-    			setMotor("R", -DRIVE_SPEED*DPAD_MULT);
+    			setMotor("L", driveSpeed*dpadMult);
+    			setMotor("R", -driveSpeed*dpadMult);
     			break;
     		}
     	}
@@ -197,8 +205,8 @@ public class DriveTrainSubsystem extends Subsystem {
 	    	}
 	    	
 	    //  scale motor speeds to joystick magnitude, max speed
-	    	leftMotorSpeed *= magnitude*DRIVE_SPEED;
-	    	rightMotorSpeed *= magnitude*DRIVE_SPEED;
+	    	leftMotorSpeed *= magnitude*driveSpeed;
+	    	rightMotorSpeed *= magnitude*driveSpeed;
 	    	
 	    	SmartDashboard.putNumber("Angle:", angle);
 	    	SmartDashboard.putNumber("Magnitude:", magnitude);
@@ -210,39 +218,62 @@ public class DriveTrainSubsystem extends Subsystem {
 			switch(dpad){ //default dpad directions (perfectly straight, back, cw, ccw);
 						  //negative is forward specifically here... for some reason...
 			case 0: //forward
-				setMotor("L", -DRIVE_SPEED*DPAD_MULT);
-				setMotor("R", -DRIVE_SPEED*DPAD_MULT);
+				setMotor("L", -driveSpeed*dpadMult);
+				setMotor("R", -driveSpeed*dpadMult);
 				break;
 			case 2: //cw
-				setMotor("L", -DRIVE_SPEED*DPAD_MULT);
-				setMotor("R", DRIVE_SPEED*DPAD_MULT);
+				setMotor("L", -driveSpeed*dpadMult);
+				setMotor("R", driveSpeed*dpadMult);
 				break;
 			case 4: //backward
-				setMotor("L", DRIVE_SPEED*DPAD_MULT);
-				setMotor("R", DRIVE_SPEED*DPAD_MULT);
+				setMotor("L", driveSpeed*dpadMult);
+				setMotor("R", driveSpeed*dpadMult);
 				break;
 			case 6: //ccw
-				setMotor("L", DRIVE_SPEED*DPAD_MULT);
-				setMotor("R", -DRIVE_SPEED*DPAD_MULT);
+				setMotor("L", driveSpeed*dpadMult);
+				setMotor("R", -driveSpeed*dpadMult);
 				break;
 			}
 		}
     }
     
-    //crude camera centering method--need to test
+    //crude camera centering method
     public void autoCenterCamera() {
     	double error = Robot.vision.errorAimingX;
     	double speed = 0;
     	
     	//center at error=0
     	
-    	if(Math.abs(error)>0.002) speed = error*DRIVE_SPEED*50; //if error<0, then speed<0. if error>0, then speed>0.
+    	if(Math.abs(error)>0.002) speed = error*driveSpeed*50; //if error<0, then speed<0. if error>0, then speed>0.
     	if(Math.abs(speed)>1) speed = Math.signum(speed);
     	
     	setMotor("L", -speed);
 		setMotor("R", speed);
     }
     
+    //PID loop camera centering methods--use these!
+    @Override
+	protected double returnPIDInput() {
+		return Robot.vision.errorAimingX;
+	}
+
+	@Override
+	protected void usePIDOutput(double output) {
+		setMotor("L", output);
+		setMotor("R", -output);
+	}
+	
+	public void enablePID() {
+		getPIDController().enable();
+	}
+	
+	public void enablePID(boolean enable) {
+		if(enable) {
+			getPIDController().enable();
+		} else {
+			getPIDController().disable();
+		}
+	}
 }
 
 

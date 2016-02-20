@@ -1,27 +1,23 @@
 
 package org.usfirst.frc.team4804.robot.subsystems;
 
-import org.usfirst.frc.team4804.robot.OI;
 import org.usfirst.frc.team4804.robot.Robot;
 import org.usfirst.frc.team4804.robot.commands.CannonEncoderMove;
 
 import com.portpiratech.xbox360.XboxController;
 
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.command.PIDSubsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
  */
-public class EncoderSubsystem extends Subsystem {
+public class EncoderSubsystem extends PIDSubsystem {
     
    //objects
-	private Encoder encoder;
+	/*private Encoder encoder;
 	private DigitalInput inputA = new DigitalInput(OI.CANNON_ENCODER_CHANNEL_A); //The inputs on the RoboRIO DIO
-	private DigitalInput inputB = new DigitalInput(OI.CANNON_ENCODER_CHANNEL_B);
+	private DigitalInput inputB = new DigitalInput(OI.CANNON_ENCODER_CHANNEL_B);*/
 	
    //constants
 	public final double DEGREES_PER_PULSE = 360 / 497;
@@ -31,17 +27,22 @@ public class EncoderSubsystem extends Subsystem {
 	public final double SPEED_TOLERANCE = 0.03;
 	public final double SPEED_MAX = 1;
 	
+	double angleOffset = 45; //degrees; need to measure this value
 	double positionTarget = 0;
+	boolean calibrated = false;
 	
     // Constructor
 	public EncoderSubsystem() {
-		encoder = new Encoder(inputA, inputB);
-		encoder.setDistancePerPulse(DEGREES_PER_PULSE);
+		super(0.1, 0.0, 0.0);
+		this.disable();
+		/*encoder = new Encoder(inputA, inputB);
+		encoder.setDistancePerPulse(DEGREES_PER_PULSE);*/
 	}
 	// Default command
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        setDefaultCommand(new CannonEncoderMove());
+        //setDefaultCommand(new CannonEncoderMove());
+    	setDefaultCommand(new CannonEncoderMove());
     }
     
     
@@ -52,19 +53,41 @@ public class EncoderSubsystem extends Subsystem {
     private void setMotor(double speed) {
     	if (Math.abs(speed) < SPEED_TOLERANCE) speed = 0;
 		Robot.cannonEncoderMotor.set(speed);
+		positionTarget = Robot.cannonEncoderMotor.get();
 	}
+    
+    public void move(XboxController xbox) {
+    	setMotor(xbox.getLeftStickYAxis()*0.4);
+    }
 
-	private double getMotorSpeed() {
+	/*private double getMotorSpeed() {
 		return encoder.getRate(); //we still need to set the distance per pulse <--(I think we already did?)
-	}
+	}*/
 	
-	private void resetMotor() {
-		Robot.cannonEncoderMotor.reset();
+	public void resetMotor() {
+		//hit first lim
+		setMotor(-0.1);
+		while(!Robot.cannonEncoderMotor.isFwdLimitSwitchClosed()) {}
+		setMotor(0);
+		double angle1 = Robot.cannonEncoderMotor.getEncPosition();
+		
+		//move to second lim
+		setMotor(0.1);
+		while(!Robot.cannonEncoderMotor.isRevLimitSwitchClosed()) {}
+		setMotor(0);
+		
+		//measure angle
+		double angle2 = Robot.cannonEncoderMotor.getEncPosition();
+		
+		//move until centered
+		setMotor(-0.1);
+		while(Robot.cannonEncoderMotor.get() > (angle2-angle1)/2) {}
+		setMotor(0);
 	}
     
   //Position calculation/movement/math methods
    //basic move commands
-    public void moveManual(XboxController xbox){
+    /*public void moveManual(XboxController xbox){
     	//double speed = -xbox.getLeftStickYAxis()*SPEED_MAX;
     	//setMotor(speed);
     	targetPositionWithTriggers(xbox);
@@ -110,7 +133,7 @@ public class EncoderSubsystem extends Subsystem {
 	    	}else{
 	    		//positionTarget = currentPosition;
 	    	}
-	    	break;*/
+	    	break;*//*
     	}
     	
     	if (positionTarget > POSITION_MAX) positionTarget = POSITION_MAX;
@@ -188,27 +211,22 @@ public class EncoderSubsystem extends Subsystem {
     	SmartDashboard.putNumber("TARGET POSITION",  positionTarget);
     	
     	Timer.delay(0.010);
-    }
+    }*/
     
-   //calculate the angle the encoder should be
-    public double launchAngle(double distance) {
-    	final double g = 9.81; 	//acceleration due to gravity. (m/s^2)
-    	
-       //constants
-    	double v = 6; 			//initial velocity. need to test more to calculate. (m/s)
-    	double height = 2; 		//height of target. (m) might need to make variable based on angle?
-    	
-       //optimum launch angle so that ball passes through target at peak of trajectory
-    	double numerator = pow(v, 2) + sqrt( pow(v, 4) - g*(g*pow(distance,2) + 2*height*pow(v,2)) );
-    	double denominator = g*distance;
-    	double launchAngle = atan(numerator/denominator);
-    	return launchAngle;
-    }
-    
-   //convenient math methods (see launchAngle())
-    double atan(double x) { return Math.atan(x); }
-    double pow(double x, double y) { return Math.pow(x, y); }
-    double sqrt(double x) { return Math.sqrt(x); }
+   //PID methods
+	@Override
+	protected double returnPIDInput() {
+		//double distance = Robot.vision.distanceFeet;
+		//double distanceX = distance * Math.cos(Robot.cannonEncoderMotor.get()*DEGREES_PER_PULSE - angleOffset);
+		//double targetAngle = Robot.vision.launchAngle(distanceX) + angleOffset;
+		//return targetAngle - Robot.cannonEncoderMotor.get()*DEGREES_PER_PULSE; //error
+		return positionTarget+angleOffset-Robot.cannonEncoderMotor.get()*DEGREES_PER_PULSE;
+	}
+	@Override
+	protected void usePIDOutput(double output) {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 

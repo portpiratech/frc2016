@@ -11,10 +11,11 @@ import com.ni.vision.NIVision.ShapeMode;
 
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.vision.USBCamera;
 
 public class Vision {
 	
-	//A structure to hold measurements of a particle
+	 //A structure to hold measurements of a particle
   	public class ParticleReport implements Comparator<ParticleReport>, Comparable<ParticleReport> {
   		double PercentAreaToImageArea;
   		double Area;
@@ -44,10 +45,12 @@ public class Vision {
   	Image binaryFrameToDisplay;
   	int imaqError;
   	int session;
+  	USBCamera targetCam;
+  	CameraServer server;
 	
    //Constants
   	NIVision.Range TOTE_HUE_RANGE = new NIVision.Range(40, 180);	//Default hue range for green-cyan LED
-  	NIVision.Range TOTE_SAT_RANGE = new NIVision.Range(0, 255);	//Default saturation range for green-cyan LED
+  	NIVision.Range TOTE_SAT_RANGE = new NIVision.Range(100, 255);	//Default saturation range for green-cyan LED
   	NIVision.Range TOTE_VAL_RANGE = new NIVision.Range(200, 255);	//Default value range for green-cyan LED
   	double AREA_MINIMUM = 0.5; //Default Area minimum for particle as a percentage of total image area
   	double LONG_RATIO = 2.22; //Tote long side = 26.9 / Tote height = 12.1 = 2.22
@@ -64,6 +67,9 @@ public class Vision {
     //Image frame;
   	
   	public double errorAimingX;
+  	public double distanceFeet;
+  	long lastFrameProcessTimeMs;
+	long captureIntervalMs;
   	
   //methods
   	
@@ -85,9 +91,9 @@ public class Vision {
 		SmartDashboard.putNumber("Tote val max", TOTE_VAL_RANGE.maxValue);
 		SmartDashboard.putNumber("Area min %", AREA_MINIMUM);
 		 			
-		session = NIVision.IMAQdxOpenCamera("cam0",
-		          NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-		NIVision.IMAQdxConfigureGrab(session);
+//		session = NIVision.IMAQdxOpenCamera("cam0",
+//		          NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+//		NIVision.IMAQdxConfigureGrab(session);
 		 	
 //		// old SimpleVision stuff
 //	    frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
@@ -95,19 +101,71 @@ public class Vision {
 //	    session = NIVision.IMAQdxOpenCamera("cam0",
 //	             NIVision.IMAQdxCameraControlMode.CameraControlModeController);
 //	    NIVision.IMAQdxConfigureGrab(session);
+		
+		lastFrameProcessTimeMs = 0;
+		captureIntervalMs = 100;
+		
+		targetCam = new USBCamera("cam0");
+    	targetCam.setBrightness(20);
+    	targetCam.setExposureManual(0);
+    	targetCam.setExposureHoldCurrent();
+//    	
+    	targetCam.updateSettings();
+//    	
+    	SmartDashboard.putNumber("Brightness", targetCam.getBrightness());
+    	SmartDashboard.putBoolean("Update Camera", false);
+    	
+    	targetCam.openCamera();
+    	targetCam.startCapture();
+    	
+    	server = CameraServer.getInstance();
+//    	server.setQuality(50);
 	}
+  	
+  	/**
+  	 * Displays the camera frame with no processing
+  	 */
+  	public void frameAutoDisplay() {
+  		//NIVision.IMAQdxGrab(session, frame, 1);
+  		//CameraServer.getInstance().setImage(frame);
+  		
+  		if (SmartDashboard.getBoolean("Update Camera")) {
+//          // robot code here!
+	            targetCam.setExposureManual(0);
+	            targetCam.setBrightness((int) SmartDashboard.getNumber("Brightness"));
+	        	targetCam.setExposureHoldCurrent();
+	            targetCam.updateSettings();
+				SmartDashboard.putBoolean("Update Camera", false);
+      	}
+      	targetCam.getImage(frame);
+      	CameraServer.getInstance().setImage(frame);
+  	}
   	
   	/**
 	 * Processes the camera frame
 	 */
 	public void frameProcess() {
+		if(System.currentTimeMillis() - lastFrameProcessTimeMs < captureIntervalMs) {
+			return;
+		}
+
+		lastFrameProcessTimeMs = System.currentTimeMillis();
+		
 		//read file in from disk. For this example to run you need to copy image.jpg from the SampleImages folder to the
 		//directory shown below using FTP or SFTP: http://wpilib.screenstepslive.com/s/4485/m/24166/l/282299-roborio-ftp
 		
 		//NIVision.imaqReadFile(frame, "/home/lvuser/SampleImages/image.jpg");
-		NIVision.IMAQdxGrab(session,
-				frame,
-				1);
+		//NIVision.IMAQdxGrab(session, frame, 1);
+		
+		if (SmartDashboard.getBoolean("Update Camera")) {
+//          // robot code here!
+	            targetCam.setExposureManual(0);
+	            targetCam.setBrightness((int) SmartDashboard.getNumber("Brightness"));
+	        	targetCam.setExposureHoldCurrent();
+	            targetCam.updateSettings();
+				SmartDashboard.putBoolean("Update Camera", false);
+      	}
+      	targetCam.getImage(frame);
 
 		//Update threshold values from SmartDashboard. For performance reasons it is recommended to remove this after calibration is finished.
 		TOTE_HUE_RANGE.minValue = (int)SmartDashboard.getNumber("Tote hue min", TOTE_HUE_RANGE.minValue);
@@ -124,57 +182,72 @@ public class Vision {
 		int numParticles = NIVision.imaqCountParticles(binaryFrame, 1);
 		SmartDashboard.putNumber("Masked particles", numParticles);
 
-		//Send masked image to dashboard to assist in tweaking mask.
-		//CameraServer.getInstance().setImage(frame);
-		binaryFrameToDisplay = binaryFrame;
+		//binaryFrameToDisplay = binaryFrame;
 
 		//filter out small particles
-		float areaMin = (float)SmartDashboard.getNumber("Area min %", AREA_MINIMUM);
-		criteria[0].lower = areaMin;
-		imaqError = NIVision.imaqParticleFilter4(binaryFrame, binaryFrame, criteria, filterOptions, null);
+//		float areaMin = (float)SmartDashboard.getNumber("Area min %", AREA_MINIMUM);
+//		criteria[0].lower = areaMin;
+//		imaqError = NIVision.imaqParticleFilter4(binaryFrame, binaryFrame, criteria, filterOptions, null);
 
+
+		//Send masked image to dashboard to assist in tweaking mask.
+//		CameraServer.getInstance().setImage(binaryFrame);
+		
 		//Send particle count after filtering to dashboard
 		numParticles = NIVision.imaqCountParticles(binaryFrame, 1);
 		SmartDashboard.putNumber("Filtered particles", numParticles);
 
-		if(numParticles > 0) {
+		if(numParticles > 1) {
 			
 			//Measure particles and sort by particle size
 			Vector<ParticleReport> particles = new Vector<ParticleReport>();
+			double largestArea = 0;
+			int largestAreaIndex = 0;
 			for(int particleIndex = 0; particleIndex < numParticles; particleIndex++) {
 				ParticleReport par = new ParticleReport();
-				par.PercentAreaToImageArea = NIVision.imaqMeasureParticle(binaryFrame, particleIndex, 0, NIVision.MeasurementType.MT_AREA_BY_IMAGE_AREA);
 				par.Area = NIVision.imaqMeasureParticle(binaryFrame, particleIndex, 0, NIVision.MeasurementType.MT_AREA);
-				par.BoundingRectTop = NIVision.imaqMeasureParticle(binaryFrame, particleIndex, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_TOP);
-				par.BoundingRectLeft = NIVision.imaqMeasureParticle(binaryFrame, particleIndex, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_LEFT);
-				par.BoundingRectBottom = NIVision.imaqMeasureParticle(binaryFrame, particleIndex, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_BOTTOM);
-				par.BoundingRectRight = NIVision.imaqMeasureParticle(binaryFrame, particleIndex, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_RIGHT);
-				particles.add(par);
-			}
-			particles.sort(null);
+				par.PercentAreaToImageArea = NIVision.imaqMeasureParticle(binaryFrame, particleIndex, 0, NIVision.MeasurementType.MT_AREA_BY_IMAGE_AREA);
 
+//				par.BoundingRectTop = NIVision.imaqMeasureParticle(binaryFrame, particleIndex, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_TOP);
+//				par.BoundingRectLeft = NIVision.imaqMeasureParticle(binaryFrame, particleIndex, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_LEFT);
+//				par.BoundingRectBottom = NIVision.imaqMeasureParticle(binaryFrame, particleIndex, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_BOTTOM);
+//				par.BoundingRectRight = NIVision.imaqMeasureParticle(binaryFrame, particleIndex, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_RIGHT);
+				particles.add(par);
+				if(par.Area > largestArea) {
+					largestArea = par.Area;
+					largestAreaIndex = particleIndex;
+				}
+			}
+			//particles.sort(null);
+			
 			//This example only scores the largest particle. Extending to score all particles and choosing the desired one is left as an exercise
 			//for the reader. Note that this scores and reports information about a single particle (single L shaped target). To get accurate information 
 			//about the location of the tote (not just the distance) you will need to correlate two adjacent targets in order to find the true center of the tote.
-			scores.Aspect = AspectScore(particles.elementAt(0));
+			ParticleReport largestParticle = particles.elementAt(largestAreaIndex);
+			largestParticle.BoundingRectTop = NIVision.imaqMeasureParticle(binaryFrame, 0, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_TOP);
+			largestParticle.BoundingRectLeft = NIVision.imaqMeasureParticle(binaryFrame, 0, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_LEFT);
+			largestParticle.BoundingRectBottom = NIVision.imaqMeasureParticle(binaryFrame, 0, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_BOTTOM);
+			largestParticle.BoundingRectRight = NIVision.imaqMeasureParticle(binaryFrame, 0, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_RIGHT);
+			
+			scores.Aspect = AspectScore(largestParticle);
 			SmartDashboard.putNumber("Aspect", scores.Aspect);
-			scores.Area = AreaScore(particles.elementAt(0));
+			scores.Area = AreaScore(largestParticle);
 			SmartDashboard.putNumber("Area", scores.Area);
 			boolean isTote = scores.Aspect > SCORE_MIN && scores.Area > SCORE_MIN;
 
 			//Send distance and tote status to dashboard. The bounding rect, particularly the horizontal center (left - right) may be useful for rotating/driving towards a tote
 			SmartDashboard.putBoolean("IsTote", isTote);
-			double distanceFeet = computeDistance(binaryFrame, particles.elementAt(0));
+			distanceFeet = computeDistance(binaryFrame, largestParticle);
 			SmartDashboard.putNumber("Distance", distanceFeet);
 			SmartDashboard.putNumber("Distance (in)", distanceFeet * 12.0);
 			SmartDashboard.putNumber("Launch Angle", launchAngle(distanceFeet*0.3048)); //1 ft = 0.3048 m
-			errorAimingX = computeErrorAimingX(binaryFrame, particles.elementAt(0));
+			errorAimingX = computeErrorAimingX(binaryFrame, largestParticle);
 			
 			//Bounding rectangle params
-			int top = (int)particles.elementAt(0).BoundingRectTop;
-			int left = (int)particles.elementAt(0).BoundingRectLeft;
-			int bottom = (int)particles.elementAt(0).BoundingRectBottom;
-			int right = (int)particles.elementAt(0).BoundingRectRight;
+			int top = (int)largestParticle.BoundingRectTop;
+			int left = (int)largestParticle.BoundingRectLeft;
+			int bottom = (int)largestParticle.BoundingRectBottom;
+			int right = (int)largestParticle.BoundingRectRight;
 			int width = right - left;
 			int height = bottom - top;
 			
@@ -184,13 +257,13 @@ public class Vision {
 			int b = 0;
 			float color = color(r, g, b);
 			
-			drawRectangle(top, left, width, height, color, 5, frame);
+			drawRectangle(top, left, width, height, color, 4, frame);
 		} else {
 			SmartDashboard.putBoolean("IsTote", false);
 		}
 		
-		CameraServer.getInstance().setImage(frame);
-		//Timer.delay(0.005);				// wait for a motor update time
+		CameraServer.getInstance().setImage(binaryFrame);
+		//Timer.delay(0.1);				// wait for a motor update time
 	}
 	
 	/**
@@ -267,7 +340,7 @@ public class Vision {
   		targetWidthFeet = targetWidthInches/12.0;	//units are feet. target is 20 inches wide, or 20/12 feet wide
   		
   		SmartDashboard.putNumber("PPI", targetWidthPixels / 20.0);
-  		SmartDashboard.putString("computeDistance", targetWidthFeet + "*" + imageWidthPixels + "/(" + targetWidthPixels + "*2*tan(" + VIEW_ANGLE + " * 3.14159/(180*2)))");
+//  		SmartDashboard.putString("computeDistance", targetWidthFeet + "*" + imageWidthPixels + "/(" + targetWidthPixels + "*2*tan(" + VIEW_ANGLE + " * 3.14159/(180*2)))");
   		
   		return targetWidthFeet*imageWidthPixels/(targetWidthPixels*2*Math.tan(VIEW_ANGLE*Math.PI/(180*2))); //Math.tan() takes angle in radians
   	}

@@ -30,7 +30,7 @@ public class CannonPistonFire extends Command {
     	SmartDashboard.putString("In execute:","CannonPistonFire");
     	
     	Robot.cannonSubsystem.motorLaunch();
-    	Timer.delay(4); //delay for 4 seconds
+    	Timer.delay(3); //delay for 3 seconds
     	
     	Robot.pistonSubsystem.extendLauncher();
     	Timer.delay(Robot.pistonSubsystem.firingDelay); //delay for 1 sec
