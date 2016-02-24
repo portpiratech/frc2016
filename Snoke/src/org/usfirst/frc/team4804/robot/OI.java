@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4804.robot;
 
+import org.usfirst.frc.team4804.robot.commands.TargetingAuto;
 import org.usfirst.frc.team4804.robot.commands.CameraUpdate;
 import org.usfirst.frc.team4804.robot.commands.CannonPistonExtend;
 import org.usfirst.frc.team4804.robot.commands.CannonPistonFire;
@@ -8,6 +9,8 @@ import org.usfirst.frc.team4804.robot.commands.CannonWheelLaunch;
 import org.usfirst.frc.team4804.robot.commands.CannonWheelLoad;
 import org.usfirst.frc.team4804.robot.commands.CannonWheelStop;
 import org.usfirst.frc.team4804.robot.commands.DriveToggle;
+import org.usfirst.frc.team4804.robot.commands.TargetingManual;
+import org.usfirst.frc.team4804.robot.commands.VisionToggle;
 
 import com.portpiratech.xbox360.XboxController;
 
@@ -83,6 +86,10 @@ public class OI {
 		
 	// Driver commands:
 		driverController.getAButton().whenPressed(new DriveToggle());
+		driverController.getBButton().whenPressed(new VisionToggle());
+		
+		driverController.getStart().whenPressed(new TargetingAuto());
+		driverController.getSelect().whenPressed(new TargetingManual());
 		//Left stick for driving, left + right stick when in tank drive
 		
 	// Operator commands: Cannon/piston controls
@@ -90,11 +97,11 @@ public class OI {
 		operatorController.getRightBumper().whenPressed(new CannonWheelLaunch());
 		
 		operatorController.getYButton().whenPressed(new CannonWheelStop());
-		operatorController.getXButton().whenPressed(new CannonPistonFire());
+		operatorController.getXButton().whenPressed(new CannonPistonFire()); //automatic
 		
-		operatorController.getStart().whenPressed(new CannonPistonExtend());
+		operatorController.getStart().whenPressed(new CannonPistonExtend()); // TODO: rotate the servo
 		operatorController.getSelect().whenPressed(new CannonPistonRetract());
-		operatorController.getRightBumper().whenPressed(new CameraUpdate());
+		operatorController.getAButton().whenPressed(new CameraUpdate());
 		//right stick y axis used temporarily for controlling launch speed
 		//left stick y axis used temporarily for the encoder motor
 		

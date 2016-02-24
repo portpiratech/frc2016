@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class DriveTrainSubsystem extends PIDSubsystem {
     
 	//multipliers
-	public static double driveSpeed = 1.0;	// maximum drive speed; scales other speeds to this
+	public static double driveSpeed = 0.6;	// maximum drive speed; scales other speeds to this
 	public static double dpadMult = 0.25;		// multiplier for dpad speed controls.
 	
 	public static final double SPEED_TOLERANCE = 0.1; // can't be too close to 0
@@ -23,7 +23,10 @@ public class DriveTrainSubsystem extends PIDSubsystem {
 	public double p, i, d;
 	
 	public DriveTrainSubsystem() {
-		super(0.1, 0.0, 0.0);	//initial PID constants
+		super(0.6, 0.0, 0.3);	//initial PID constants
+		p = getPIDController().getP();
+		i = getPIDController().getI();
+		d = getPIDController().getD();
 		
 		getPIDController().setContinuous(false);
 		getPIDController().setAbsoluteTolerance(0.05);
@@ -69,11 +72,11 @@ public class DriveTrainSubsystem extends PIDSubsystem {
     		tankDrive(xbox.getLeftStickYAxis(), xbox.getRightStickYAxis());
     		SmartDashboard.putString("Drive Setting", "Tank Drive");
     		break;
-    	case 1:
+    	/*case 1:
     		jonnyDrive(xbox.getLeftStickYAxis(), xbox.getLeftStickXAxis(), xbox.getDPad(), xbox.getRightStickXAxis());
     		SmartDashboard.putString("Drive Setting", "Jonny Drive");
-    		break;
-    	case 2:
+    		break;*/
+    	case 1:
     		tommyDrive(xbox.getLeftStickXAxis(), xbox.getLeftStickYAxis(), xbox.getDPad());
     		SmartDashboard.putString("Drive Setting", "Tommy Drive");
     		break;
@@ -85,7 +88,7 @@ public class DriveTrainSubsystem extends PIDSubsystem {
      */
     public void toggleDriveSetting(){ //mapped to A button on driver's controller
     	driveSetting++;
-    	if (driveSetting >= 3){
+    	if (driveSetting >= 2){
     		driveSetting = 0;
     	}
     }

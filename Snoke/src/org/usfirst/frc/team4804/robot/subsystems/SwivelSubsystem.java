@@ -52,22 +52,19 @@ public class SwivelSubsystem extends Subsystem {
     
    //check if limit switch is pressed
     /**
-     * Check if a limit switch is pressed.
-     * @param side String: "right" or "left"
-     * @return true if not pressed, false if pressed
+     * Check if a limit switch wired to the swivel CANTalon is pressed.
+     * @param side String: "fwd" or "rev"
+     * @return true if pressed, false if not pressed
      */
     public boolean isLimitSwitchPressed(String side) {
     	switch(side) {
     	
-    	case "left":
-    		SmartDashboard.putBoolean("Swivel Right Limit Switch", Robot.limitLeft.get());
-    		return Robot.limitLeft.get();
-    	case "right":
-    		SmartDashboard.putBoolean("Swivel Left Limit Switch", Robot.limitRight.get());
-    		return Robot.limitRight.get();
-    	case "center":
-    		SmartDashboard.putBoolean("Swivel Center Limit Switch", Robot.limitCenter.get());
-    		return Robot.limitCenter.get();
+    	case "fwd":
+    		SmartDashboard.putBoolean("Swivel Right Limit Switch", Robot.cannonSwivelMotor.isFwdLimitSwitchClosed());
+    		return Robot.cannonSwivelMotor.isFwdLimitSwitchClosed();
+    	case "rev":
+    		SmartDashboard.putBoolean("Swivel Left Limit Switch", Robot.cannonSwivelMotor.isRevLimitSwitchClosed());
+    		return Robot.cannonSwivelMotor.isRevLimitSwitchClosed();
     	default: return false;
     	}
     }
@@ -77,7 +74,7 @@ public class SwivelSubsystem extends Subsystem {
     public void calibrateSpeed() {
     	//rotate left until left limit switch is hit to reset
     	setMotor(-speed);
-    	while(!isLimitSwitchPressed("left")) {}
+    	while(!isLimitSwitchPressed("rev")) {}
     	
     	//stop motor
     	setMotor(0);
@@ -85,12 +82,12 @@ public class SwivelSubsystem extends Subsystem {
     	//record time and rotate right until right limit switch is hit
     	double time0 = System.currentTimeMillis();
     	setMotor(speed);
-    	while(!isLimitSwitchPressed("right")) {}
+    	while(!isLimitSwitchPressed("fwd")) {}
     	
     	//record time and rotate left until left limit switch is hit
     	double time1 = System.currentTimeMillis();
     	setMotor(-speed);
-    	while(!isLimitSwitchPressed("left")) {}
+    	while(!isLimitSwitchPressed("rev")) {}
     	
     	double time2 = System.currentTimeMillis();
     	

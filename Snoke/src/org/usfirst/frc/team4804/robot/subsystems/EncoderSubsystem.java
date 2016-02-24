@@ -6,13 +6,13 @@ import org.usfirst.frc.team4804.robot.commands.CannonEncoderMove;
 
 import com.portpiratech.xbox360.XboxController;
 
-import edu.wpi.first.wpilibj.command.PIDSubsystem;
+import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
  */
-public class EncoderSubsystem extends PIDSubsystem {
+public class EncoderSubsystem extends Subsystem {
     
    //objects
 	/*private Encoder encoder;
@@ -20,21 +20,21 @@ public class EncoderSubsystem extends PIDSubsystem {
 	private DigitalInput inputB = new DigitalInput(OI.CANNON_ENCODER_CHANNEL_B);*/
 	
    //constants
-	public final double DEGREES_PER_PULSE = 360 / 497;
+	public final double DEGREES_PER_PULSE = 360.0 / 497.0; //7 encoder pulses per 1 encoder rev, gearbox reduction is 71:1 ratio; 7*71=497
 	public final double TRIGGER_TOLERANCE = 0.05;
 	public final double POSITION_TOLERANCE = 10;
-	public final double POSITION_MAX = 1000;
+	public final double POSITION_MAX_DEG = 137;
 	public final double SPEED_TOLERANCE = 0.03;
-	public final double SPEED_MAX = 1;
+	public double SPEED_MAX = 0.4;
 	
-	double angleOffset = 45; //degrees; need to measure this value
-	double positionTarget = 0;
+	double offsetDeg = 47.0; //degrees below horizontal; need to measure this value
+	double targetPositionDeg = 0; //degrees
 	boolean calibrated = false;
+	public boolean auto = false;
 	
     // Constructor
-	public EncoderSubsystem() {
-		super(0.1, 0.0, 0.0);
-		this.disable();
+	public EncoderSubsystem() {		
+		super();
 		/*encoder = new Encoder(inputA, inputB);
 		encoder.setDistancePerPulse(DEGREES_PER_PULSE);*/
 	}
@@ -48,23 +48,9 @@ public class EncoderSubsystem extends PIDSubsystem {
     
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
-    
-  //Basic Encoder Motor speed/position methods
-    private void setMotor(double speed) {
-    	if (Math.abs(speed) < SPEED_TOLERANCE) speed = 0;
-		Robot.cannonEncoderMotor.set(speed);
-		positionTarget = Robot.cannonEncoderMotor.get();
-	}
-    
-    public void move(XboxController xbox) {
-    	setMotor(xbox.getLeftStickYAxis()*0.4);
-    }
-
-	/*private double getMotorSpeed() {
-		return encoder.getRate(); //we still need to set the distance per pulse <--(I think we already did?)
-	}*/
 	
-	public void resetMotor() {
+	/*public void resetMotor() {
+		/*
 		//hit first lim
 		setMotor(-0.1);
 		while(!Robot.cannonEncoderMotor.isFwdLimitSwitchClosed()) {}
@@ -82,9 +68,170 @@ public class EncoderSubsystem extends PIDSubsystem {
 		//move until centered
 		setMotor(-0.1);
 		while(Robot.cannonEncoderMotor.get() > (angle2-angle1)/2) {}
-		setMotor(0);
+		setMotor(0);*/
+		
+		
+		/*//move down until a limit switch is hit
+		setMotorSpeed(-0.2);
+		while(!Robot.cannonEncoderMotor.isFwdLimitSwitchClosed() && !Robot.cannonEncoderMotor.isRevLimitSwitchClosed()) {} //neither is pressed
+		setMotorSpeed(0);
+		//reset encoder value
+		Robot.cannonEncoderMotor.setEncPosition(0);
+		targetPositionDeg = Robot.cannonEncoderMotor.getEncPosition();
+		calibrated = true;
+	}*/
+	
+	public double getTargetPosition() {
+		targetPositionDeg = Robot.vision.launchAngle(Robot.vision.distanceFeet * Math.cos(getMotorPosition()-offsetDeg));
+		SmartDashboard.putNumber("Target angle", targetPositionDeg);
+		return targetPositionDeg;
 	}
+	
+	public double getMotorSpeed() {
+		return Robot.cannonEncoderMotor.getEncVelocity();
+	}
+	
+	public double getMotorPosition() {
+		SmartDashboard.putNumber("EncPosition", Robot.cannonEncoderMotor.getEncPosition());
+		return Robot.cannonEncoderMotor.getEncPosition();
+	}
+	
+    /**
+     * Sets encoder motor to a given speed (scaled to SPEED_MAX in subsystem)
+     * @param speed Value between [-1,1] to control encoder
+     */
+    private void setMotorSpeed(double speed) {
+    	//check if speed is too low to do anything
+    	if (Math.abs(speed*SPEED_MAX) < SPEED_TOLERANCE) {
+    		speed = 0;
+    	}
+		//set motor
+    	Robot.cannonEncoderMotor.set(-speed*SPEED_MAX);
+    	//targetPositionDeg = Robot.cannonEncoderMotor.getEncPosition();
+	}
+
+	/*private double getMotorSpeed() {
+		return encoder.getRate(); //we still need to set the distance per pulse <--(I think we already did?)
+	}*/
     
+    public void move(XboxController xbox) {
+    	SmartDashboard.putNumber("EncPosition", Robot.cannonEncoderMotor.getEncPosition());
+    	
+    	//check if encoder is hitting bottom (being reset)
+    	if (Robot.cannonEncoderMotor.isFwdLimitSwitchClosed()) {
+    		Robot.cannonEncoderMotor.setEncPosition(0);
+    	}
+    	//check if encoder is hitting top
+    	if ( Robot.cannonEncoderMotor.isRevLimitSwitchClosed()) {
+    		Robot.cannonEncoderMotor.setEncPosition((int) (POSITION_MAX_DEG/DEGREES_PER_PULSE));
+    	}
+    	
+    	//move encoder
+    	if (auto) {
+    		moveTowardTargetPosition();
+    	} else {
+    		moveXbox(xbox);
+    	}
+    }
+    
+    /**
+     * Moves the encoder based on xbox left stick Y axis value
+     * @param xbox
+     */
+    public void moveXbox(XboxController xbox) {
+    	setMotorSpeed(xbox.getLeftStickYAxis());
+    }
+	
+    /**
+     * Moves the encoder based on camera target position
+     */
+	public void moveTowardTargetPosition() {
+    	double currentSpeed = 1;
+    	double finalSpeed = 0;
+    	double posError = 10;
+    	double incGain = 0.1;
+    	SmartDashboard.putString("Encoder Command", "Lock Speed Mode");
+
+    	currentSpeed = getMotorSpeed();
+    	posError = getTargetPosition() - getMotorPosition();
+        if (posError != 0.0) {
+	    	currentSpeed = getMotorSpeed();
+	    	posError = getTargetPosition() - getMotorPosition();
+	    	SmartDashboard.putNumber("Position Error", posError);
+	    		    	
+	    	if(posError >= POSITION_TOLERANCE) {
+	    		// increase speed toward floor if current position is lower than target (too close to the robot)
+	    		SmartDashboard.putString("Lock Speed Command", "Incrementing Speed");
+	    		finalSpeed = (currentSpeed + incGain*Math.abs(posError));
+	    		finalSpeed = (finalSpeed * Math.abs(posError/SPEED_MAX));
+	    	}
+  
+	    	if(posError <= -POSITION_TOLERANCE) {
+	    		// increase speed toward robot if current position is greater than target (too close to the floor)
+	    		SmartDashboard.putString("Lock Speed Command", "Decrementing Speed");
+	    		finalSpeed = (currentSpeed - incGain*Math.abs(posError));
+	    		finalSpeed = (finalSpeed * Math.abs(posError/SPEED_MAX));
+
+	    	}
+	    	
+	    	if(Math.abs(posError) < POSITION_TOLERANCE) {
+	    		// do nothing if the current position is within reasonable bounds
+	    		SmartDashboard.putString("Lock Speed Command", "Doing Nothing");
+	    		finalSpeed = currentSpeed;
+	    	}
+	    	
+	    	SmartDashboard.putString("Lock Speed Command", "Setting Speed");
+	    	if(Math.abs(finalSpeed) > SPEED_MAX) {
+	    		setMotorSpeed(Math.signum(finalSpeed)*SPEED_MAX);
+	    	}else{
+	    		setMotorSpeed(finalSpeed);
+	    	}
+	    	
+	    	//Timer.delay(0.005);
+	    	
+	    	SmartDashboard.putNumber("Final Speed", finalSpeed);
+	    	//SmartDashboard.putNumber("Encoder Position Actual", getMotorPosition());
+	    	//SmartDashboard.putNumber("Encoder Position Target", getTargetPosition());
+	    	SmartDashboard.putString("Lock Speed Command", "Looping");
+    	}
+    	SmartDashboard.putString("Lock Speed Command", "idle");
+    	return;
+    }
+	
+   //PID methods
+	/*@Override
+	protected double returnPIDInput() {
+		double distance = Robot.vision.distanceFeet;
+		double distanceX = distance * Math.cos(Robot.cannonEncoderMotor.get()*DEGREES_PER_PULSE - offsetDeg);
+		targetPositionDeg = Robot.vision.launchAngle(distanceX) + offsetDeg;
+		
+		SmartDashboard.putNumber("targetPositionDeg", targetPositionDeg);
+		SmartDashboard.putNumber("cannonEncoderMotor.get()", Robot.cannonEncoderMotor.get());
+		SmartDashboard.putNumber("cannonEncoderMotor.get() * deg/pulse", Robot.cannonEncoderMotor.get()*DEGREES_PER_PULSE);
+		
+		//return the position error
+		return targetPositionDeg - Robot.cannonEncoderMotor.get()*DEGREES_PER_PULSE;
+	}
+	
+	@Override
+	protected void usePIDOutput(double output) {
+		setMotor(output);
+	}
+	
+	public void enablePID() {
+		getPIDController().enable();
+	}
+	
+	public void enablePID(boolean enable) {
+		if(enable) {
+			getPIDController().enable();
+		} else {
+			getPIDController().disable();
+		}
+	}*/
+    
+	
+	
   //Position calculation/movement/math methods
    //basic move commands
     /*public void moveManual(XboxController xbox){
@@ -212,21 +359,6 @@ public class EncoderSubsystem extends PIDSubsystem {
     	
     	Timer.delay(0.010);
     }*/
-    
-   //PID methods
-	@Override
-	protected double returnPIDInput() {
-		//double distance = Robot.vision.distanceFeet;
-		//double distanceX = distance * Math.cos(Robot.cannonEncoderMotor.get()*DEGREES_PER_PULSE - angleOffset);
-		//double targetAngle = Robot.vision.launchAngle(distanceX) + angleOffset;
-		//return targetAngle - Robot.cannonEncoderMotor.get()*DEGREES_PER_PULSE; //error
-		return positionTarget+angleOffset-Robot.cannonEncoderMotor.get()*DEGREES_PER_PULSE;
-	}
-	@Override
-	protected void usePIDOutput(double output) {
-		// TODO Auto-generated method stub
-		
-	}
 }
 
 

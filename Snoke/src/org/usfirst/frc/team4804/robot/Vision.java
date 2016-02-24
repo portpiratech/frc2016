@@ -185,13 +185,13 @@ public class Vision {
 		//binaryFrameToDisplay = binaryFrame;
 
 		//filter out small particles
-//		float areaMin = (float)SmartDashboard.getNumber("Area min %", AREA_MINIMUM);
-//		criteria[0].lower = areaMin;
-//		imaqError = NIVision.imaqParticleFilter4(binaryFrame, binaryFrame, criteria, filterOptions, null);
+		float areaMin = (float)SmartDashboard.getNumber("Area min %", AREA_MINIMUM);
+		criteria[0].lower = areaMin;
+		imaqError = NIVision.imaqParticleFilter4(binaryFrame, binaryFrame, criteria, filterOptions, null);
 
 
 		//Send masked image to dashboard to assist in tweaking mask.
-//		CameraServer.getInstance().setImage(binaryFrame);
+		//CameraServer.getInstance().setImage(binaryFrame);
 		
 		//Send particle count after filtering to dashboard
 		numParticles = NIVision.imaqCountParticles(binaryFrame, 1);
@@ -262,7 +262,7 @@ public class Vision {
 			SmartDashboard.putBoolean("IsTote", false);
 		}
 		
-		CameraServer.getInstance().setImage(binaryFrame);
+		CameraServer.getInstance().setImage(frame);
 		//Timer.delay(0.1);				// wait for a motor update time
 	}
 	

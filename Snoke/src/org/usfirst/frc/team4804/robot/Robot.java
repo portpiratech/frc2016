@@ -7,10 +7,10 @@ import org.usfirst.frc.team4804.robot.subsystems.DriveTrainSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.EncoderSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.PistonSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.SwivelSubsystem;
+import org.usfirst.frc.team4804.robot.subsystems.VisionSubsystem;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick.RumbleType;
 import edu.wpi.first.wpilibj.Talon;
@@ -34,10 +34,11 @@ public class Robot extends IterativeRobot {
 	public static DriveTrainSubsystem driveTrainSubsystem;
 	public static SwivelSubsystem swivelSubsystem;
 	public static EncoderSubsystem encoderSubsystem;
+	public static VisionSubsystem visionSubsystem;
 	
    //Other classes
-	public static OI oi;
 	public static Vision vision;
+	public static OI oi;
 	
    //Motor controllers and other objects
 	public static Talon tankDriveLeftOld;
@@ -54,11 +55,6 @@ public class Robot extends IterativeRobot {
 	
    //Autonomous command
     Command autonomousCommand;
-    
-   //sensors
-    public static DigitalInput limitLeft;
-    public static DigitalInput limitRight;
-    public static DigitalInput limitCenter;
     
    //Constructor
     public Robot() {
@@ -89,6 +85,7 @@ public class Robot extends IterativeRobot {
         	swivelSubsystem = new SwivelSubsystem();
         	encoderSubsystem = new EncoderSubsystem();
         	driveTrainSubsystem = new DriveTrainSubsystem();
+        	visionSubsystem = new VisionSubsystem();
         	
            //Motors controllers and objects
         	cannonLauncherMotors = new CANTalon(OI.CANNON_LAUNCHER_ID);
@@ -118,8 +115,8 @@ public class Robot extends IterativeRobot {
         }
         
        //other important classes
-        oi = new OI();
         vision = new Vision();
+        oi = new OI();
         
        //instantiate the command used for the autonomous period
         autonomousCommand = new ExampleCommand();
@@ -147,6 +144,12 @@ public class Robot extends IterativeRobot {
         // continue until interrupted by another command, remove
         // this line or comment it out.
         if (autonomousCommand != null) autonomousCommand.cancel();
+        SmartDashboard.putNumber("Drive Speed Max", DriveTrainSubsystem.driveSpeed);
+    	SmartDashboard.putNumber("Cannon Load Speed", CannonSubsystem.LOAD_SPEED);
+    	SmartDashboard.putNumber("Cannon Launch Speed", CannonSubsystem.LAUNCH_SPEED);
+    	
+    	SmartDashboard.putNumber("setEncPosition", Robot.cannonEncoderMotor.getEncPosition());
+    	SmartDashboard.putNumber("Encoder max speed", Robot.encoderSubsystem.SPEED_MAX);
     }
 
     /**
@@ -166,11 +169,12 @@ public class Robot extends IterativeRobot {
      */
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
-        DriveTrainSubsystem.driveSpeed = (double)SmartDashboard.getNumber("Drive Speed Max", DriveTrainSubsystem.driveSpeed);
-    	CannonSubsystem.LOAD_SPEED = (double)SmartDashboard.getNumber("Cannon Load Speed", CannonSubsystem.LOAD_SPEED);
-    	CannonSubsystem.LAUNCH_SPEED = (double)SmartDashboard.getNumber("Cannon Launch Speed", CannonSubsystem.LAUNCH_SPEED);
-        
-        vision.frameProcess();
+        DriveTrainSubsystem.driveSpeed = (double)SmartDashboard.getNumber("Drive Speed Max");
+    	CannonSubsystem.LOAD_SPEED = (double)SmartDashboard.getNumber("Cannon Load Speed");
+    	CannonSubsystem.LAUNCH_SPEED = (double)SmartDashboard.getNumber("Cannon Launch Speed");
+    	
+    	Robot.cannonEncoderMotor.setEncPosition((int)SmartDashboard.getNumber("setEncPosition"));
+    	Robot.encoderSubsystem.SPEED_MAX = (double)SmartDashboard.getNumber("Encoder max speed");
     }
     
     /**
