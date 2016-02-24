@@ -148,7 +148,7 @@ public class Robot extends IterativeRobot {
     	SmartDashboard.putNumber("Cannon Load Speed", CannonSubsystem.LOAD_SPEED);
     	SmartDashboard.putNumber("Cannon Launch Speed", CannonSubsystem.LAUNCH_SPEED);
     	
-    	SmartDashboard.putNumber("setEncPosition", Robot.cannonEncoderMotor.getEncPosition());
+    	//SmartDashboard.putNumber("setEncPosition", Robot.cannonEncoderMotor.getEncPosition());
     	SmartDashboard.putNumber("Encoder max speed", Robot.encoderSubsystem.SPEED_MAX);
     }
 
@@ -173,7 +173,8 @@ public class Robot extends IterativeRobot {
     	CannonSubsystem.LOAD_SPEED = (double)SmartDashboard.getNumber("Cannon Load Speed");
     	CannonSubsystem.LAUNCH_SPEED = (double)SmartDashboard.getNumber("Cannon Launch Speed");
     	
-    	Robot.cannonEncoderMotor.setEncPosition((int)SmartDashboard.getNumber("setEncPosition"));
+    	//SmartDashboard.putNumber("setEncPosition", Robot.cannonEncoderMotor.getEncPosition());
+    	//Robot.cannonEncoderMotor.setEncPosition((int)SmartDashboard.getNumber("setEncPosition"));
     	Robot.encoderSubsystem.SPEED_MAX = (double)SmartDashboard.getNumber("Encoder max speed");
     }
     

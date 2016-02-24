@@ -24,6 +24,9 @@ public class TargetingAuto extends Command {
     	
     	if(encoder) {
 	    	requires(Robot.encoderSubsystem);
+	    	SmartDashboard.putNumber("Enc const-Proportional (p)", Robot.encoderSubsystem.p);
+	    	SmartDashboard.putNumber("Enc const-Integral (i)", Robot.encoderSubsystem.i);
+	    	SmartDashboard.putNumber("Enc const-Derivative (d)", Robot.encoderSubsystem.d);
     	}
     }
 
@@ -34,6 +37,7 @@ public class TargetingAuto extends Command {
     	}
     	if(encoder) {
     		Robot.encoderSubsystem.auto = true;
+    		//Robot.encoderSubsystem.enablePID(true);
     	}
     }
 
@@ -47,6 +51,10 @@ public class TargetingAuto extends Command {
     	}
 	    if(encoder) {	
 	    	Robot.encoderSubsystem.move(Robot.oi.operatorController);
+	    	/*Robot.encoderSubsystem.p = SmartDashboard.getNumber("Enc const-Proportional (p)");
+	    	Robot.encoderSubsystem.i = SmartDashboard.getNumber("Enc const-Integral (i)");
+	    	Robot.encoderSubsystem.d = SmartDashboard.getNumber("Enc const-Derivative (d)");
+	    	Robot.encoderSubsystem.getPIDController().setPID(Robot.encoderSubsystem.p, Robot.encoderSubsystem.i, Robot.encoderSubsystem.d);*/
 	    }
     }
 

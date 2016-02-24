@@ -6,6 +6,7 @@ import org.usfirst.frc.team4804.robot.commands.CannonEncoderMove;
 
 import com.portpiratech.xbox360.XboxController;
 
+import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -20,74 +21,59 @@ public class EncoderSubsystem extends Subsystem {
 	private DigitalInput inputB = new DigitalInput(OI.CANNON_ENCODER_CHANNEL_B);*/
 	
    //constants
-	public final double DEGREES_PER_PULSE = 360.0 / 497.0; //7 encoder pulses per 1 encoder rev, gearbox reduction is 71:1 ratio; 7*71=497
+	//public final double DEGREES_PER_PULSE = 360.0 / 497.0; //7 encoder pulses per 1 encoder rev, gearbox reduction is 71:1 ratio; 7*71=497
 	public final double TRIGGER_TOLERANCE = 0.05;
-	public final double POSITION_TOLERANCE = 10;
-	public final double POSITION_MAX_DEG = 137;
+	public final double POSITION_TOLERANCE = 5.0;
+	public final double POSITION_RANGE_DEG = 137.0;
+	public final double POSITION_MAX_DEG = 90.0;
+	public final double POSITION_OFFSET_DEG = 47.0; //degrees below horizontal; need to measure this value
+	public final double PULSES_PER_DEGREE = 800.0/POSITION_RANGE_DEG;
 	public final double SPEED_TOLERANCE = 0.03;
 	public double SPEED_MAX = 0.4;
 	
-	double offsetDeg = 47.0; //degrees below horizontal; need to measure this value
 	double targetPositionDeg = 0; //degrees
 	boolean calibrated = false;
 	public boolean auto = false;
 	
+	public double p, i, d;
+	
     // Constructor
-	public EncoderSubsystem() {		
+	public EncoderSubsystem() {
+		/*super(0.6, 0.0, 0.3);	//initial PID constants
+		p = getPIDController().getP();
+		i = getPIDController().getI();
+		d = getPIDController().getD();
+		getPIDController().setContinuous(false);
+		getPIDController().setAbsoluteTolerance(0.05);
+		
+		getPIDController().disable();*/
+		
 		super();
-		/*encoder = new Encoder(inputA, inputB);
-		encoder.setDistancePerPulse(DEGREES_PER_PULSE);*/
+		
+		//initialize the CANTalon PID stuff
+		p = 0.1;
+		i = 0.001;
+		d = 0.3;
+		Robot.cannonEncoderMotor.changeControlMode(CANTalon.TalonControlMode.Position);
+		Robot.cannonEncoderMotor.setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);
+		Robot.cannonEncoderMotor.setPID(p, i, d);
 	}
+	
 	// Default command
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
         //setDefaultCommand(new CannonEncoderMove());
     	setDefaultCommand(new CannonEncoderMove());
     }
-    
-    
-    // Put methods for controlling this subsystem
-    // here. Call these from Commands.
 	
-	/*public void resetMotor() {
-		/*
-		//hit first lim
-		setMotor(-0.1);
-		while(!Robot.cannonEncoderMotor.isFwdLimitSwitchClosed()) {}
-		setMotor(0);
-		double angle1 = Robot.cannonEncoderMotor.getEncPosition();
-		
-		//move to second lim
-		setMotor(0.1);
-		while(!Robot.cannonEncoderMotor.isRevLimitSwitchClosed()) {}
-		setMotor(0);
-		
-		//measure angle
-		double angle2 = Robot.cannonEncoderMotor.getEncPosition();
-		
-		//move until centered
-		setMotor(-0.1);
-		while(Robot.cannonEncoderMotor.get() > (angle2-angle1)/2) {}
-		setMotor(0);*/
-		
-		
-		/*//move down until a limit switch is hit
-		setMotorSpeed(-0.2);
-		while(!Robot.cannonEncoderMotor.isFwdLimitSwitchClosed() && !Robot.cannonEncoderMotor.isRevLimitSwitchClosed()) {} //neither is pressed
-		setMotorSpeed(0);
-		//reset encoder value
-		Robot.cannonEncoderMotor.setEncPosition(0);
-		targetPositionDeg = Robot.cannonEncoderMotor.getEncPosition();
-		calibrated = true;
-	}*/
-	
-	public double getTargetPosition() {
-		targetPositionDeg = Robot.vision.launchAngle(Robot.vision.distanceFeet * Math.cos(getMotorPosition()-offsetDeg));
+	public double getTargetPositionDeg() {
+		targetPositionDeg = Robot.vision.launchAngle(Robot.vision.distanceFeet * Math.cos(getMotorPosition()-POSITION_OFFSET_DEG));
 		SmartDashboard.putNumber("Target angle", targetPositionDeg);
 		return targetPositionDeg;
 	}
 	
 	public double getMotorSpeed() {
+		SmartDashboard.putNumber("EncVelocity", Robot.cannonEncoderMotor.getEncVelocity());
 		return Robot.cannonEncoderMotor.getEncVelocity();
 	}
 	
@@ -114,22 +100,32 @@ public class EncoderSubsystem extends Subsystem {
 		return encoder.getRate(); //we still need to set the distance per pulse <--(I think we already did?)
 	}*/
     
+    public void setPID(double p, double i, double d) {
+    	Robot.cannonEncoderMotor.setPID(p, i, d);
+    }
+    
     public void move(XboxController xbox) {
     	SmartDashboard.putNumber("EncPosition", Robot.cannonEncoderMotor.getEncPosition());
+    	SmartDashboard.putNumber("EncVelocity", Robot.cannonEncoderMotor.getEncVelocity());
     	
     	//check if encoder is hitting bottom (being reset)
-    	if (Robot.cannonEncoderMotor.isFwdLimitSwitchClosed()) {
-    		Robot.cannonEncoderMotor.setEncPosition(0);
+    	if (Robot.cannonEncoderMotor.isRevLimitSwitchClosed()) {
+    		Robot.cannonEncoderMotor.setEncPosition((int) (POSITION_OFFSET_DEG*PULSES_PER_DEGREE));
     	}
     	//check if encoder is hitting top
-    	if ( Robot.cannonEncoderMotor.isRevLimitSwitchClosed()) {
-    		Robot.cannonEncoderMotor.setEncPosition((int) (POSITION_MAX_DEG/DEGREES_PER_PULSE));
+    	if (Robot.cannonEncoderMotor.isFwdLimitSwitchClosed()) {
+    		Robot.cannonEncoderMotor.setEncPosition((int) (POSITION_MAX_DEG*PULSES_PER_DEGREE));
     	}
     	
     	//move encoder
     	if (auto) {
-    		moveTowardTargetPosition();
+    		setPID(p, i, d);
+    		//moveTowardTargetPosition();
+    		Robot.cannonEncoderMotor.changeControlMode(CANTalon.TalonControlMode.Position);
+    		Robot.cannonEncoderMotor.set(getTargetPositionDeg()*PULSES_PER_DEGREE);
     	} else {
+    		setPID(0, 0, 0);
+    		Robot.cannonEncoderMotor.changeControlMode(CANTalon.TalonControlMode.Speed);
     		moveXbox(xbox);
     	}
     }
@@ -153,10 +149,10 @@ public class EncoderSubsystem extends Subsystem {
     	SmartDashboard.putString("Encoder Command", "Lock Speed Mode");
 
     	currentSpeed = getMotorSpeed();
-    	posError = getTargetPosition() - getMotorPosition();
+    	posError = getTargetPositionDeg() - getMotorPosition();
         if (posError != 0.0) {
 	    	currentSpeed = getMotorSpeed();
-	    	posError = getTargetPosition() - getMotorPosition();
+	    	posError = getTargetPositionDeg() - getMotorPosition();
 	    	SmartDashboard.putNumber("Position Error", posError);
 	    		    	
 	    	if(posError >= POSITION_TOLERANCE) {
@@ -197,6 +193,66 @@ public class EncoderSubsystem extends Subsystem {
     	SmartDashboard.putString("Lock Speed Command", "idle");
     	return;
     }
+	
+	 //PID loop camera centering methods--use these!
+    /*@Override
+	protected double returnPIDInput() {
+		return getMotorPosition() - getTargetPosition();
+	}
+
+	@Override
+	protected void usePIDOutput(double output) {
+		setMotorSpeed(output);
+	}
+	
+	public void enablePID() {
+		getPIDController().enable();
+	}
+	
+	public void enablePID(boolean enable) {
+		if(enable) {
+			getPIDController().enable();
+		} else {
+			getPIDController().disable();
+		}
+	}*/
+    
+    
+    // Put methods for controlling this subsystem
+    // here. Call these from Commands.
+	
+	/*public void resetMotor() {
+		/*
+		//hit first lim
+		setMotor(-0.1);
+		while(!Robot.cannonEncoderMotor.isFwdLimitSwitchClosed()) {}
+		setMotor(0);
+		double angle1 = Robot.cannonEncoderMotor.getEncPosition();
+		
+		//move to second lim
+		setMotor(0.1);
+		while(!Robot.cannonEncoderMotor.isRevLimitSwitchClosed()) {}
+		setMotor(0);
+		
+		//measure angle
+		double angle2 = Robot.cannonEncoderMotor.getEncPosition();
+		
+		//move until centered
+		setMotor(-0.1);
+		while(Robot.cannonEncoderMotor.get() > (angle2-angle1)/2) {}
+		setMotor(0);*/
+		
+		
+		/*//move down until a limit switch is hit
+		setMotorSpeed(-0.2);
+		while(!Robot.cannonEncoderMotor.isFwdLimitSwitchClosed() && !Robot.cannonEncoderMotor.isRevLimitSwitchClosed()) {} //neither is pressed
+		setMotorSpeed(0);
+		//reset encoder value
+		Robot.cannonEncoderMotor.setEncPosition(0);
+		targetPositionDeg = Robot.cannonEncoderMotor.getEncPosition();
+		calibrated = true;
+	}*/
+	
 	
    //PID methods
 	/*@Override

@@ -106,7 +106,7 @@ public class Vision {
 		captureIntervalMs = 100;
 		
 		targetCam = new USBCamera("cam0");
-    	targetCam.setBrightness(20);
+    	targetCam.setBrightness(0);
     	targetCam.setExposureManual(0);
     	targetCam.setExposureHoldCurrent();
 //    	

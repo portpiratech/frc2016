@@ -21,6 +21,7 @@ public class TargetingManual extends Command {
     protected void initialize() {
     	Robot.driveTrainSubsystem.enablePID(false);
     	Robot.encoderSubsystem.auto = false;
+    	Robot.driveTrainSubsystem.enablePID(false);
     }
 
     // Called repeatedly when this Command is scheduled to run
