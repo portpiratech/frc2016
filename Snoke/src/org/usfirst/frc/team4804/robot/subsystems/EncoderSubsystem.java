@@ -21,7 +21,7 @@ public class EncoderSubsystem extends Subsystem {
 	private DigitalInput inputB = new DigitalInput(OI.CANNON_ENCODER_CHANNEL_B);*/
 	
    //constants
-	//public final double DEGREES_PER_PULSE = 360.0 / 497.0; //7 encoder pulses per 1 encoder rev, gearbox reduction is 71:1 ratio; 7*71=497
+	public final double DEGREES_PER_PULSE = 360.0 / 497.0; //7 encoder pulses per 1 encoder rev, gearbox reduction is 71:1 ratio; 7*71=497
 	public final double TRIGGER_TOLERANCE = 0.05;
 	public final double POSITION_TOLERANCE = 5.0;
 	public final double POSITION_RANGE_DEG = 137.0;
@@ -65,40 +65,31 @@ public class EncoderSubsystem extends Subsystem {
         //setDefaultCommand(new CannonEncoderMove());
     	setDefaultCommand(new CannonEncoderMove());
     }
+    
+    //METHODS
 	
-	public double getTargetPositionDeg() {
-		targetPositionDeg = Robot.vision.launchAngle(Robot.vision.distanceFeet * Math.cos(getMotorPosition()-POSITION_OFFSET_DEG));
-		SmartDashboard.putNumber("Target angle", targetPositionDeg);
-		return targetPositionDeg;
-	}
-	
-	public double getMotorSpeed() {
-		SmartDashboard.putNumber("EncVelocity", Robot.cannonEncoderMotor.getEncVelocity());
-		return Robot.cannonEncoderMotor.getEncVelocity();
-	}
-	
-	public double getMotorPosition() {
+    public double toDeg(double pulses) {
+    	return pulses*DEGREES_PER_PULSE;
+    }
+    
+    public double toPulses(double deg) {
+    	return deg/DEGREES_PER_PULSE;
+    }
+    
+    public double getMotorPositionPulses() {
 		SmartDashboard.putNumber("EncPosition", Robot.cannonEncoderMotor.getEncPosition());
 		return Robot.cannonEncoderMotor.getEncPosition();
 	}
-	
-    /**
-     * Sets encoder motor to a given speed (scaled to SPEED_MAX in subsystem)
-     * @param speed Value between [-1,1] to control encoder
-     */
-    private void setMotorSpeed(double speed) {
-    	//check if speed is too low to do anything
-    	if (Math.abs(speed*SPEED_MAX) < SPEED_TOLERANCE) {
-    		speed = 0;
-    	}
-		//set motor
-    	Robot.cannonEncoderMotor.set(-speed*SPEED_MAX);
-    	//targetPositionDeg = Robot.cannonEncoderMotor.getEncPosition();
+    
+    public void setMotorPositionPulses(double pulses) {
+    	Robot.cannonEncoderMotor.setEncPosition((int)pulses);
+    }
+    
+	public double getTargetPositionDeg() {
+		targetPositionDeg = Robot.vision.launchAngle( Robot.vision.distanceFeet * Math.cos(toDeg(getMotorPositionPulses())) ); //horizontal distance
+		SmartDashboard.putNumber("Target angle", targetPositionDeg);
+		return targetPositionDeg;
 	}
-
-	/*private double getMotorSpeed() {
-		return encoder.getRate(); //we still need to set the distance per pulse <--(I think we already did?)
-	}*/
     
     public void setPID(double p, double i, double d) {
     	Robot.cannonEncoderMotor.setPID(p, i, d);
@@ -110,7 +101,7 @@ public class EncoderSubsystem extends Subsystem {
     	
     	//check if encoder is hitting bottom (being reset)
     	if (Robot.cannonEncoderMotor.isRevLimitSwitchClosed()) {
-    		Robot.cannonEncoderMotor.setEncPosition((int) (POSITION_OFFSET_DEG*PULSES_PER_DEGREE));
+    		Robot.cannonEncoderMotor.setEncPosition((int) (-POSITION_OFFSET_DEG*PULSES_PER_DEGREE));
     	}
     	//check if encoder is hitting top
     	if (Robot.cannonEncoderMotor.isFwdLimitSwitchClosed()) {
@@ -130,6 +121,8 @@ public class EncoderSubsystem extends Subsystem {
     	}
     }
     
+    //SPEED
+    
     /**
      * Moves the encoder based on xbox left stick Y axis value
      * @param xbox
@@ -137,11 +130,32 @@ public class EncoderSubsystem extends Subsystem {
     public void moveXbox(XboxController xbox) {
     	setMotorSpeed(xbox.getLeftStickYAxis());
     }
+    
+    public double getMotorSpeed() {
+		SmartDashboard.putNumber("EncVelocity", Robot.cannonEncoderMotor.getEncVelocity());
+		return Robot.cannonEncoderMotor.getEncVelocity();
+	}
+	
+	/**
+	 * Sets encoder motor to a given speed (scaled to SPEED_MAX in subsystem)
+	 * @param speed Value between [-1,1] to control encoder
+	 */
+	private void setMotorSpeed(double speed) {
+		//check if speed is too low to do anything
+		if (Math.abs(speed*SPEED_MAX) < SPEED_TOLERANCE) {
+			speed = 0;
+		}
+		//set motor
+		Robot.cannonEncoderMotor.set(-speed*SPEED_MAX);
+		//targetPositionDeg = Robot.cannonEncoderMotor.getEncPosition();
+	}
+    
+    //////////////------------------/*
 	
     /**
      * Moves the encoder based on camera target position
      */
-	public void moveTowardTargetPosition() {
+	/*public void moveTowardTargetPosition() {
     	double currentSpeed = 1;
     	double finalSpeed = 0;
     	double posError = 10;
@@ -192,9 +206,9 @@ public class EncoderSubsystem extends Subsystem {
     	}
     	SmartDashboard.putString("Lock Speed Command", "idle");
     	return;
-    }
+    }*/
 	
-	 //PID loop camera centering methods--use these!
+	 //PID loop camera centering methods
     /*@Override
 	protected double returnPIDInput() {
 		return getMotorPosition() - getTargetPosition();

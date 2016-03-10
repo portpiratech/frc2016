@@ -72,11 +72,11 @@ public class DriveTrainSubsystem extends PIDSubsystem {
     		tankDrive(xbox.getLeftStickYAxis(), xbox.getRightStickYAxis());
     		SmartDashboard.putString("Drive Setting", "Tank Drive");
     		break;
-    	/*case 1:
+    	case 1:
     		jonnyDrive(xbox.getLeftStickYAxis(), xbox.getLeftStickXAxis(), xbox.getDPad(), xbox.getRightStickXAxis());
     		SmartDashboard.putString("Drive Setting", "Jonny Drive");
-    		break;*/
-    	case 1:
+    		break;
+    	case 2:
     		tommyDrive(xbox.getLeftStickXAxis(), xbox.getLeftStickYAxis(), xbox.getDPad());
     		SmartDashboard.putString("Drive Setting", "Tommy Drive");
     		break;
@@ -88,8 +88,28 @@ public class DriveTrainSubsystem extends PIDSubsystem {
      */
     public void toggleDriveSetting(){ //mapped to A button on driver's controller
     	driveSetting++;
-    	if (driveSetting >= 2){
+    	if (driveSetting > 2){
     		driveSetting = 0;
+    	}
+    }
+    
+    /**
+     * Changes the drive mode. 0=tank, 1=jonny, 2=tommy.
+     */
+    public void toggleDriveSetting(String driveMode){ //mapped to A button on driver's controller
+    	switch(driveMode) {
+    	case "tank":
+    		driveSetting = 0;
+    		break;
+    	case "jonny":
+    		driveSetting = 1;
+    		break;
+    	case "tommy":
+    		driveSetting = 2;
+    		break;
+    	default:
+    		toggleDriveSetting();
+    		break;
     	}
     }
     

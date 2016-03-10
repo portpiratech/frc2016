@@ -12,14 +12,36 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionToggle extends Command {
     
+	boolean processing = false;
+	boolean altConstructor = false;
+	
+	/**
+	 * Toggle vision mode -- processing enabled or disabled
+	 */
     public VisionToggle() {
         requires(Robot.visionSubsystem);
+    }
+    
+    /**
+     * Set vision mode directly
+     * @param process Should vision be processing?
+     */
+    public VisionToggle(boolean process) {
+        requires(Robot.visionSubsystem);
+        processing = process;
+        altConstructor = true;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	VisionSubsystem.visionProcessing = !VisionSubsystem.visionProcessing;
-        SmartDashboard.putBoolean("Vision Processing", VisionSubsystem.visionProcessing);
+    	if(altConstructor) {
+    		//set vision mode directly
+    		VisionSubsystem.visionProcessing = processing;
+    	} else {
+    		//toggle vision mode
+	    	VisionSubsystem.visionProcessing = !VisionSubsystem.visionProcessing;
+	        SmartDashboard.putBoolean("Vision Processing", VisionSubsystem.visionProcessing);
+    	}
     }
 
     // Called repeatedly when this Command is scheduled to run

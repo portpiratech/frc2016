@@ -53,8 +53,8 @@ public class Vision {
   	NIVision.Range TOTE_SAT_RANGE = new NIVision.Range(100, 255);	//Default saturation range for green-cyan LED
   	NIVision.Range TOTE_VAL_RANGE = new NIVision.Range(200, 255);	//Default value range for green-cyan LED
   	double AREA_MINIMUM = 0.5; //Default Area minimum for particle as a percentage of total image area
-  	double LONG_RATIO = 2.22; //Tote long side = 26.9 / Tote height = 12.1 = 2.22
-  	double SHORT_RATIO = 1.4; //Tote short side = 16.9 / Tote height = 12.1 = 1.4
+  	double LONG_RATIO = 2.22; //(Target long side = 26.9 / Target height = 12.1) = 2.22
+  	double SHORT_RATIO = 1.4; //(Target short side = 16.9 / Target height = 12.1) = 1.4
   	double SCORE_MIN = 75.0;  //Minimum score to be considered a tote
   	double VIEW_ANGLE = 48.5; //View angle fo camera, set to Axis m1011 by default, 64 for m1013, 51.7 for 206, 52 for HD3000 square, 68.5 for HD3000 640x480
   	NIVision.ParticleFilterCriteria2 criteria[] = new NIVision.ParticleFilterCriteria2[1];
@@ -307,14 +307,14 @@ public class Vision {
 
   	double AreaScore(ParticleReport report) {
   		double boundingArea = (report.BoundingRectBottom - report.BoundingRectTop) * (report.BoundingRectRight - report.BoundingRectLeft);
-  		//Tape is 7" edge so 49" bounding rect. With 2" wide tape it covers 24" of the rect.
-  		return ratioToScore((49/24)*report.Area/boundingArea);
+  		//Tape is 20" bottom edge + 7" side edges so 140" bounding rect. With 2" wide tape it covers 50" of the rect.
+  		return ratioToScore((140.0/50.0)*report.Area/boundingArea);
   	}
  	/**
- 	 * Method to score if the aspect ratio of the particle appears to match the retro-reflective target. Target is 7"x7" so aspect should be 1
+ 	 * Method to score if the aspect ratio of the particle appears to match the retro-reflective target. Target is 20"x14" so aspect should be 10/7=1.429
   	 */
  	double AspectScore(ParticleReport report) {
-  		return ratioToScore(((report.BoundingRectRight-report.BoundingRectLeft)/(report.BoundingRectBottom-report.BoundingRectTop)));
+  		return ratioToScore((7.0/10.0)*(report.BoundingRectRight-report.BoundingRectLeft)/(report.BoundingRectBottom-report.BoundingRectTop));
   	}
  	
  	/**
@@ -372,12 +372,11 @@ public class Vision {
     	
        //constants
     	double v = 6.26; 		//initial velocity. (m/s)	Roughly 14 mph = 6.26 m/s
-    	double height = 1.6002; 		//height of target. (m)		On old robot, roughly 63 inches
+    	double height = Robot.visionSubsystem.cameraHeightMeters; 		//height of target. (m)		On old robot, roughly 63 inches
     	
        //optimum launch angle so that ball passes through target at peak of trajectory
-    	double numerator = Math.pow(v, 2) + Math.sqrt( Math.pow(v, 4) - g*(g*Math.pow(distance,2) + 2*height*Math.pow(v,2)) );
-    	double denominator = g*distance;
-    	double launchAngle = Math.atan(numerator/denominator);
+    	double launchAngle = Math.atan( (Math.pow(v, 2) + Math.sqrt( Math.pow(v, 4) - g*(g*Math.pow(distance,2) + 2*height*Math.pow(v,2)) ))/
+    			(g*distance) );
     	return launchAngle;
     }
   		

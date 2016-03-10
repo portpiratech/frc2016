@@ -191,5 +191,16 @@ public class XboxController extends Joystick {
 		}
 		return dpad;
 	}
+	
+	/**
+	 * This method sets the rumble of an xbox controller
+	 * @param high High frequency value [0.0, 1.0]
+	 * @param low Low frequency rumble [0.0, 1.0]
+	 */
+	public void setRumble(double high, double low) {
+		//need to verify which side is which
+		this.setRumble(RumbleType.kLeftRumble, (float)high);
+		this.setRumble(RumbleType.kRightRumble, (float)low);
+	}
 
 }

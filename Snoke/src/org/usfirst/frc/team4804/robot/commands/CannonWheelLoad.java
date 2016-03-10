@@ -14,6 +14,7 @@ public class CannonWheelLoad extends Command {
     public CannonWheelLoad() {
         // Use requires() here to declare subsystem dependencies
         requires(Robot.cannonSubsystem);
+        requires(Robot.pusherSubsystem);
     }
 
     // Called just before this Command runs the first time
@@ -22,7 +23,8 @@ public class CannonWheelLoad extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.cannonSubsystem.motorLoad();
+    	Robot.pusherSubsystem.positionReverse();
+    	//Robot.cannonSubsystem.motorLoad();
     	
     	// set rumble
     	//Robot.oi.operatorController.setRumble(RumbleType.kLeftRumble, (float)0.5);

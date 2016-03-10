@@ -11,10 +11,27 @@ import edu.wpi.first.wpilibj.command.Command;
 public class DriveToggle extends Command {
 
 	public boolean finished = false;
+	String driveMode = "";
 	
+	/**
+	 * Cycle through drive settings
+	 * 0 = tank
+	 * 1 = jonny
+	 * 2 = tommy
+	 */
     public DriveToggle() {
         // Use requires() here to declare subsystem dependencies
         requires(Robot.driveTrainSubsystem);
+    }
+    
+    /**
+     * Set drive to a specific setting
+     * @param driveSetting Can be "tank", "jonny", "tommy"
+     */
+    public DriveToggle(String driveSetting) {
+        // Use requires() here to declare subsystem dependencies
+        requires(Robot.driveTrainSubsystem);
+        driveMode = driveSetting;
     }
 
     // Called just before this Command runs the first time
@@ -23,7 +40,20 @@ public class DriveToggle extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.driveTrainSubsystem.toggleDriveSetting();
+    	switch(driveMode) {
+    	case "tank":
+    		Robot.driveTrainSubsystem.toggleDriveSetting("tank");
+    		break;
+    	case "jonny":
+    		Robot.driveTrainSubsystem.toggleDriveSetting("jonny");
+    		break;
+    	case "tommy":
+    		Robot.driveTrainSubsystem.toggleDriveSetting("tommy");
+    		break;
+    	default:
+    		Robot.driveTrainSubsystem.toggleDriveSetting();
+    		break;
+    	}
     	finished = true;
     }
 

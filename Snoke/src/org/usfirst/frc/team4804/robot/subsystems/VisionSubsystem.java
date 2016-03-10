@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public class VisionSubsystem extends Subsystem {
 	
+	public double cameraHeightMeters = 1.0; //relative to floor
+	
 	public static boolean visionProcessing;
 	//long lastFrameProcessTimeMs;
 	//long captureIntervalMs;

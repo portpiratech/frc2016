@@ -1,11 +1,12 @@
 
 package org.usfirst.frc.team4804.robot;
 
-import org.usfirst.frc.team4804.robot.commands.ExampleCommand;
+import org.usfirst.frc.team4804.robot.commands.AutonomousCommand;
 import org.usfirst.frc.team4804.robot.subsystems.CannonSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.DriveTrainSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.EncoderSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.PistonSubsystem;
+import org.usfirst.frc.team4804.robot.subsystems.PusherSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.SwivelSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.VisionSubsystem;
 
@@ -13,6 +14,7 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick.RumbleType;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -34,6 +36,7 @@ public class Robot extends IterativeRobot {
 	public static DriveTrainSubsystem driveTrainSubsystem;
 	public static SwivelSubsystem swivelSubsystem;
 	public static EncoderSubsystem encoderSubsystem;
+	public static PusherSubsystem pusherSubsystem;
 	public static VisionSubsystem visionSubsystem;
 	
    //Other classes
@@ -43,6 +46,10 @@ public class Robot extends IterativeRobot {
    //Motor controllers and other objects
 	public static Talon tankDriveLeftOld;
 	public static Talon tankDriveRightOld;
+	public static Talon tankDriveLeftTest;
+	public static Talon tankDriveRightTest;
+	public static Talon cannonLauncherMotorsTest;
+	public static Servo pusher;
 	public static CANTalon tankDriveLeft;
 	public static CANTalon tankDriveRight;
 	public static CANTalon cannonLauncherMotors;
@@ -51,7 +58,7 @@ public class Robot extends IterativeRobot {
 	public static Compressor cannonCompressor;
 	
    //Switching robot mode
-	public static RobotModes currentMode = RobotModes.NEW_ROBOT_MODE;
+	public static RobotModes currentMode = RobotModes.TEST_ROBOT_MODE;
 	
    //Autonomous command
     Command autonomousCommand;
@@ -94,7 +101,7 @@ public class Robot extends IterativeRobot {
         	cannonEncoderMotor = new CANTalon(OI.CANNON_ENCODER_ID);
         	tankDriveRight = new CANTalon(OI.NEW_TANKDRIVE_RIGHT_ID);
         	tankDriveLeft = new CANTalon(OI.NEW_TANKDRIVE_LEFT_ID);
-        	cannonSwivelMotor = new CANTalon(OI.CANNON_SWIVEL_MOTOR_CHANNEL);
+        	cannonSwivelMotor = new CANTalon(OI.CANNON_SWIVEL_MOTOR_ID);
         	
            //sensors
         	/*limitLeft = new DigitalInput(OI.LIMIT_LEFT_ID);
@@ -105,6 +112,24 @@ public class Robot extends IterativeRobot {
         	/*DriveTrainSubsystem.DRIVE_SPEED = (double)SmartDashboard.getNumber("Drive Speed Max", DriveTrainSubsystem.DRIVE_SPEED);
         	CannonSubsystem.LOAD_SPEED = (double)SmartDashboard.getNumber("Cannon Load Speed", CannonSubsystem.LOAD_SPEED);
         	CannonSubsystem.LAUNCH_SPEED = (double)SmartDashboard.getNumber("Cannon Launch Speed", CannonSubsystem.LAUNCH_SPEED);*/
+        	break;
+        	
+        case TEST_ROBOT_MODE:
+        	//Subsystems:
+        	//cannonSubsystem = new CannonSubsystem();
+        	//swivelSubsystem = new SwivelSubsystem();
+        	//encoderSubsystem = new EncoderSubsystem();
+        	//driveTrainSubsystem = new DriveTrainSubsystem();
+        	pusherSubsystem = new PusherSubsystem();
+        	//visionSubsystem = new VisionSubsystem();
+        	
+        	//Motor controllers and objects
+        	//tankDriveLeftTest = new Talon(OI.TEST_TANKDRIVE_LEFT_CHANNEL);
+        	//tankDriveRightTest = new Talon(OI.TEST_TANKDRIVE_RIGHT_CHANNEL);
+        	//cannonLauncherMotorsTest = new Talon(OI.TEST_LAUNCHER_CHANNEL);
+        	//cannonEncoderMotor = new CANTalon(OI.TEST_CANNON_ENCODER_ID);
+        	//cannonSwivelMotor = new CANTalon(OI.TEST_CANNON_SWIVEL_ID);
+        	pusher = new Servo(OI.TEST_PUSHER_SERVO_CHANNEL);
         	break;
         	
         case OLD_TALON_TANK_MODE:
@@ -119,7 +144,7 @@ public class Robot extends IterativeRobot {
         oi = new OI();
         
        //instantiate the command used for the autonomous period
-        autonomousCommand = new ExampleCommand();
+        autonomousCommand = new AutonomousCommand();
     }
 	
 	public void disabledPeriodic() {
