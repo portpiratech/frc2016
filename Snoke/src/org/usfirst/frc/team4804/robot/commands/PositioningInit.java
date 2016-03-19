@@ -25,6 +25,7 @@ public class PositioningInit extends Command {
     	EncoderSubsystem.auto = true;
     	EncoderSubsystem.manualTarget = true;
     	SmartDashboard.putNumber("Enc Target angle", 45.0);
+    	Robot.encoderSubsystem.targetPositionDeg = SmartDashboard.getNumber("Enc Target angle");
     	VisionSubsystem.visionProcessing = true;
     }
 

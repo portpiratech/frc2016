@@ -32,7 +32,7 @@ public class EncoderSubsystem extends Subsystem {
 	public final double SPEED_TOLERANCE = 0.03;
 	public static double SPEED_MAX = 0.4;
 	
-	double targetPositionDeg = -40; //degrees
+	public double targetPositionDeg = -40; //degrees
 	boolean calibrated = false;
 	public static boolean auto = false;
 	public static boolean manualTarget = true;
