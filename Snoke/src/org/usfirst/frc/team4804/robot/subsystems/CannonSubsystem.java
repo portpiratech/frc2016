@@ -17,7 +17,7 @@ public class CannonSubsystem extends Subsystem {
 	// Put important variables and objects for this subsystem here.
 	
 	// Wheel launcher variables
-	public static double LOAD_SPEED = 0.35;
+	public static double LOAD_SPEED = 0.45;
 	public static double LAUNCH_SPEED = -1.0;
 	
 	

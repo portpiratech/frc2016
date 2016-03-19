@@ -20,11 +20,12 @@ public class DriveTrainSubsystem extends PIDSubsystem {
 	
 	public static final double SPEED_TOLERANCE = 0.1; // can't be too close to 0
 	static int driveSetting = 2; //0 is tank, 1 is Jonnydrive, 2 is Tommydrive
-    
+    public boolean centered = false;
+	
 	public double p, i, d;
 	
 	public DriveTrainSubsystem() {
-		super(0.6, 0.0, 0.3);	//initial PID constants
+		super(0.5, 0.0, 0.3);	//initial PID constants
 		p = getPIDController().getP();
 		i = getPIDController().getI();
 		d = getPIDController().getD();
@@ -302,6 +303,10 @@ public class DriveTrainSubsystem extends PIDSubsystem {
     //PID loop camera centering methods--use these!
     @Override
 	protected double returnPIDInput() {
+    	if(Robot.vision.errorAimingX < 0.01) {
+    		//check if close enough to centered
+    		centered = true;
+    	}
 		return Robot.vision.errorAimingX;
 	}
 

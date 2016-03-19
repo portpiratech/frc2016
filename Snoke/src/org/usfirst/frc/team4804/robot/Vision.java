@@ -182,7 +182,7 @@ public class Vision {
 
 		//Send particle count to dashboard
 		int numParticles = NIVision.imaqCountParticles(binaryFrame, 1);
-		SmartDashboard.putNumber("Masked particles", numParticles);
+		//SmartDashboard.putNumber("Masked particles", numParticles);
 
 		//binaryFrameToDisplay = binaryFrame;
 
@@ -197,7 +197,7 @@ public class Vision {
 		
 		//Send particle count after filtering to dashboard
 		numParticles = NIVision.imaqCountParticles(binaryFrame, 1);
-		SmartDashboard.putNumber("Filtered particles", numParticles);
+		//SmartDashboard.putNumber("Filtered particles", numParticles);
 
 		if(numParticles >= 1) {
 			
@@ -232,9 +232,9 @@ public class Vision {
 			largestParticle.BoundingRectRight = NIVision.imaqMeasureParticle(binaryFrame, 0, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_RIGHT);
 			
 			scores.Aspect = AspectScore(largestParticle);
-			SmartDashboard.putNumber("Aspect", scores.Aspect);
+			//SmartDashboard.putNumber("Aspect", scores.Aspect);
 			scores.Area = AreaScore(largestParticle);
-			SmartDashboard.putNumber("Area", scores.Area);
+			//SmartDashboard.putNumber("Area", scores.Area);
 			boolean isTote = scores.Aspect > SCORE_MIN && scores.Area > SCORE_MIN;
 
 			//Send distance and tote status to dashboard. The bounding rect, particularly the horizontal center (left - right) may be useful for rotating/driving towards a tote
@@ -242,7 +242,8 @@ public class Vision {
 			distanceFeetTemp = computeDistance(binaryFrame, largestParticle);
 			SmartDashboard.putNumber("Distance (Temp)", distanceFeetTemp);
 			SmartDashboard.putNumber("Distance (in) (Temp)", distanceFeetTemp * 12.0);
-			SmartDashboard.putNumber("Launch Angle (Temp)", launchAngle(distanceFeetTemp)); //1 ft = 0.3048 m
+			SmartDashboard.putString("Launch Angle (Test)", Double.toString(launchAngle(distanceFeetTemp))); //1 ft = 0.3048 m
+			//SmartDashboard.putString("Launch Angle (Test)", "test1");
 			errorAimingX = computeErrorAimingX(binaryFrame, largestParticle);
 			
 			//Bounding rectangle params
@@ -266,7 +267,8 @@ public class Vision {
 			
 			SmartDashboard.putNumber("Distance (Temp)", distanceFeetTemp);
 			SmartDashboard.putNumber("Distance (in) (Temp)", distanceFeetTemp * 12.0);
-			SmartDashboard.putNumber("Launch Angle (Temp)", launchAngle(distanceFeetTemp)); //1 ft = 0.3048 m
+			SmartDashboard.putString("Launch Angle (Test)", Double.toString(launchAngle(distanceFeetTemp))); //1 ft = 0.3048 m
+			//SmartDashboard.putString("Launch Angle (Test)", "test2");
 			
 			/*distanceFeet = 0;
 			SmartDashboard.putNumber("Distance", distanceFeet);
@@ -365,6 +367,8 @@ public class Vision {
   	}
  	
  	double computeErrorAimingX (Image image, ParticleReport report) {
+ 		double cameraOffset = -0.05;
+ 		
   		NIVision.GetImageSizeResult size = NIVision.imaqGetImageSize(image);
   		double imageWidthPixels = size.width;
   		
@@ -377,7 +381,7 @@ public class Vision {
   		double leftAiming = (leftPixels - imageWidthPixels/2.0)/(imageWidthPixels/2.0);
   		double rightAiming = (rightPixels - imageWidthPixels/2.0)/(imageWidthPixels/2.0);
   		
-  		double centerAiming = (leftAiming+rightAiming)/2.0;
+  		double centerAiming = (leftAiming+rightAiming)/2.0 + cameraOffset;
   		
   		SmartDashboard.putNumber("centerPixels", centerPixels);
   		SmartDashboard.putNumber("centerAiming", centerAiming);
@@ -388,16 +392,18 @@ public class Vision {
  	//calculate the angle the encoder should be
     public double launchAngle(double distanceFt) {
     	final double g = 9.81; 	//acceleration due to gravity. (m/s^2)
-    	double distanceM; //distance in meters
+    	double distanceM = distanceFt/3.281; //distance in meters
     	
        //constants
-    	double v = 6.26; 		//initial velocity. (m/s)	Roughly 14 mph = 6.26 m/s
-    	double height = 7; 		//height of target. (m)
-    	
-    	distanceM = distanceFt/3.281;
+    	double v = 8.686; 		//initial velocity. (m/s)	Roughly 14 mph = 6.26 m/s
+    	double heightM = 2.311; 		//height of target. (m)
     	
        //optimum launch angle so that ball passes through target at peak of trajectory
-    	double launchAngle = Math.atan( (Math.pow(v, 2) + Math.sqrt( Math.pow(v, 4) - g*(g*Math.pow(distanceM,2) + 2*height*Math.pow(v,2)) ))/(g*distanceM) );
+    	/*SmartDashboard.putString("Square Root Argument", Double.toString(Math.pow(v, 4) - g*(g*Math.pow(distanceM,2) + 2*heightM*Math.pow(v,2)) ));
+    	SmartDashboard.putString("Denominator Argument", Double.toString(g*distanceM));
+    	SmartDashboard.putString("Arctangent Argument", Double.toString((Math.pow(v, 2) - Math.sqrt( Math.pow(v, 4) - g*(g*Math.pow(distanceM,2) + 2*heightM*Math.pow(v,2)) ))/(g*distanceM)));
+    	SmartDashboard.putString("Arctangent Result", Double.toString(Math.atan( (Math.pow(v, 2) - Math.sqrt( Math.pow(v, 4) - g*(g*Math.pow(distanceM,2) + 2*heightM*Math.pow(v,2)) ))/(g*distanceM) )));*/
+    	double launchAngle = Math.atan( (Math.pow(v, 2) - Math.sqrt( Math.pow(v, 4) - g*(g*Math.pow(distanceM,2) + 2*heightM*Math.pow(v,2)) ))/(g*distanceM) );
     	return launchAngle*180.0/Math.PI;
     }
   		

@@ -11,6 +11,8 @@ import org.usfirst.frc.team4804.robot.commands.CannonWheelLaunch;
 import org.usfirst.frc.team4804.robot.commands.CannonWheelLoad;
 import org.usfirst.frc.team4804.robot.commands.CannonWheelStop;
 import org.usfirst.frc.team4804.robot.commands.DriveToggle;
+import org.usfirst.frc.team4804.robot.commands.Launch;
+import org.usfirst.frc.team4804.robot.commands.Load;
 import org.usfirst.frc.team4804.robot.commands.TargetingAuto;
 import org.usfirst.frc.team4804.robot.commands.TargetingManual;
 import org.usfirst.frc.team4804.robot.commands.VisionToggle;
@@ -126,15 +128,18 @@ public class OI {
 			driverController.getAButton().whenPressed(new DriveToggle());
 			driverController.getBButton().whenPressed(new VisionToggle());
 			
-			operatorController.getLeftBumper().whenPressed(new CannonWheelLoad());
-			operatorController.getRightBumper().whenPressed(new CannonWheelLaunch());
-			operatorController.getYButton().whenPressed(new CannonWheelStop());
-			operatorController.getAButton().whenPressed(new CannonPusherCenter());
-			operatorController.getBButton().whenPressed(new CannonPusherReverse()); //have this automatically do that
+			//operatorController.getLeftBumper().whenPressed(new CannonWheelLoad());
+			//operatorController.getRightBumper().whenPressed(new CannonWheelLaunch());
+			//operatorController.getAButton().whenPressed(new CannonPusherCenter());
+			//operatorController.getBButton().whenPressed(new CannonPusherReverse()); //have this automatically do that
 			
-			SmartDashboard.putData("Pusher Forward", new CannonPusherForward());
+			operatorController.getLeftBumper().whenPressed(new Load());
+			operatorController.getAButton().whenPressed(new Launch());
+			operatorController.getYButton().whenPressed(new CannonWheelStop());
+			
+			/*SmartDashboard.putData("Pusher Forward", new CannonPusherForward());
 			SmartDashboard.putData("Pusher Center", new CannonPusherCenter());
-			SmartDashboard.putData("Pusher Reverse", new CannonPusherReverse());
+			SmartDashboard.putData("Pusher Reverse", new CannonPusherReverse());*/
 			break;
 		
 		case OLD_TALON_TANK_MODE:

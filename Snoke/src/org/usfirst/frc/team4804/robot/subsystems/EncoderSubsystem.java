@@ -22,19 +22,20 @@ public class EncoderSubsystem extends Subsystem {
 	private DigitalInput inputB = new DigitalInput(OI.CANNON_ENCODER_CHANNEL_B);*/
 	
    //constants
-	public final double DEGREES_PER_PULSE = 1.0/5.92; //360.0 / 497.0; //7 encoder pulses per 1 encoder rev, gearbox reduction is 71:1 ratio; 7*71=497
+	public final double DEGREES_PER_PULSE = 360.0 / (4.0*497.0); //1.0/5.52 //7 encoder pulses per 1 encoder rev, gearbox reduction is 71:1 ratio; 7*71=497
 	public final double TRIGGER_TOLERANCE = 0.05;
 	public final double POSITION_TOLERANCE = 5.0;
 	public final double POSITION_RANGE_DEG = 137.0;
-	public final double POSITION_MAX_DEG = 90.0;
-	public final double POSITION_MIN_DEG = -42.0; //degrees below horizontal; need to measure this value
-	public final double PULSES_PER_DEGREE = 5.92;
+	public final double POSITION_MAX_DEG = 101.0;
+	public final double POSITION_MIN_DEG = -38.0; //degrees below horizontal; need to measure this value
+	public final double PULSES_PER_DEGREE = 5.52;
 	public final double SPEED_TOLERANCE = 0.03;
 	public static double SPEED_MAX = 0.4;
 	
 	double targetPositionDeg = -45.0; //degrees
 	boolean calibrated = false;
 	public static boolean auto = false;
+	boolean manualTarget = false;
 	
 	public double p, i, d;
 	
@@ -52,14 +53,17 @@ public class EncoderSubsystem extends Subsystem {
 		super();
 		
 		//initialize the CANTalon PID stuff
-		p = 7;
-		i = 0;
-		d = 750;
+		p = 2;
+		i = 0.01;
+		d = 200;
 		Robot.cannonEncoderMotor.setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);
 		Robot.cannonEncoderMotor.changeControlMode(CANTalon.TalonControlMode.Position);
 		setPID(p, i, d);
 		SmartDashboard.putNumber("Enc Target angle", targetPositionDeg);
-		Robot.cannonEncoderMotor.configMaxOutputVoltage(9.0);
+		SmartDashboard.putBoolean("Enc manualTarget", manualTarget);
+		Robot.cannonEncoderMotor.configMaxOutputVoltage(12.0);
+		Robot.cannonEncoderMotor.setAllowableClosedLoopErr(2);
+		Robot.cannonEncoderMotor.enableBrakeMode(true);
 	}
 	
 	// Default command
@@ -81,7 +85,7 @@ public class EncoderSubsystem extends Subsystem {
     
     public double getMotorPositionPulses() {
 		SmartDashboard.putNumber("EncPosition", Robot.cannonEncoderMotor.getEncPosition());
-		return Robot.cannonEncoderMotor.getEncPosition();
+		return (double)Robot.cannonEncoderMotor.getEncPosition();
 	}
     
     public void setMotorPositionPulses(double pulses) {
@@ -89,14 +93,28 @@ public class EncoderSubsystem extends Subsystem {
     }
     
 	public double getTargetPositionDeg() {
-		if(Robot.vision.distanceFeet != 0) {
-			targetPositionDeg = Robot.vision.launchAngle( Robot.vision.distanceFeet * Math.cos(toDeg(getMotorPositionPulses())) ); //horizontal distance
-		} else {
-			targetPositionDeg = 38.0;
+		manualTarget = SmartDashboard.getBoolean("Enc manualTarget");
+		if(manualTarget) {
+			targetPositionDeg = SmartDashboard.getNumber("Enc Target angle");
+		}else{
+			//auto target
+			if(Robot.vision.distanceFeet != 0 && Robot.driveTrainSubsystem.centered) {
+				targetPositionDeg = Robot.vision.launchAngle( Robot.vision.distanceFeet * Math.cos(toDeg(getMotorPositionPulses())*Math.PI/180) ); //horizontal distance
+			} else {
+				targetPositionDeg = 38.0;
+			}
+			
+			/*if(targetPositionDeg>50.0) {
+				targetPositionDeg = 50.0;
+			}
+			if(targetPositionDeg<25.0) {
+				targetPositionDeg = 25.0;
+			}*/
+			
+			SmartDashboard.putNumber("Enc Target angle", targetPositionDeg);
+			//targetPositionDeg = SmartDashboard.getNumber("Enc Target angle");
+			//SmartDashboard.putNumber("Enc Target angle", targetPositionDeg);
 		}
-		SmartDashboard.putNumber("Enc Target angle", targetPositionDeg);
-		//targetPositionDeg = SmartDashboard.getNumber("Enc Target angle");
-		//SmartDashboard.putNumber("Enc Target angle", targetPositionDeg);
 		return targetPositionDeg;
 	}
     

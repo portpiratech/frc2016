@@ -36,13 +36,13 @@ public class VisionSubsystem extends Subsystem {
 	}
 	
 	public void frameProcess() {
-		for(int i = 0; i<10; i++) {
+		//for(int i = 0; i<10; i++) {
 		//if(System.currentTimeMillis() - lastFrameProcessTimeMs >= captureIntervalMs) {
 			Robot.vision.frameProcess();
 			Timer.delay(0.1);
 			//lastFrameProcessTimeMs = System.currentTimeMillis();
 		//}
-		}
+		//}
 	}
 	
 	public void frameAutoDisplay() {
