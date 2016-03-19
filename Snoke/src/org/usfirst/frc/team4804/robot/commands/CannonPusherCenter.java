@@ -15,6 +15,7 @@ public class CannonPusherCenter extends Command {
     public CannonPusherCenter() {
         // Use requires() here to declare subsystem dependencies
     	requires(Robot.pusherSubsystem);
+    	setInterruptible(true);
     }
 
     // Called just before this Command runs the first time

@@ -130,7 +130,7 @@ public class OI {
 			operatorController.getRightBumper().whenPressed(new CannonWheelLaunch());
 			operatorController.getYButton().whenPressed(new CannonWheelStop());
 			operatorController.getAButton().whenPressed(new CannonPusherCenter());
-			//operatorController.getBButton().whenPressed(new CannonPusherReverse()); //have this automatically do that
+			operatorController.getBButton().whenPressed(new CannonPusherReverse()); //have this automatically do that
 			
 			SmartDashboard.putData("Pusher Forward", new CannonPusherForward());
 			SmartDashboard.putData("Pusher Center", new CannonPusherCenter());

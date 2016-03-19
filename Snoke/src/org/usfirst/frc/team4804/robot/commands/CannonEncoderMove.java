@@ -13,6 +13,7 @@ public class CannonEncoderMove extends Command {
     public CannonEncoderMove() {
         // Use requires() here to declare subsystem dependencies
         requires(Robot.encoderSubsystem);
+        setInterruptible(true);
     }
 
     // Called just before this Command runs the first time
