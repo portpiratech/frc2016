@@ -4,22 +4,19 @@ import org.usfirst.frc.team4804.robot.commands.CameraUpdate;
 import org.usfirst.frc.team4804.robot.commands.CannonPistonExtend;
 import org.usfirst.frc.team4804.robot.commands.CannonPistonFire;
 import org.usfirst.frc.team4804.robot.commands.CannonPistonRetract;
-import org.usfirst.frc.team4804.robot.commands.CannonPusherCenter;
-import org.usfirst.frc.team4804.robot.commands.CannonPusherForward;
-import org.usfirst.frc.team4804.robot.commands.CannonPusherReverse;
 import org.usfirst.frc.team4804.robot.commands.CannonWheelLaunch;
 import org.usfirst.frc.team4804.robot.commands.CannonWheelLoad;
 import org.usfirst.frc.team4804.robot.commands.CannonWheelStop;
 import org.usfirst.frc.team4804.robot.commands.DriveToggle;
+import org.usfirst.frc.team4804.robot.commands.EncoderToggle;
 import org.usfirst.frc.team4804.robot.commands.Launch;
 import org.usfirst.frc.team4804.robot.commands.Load;
+import org.usfirst.frc.team4804.robot.commands.PositioningInit;
 import org.usfirst.frc.team4804.robot.commands.TargetingAuto;
 import org.usfirst.frc.team4804.robot.commands.TargetingManual;
 import org.usfirst.frc.team4804.robot.commands.VisionToggle;
 
 import com.portpiratech.xbox360.XboxController;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -133,6 +130,8 @@ public class OI {
 			//operatorController.getAButton().whenPressed(new CannonPusherCenter());
 			//operatorController.getBButton().whenPressed(new CannonPusherReverse()); //have this automatically do that
 			
+			operatorController.getBButton().whenPressed(new EncoderToggle());
+			operatorController.getXButton().whenPressed(new PositioningInit());
 			operatorController.getLeftBumper().whenPressed(new Load());
 			operatorController.getAButton().whenPressed(new Launch());
 			operatorController.getYButton().whenPressed(new CannonWheelStop());
