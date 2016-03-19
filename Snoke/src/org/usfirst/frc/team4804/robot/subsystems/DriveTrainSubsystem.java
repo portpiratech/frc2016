@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4804.robot.subsystems;
 
 import org.usfirst.frc.team4804.robot.Robot;
+import org.usfirst.frc.team4804.robot.RobotModes;
 import org.usfirst.frc.team4804.robot.commands.DriveCommand;
 
 import com.portpiratech.xbox360.XboxController;
@@ -51,11 +52,13 @@ public class DriveTrainSubsystem extends PIDSubsystem {
     		
     	switch(side) { //CANTalons are hooked up pos-pos && neg-neg
     		case "L":
-    			Robot.tankDriveLeft.set(speed);
+    			if(Robot.currentMode == RobotModes.NEW_ROBOT_MODE) Robot.tankDriveLeft.set(-speed);
+    			if(Robot.currentMode == RobotModes.TEST_ROBOT_MODE) Robot.tankDriveLeftTest.set(-speed);
     			SmartDashboard.putNumber("Drive train left:", -speed);
     			break;
     		case "R": 
-    			Robot.tankDriveRight.set(-speed);
+    			if(Robot.currentMode == RobotModes.NEW_ROBOT_MODE) Robot.tankDriveRight.set(speed);
+    			if(Robot.currentMode == RobotModes.TEST_ROBOT_MODE) Robot.tankDriveRightTest.set(speed);
     			SmartDashboard.putNumber("Drive train right:", speed);
     			break;
     	}
@@ -69,7 +72,7 @@ public class DriveTrainSubsystem extends PIDSubsystem {
     	
     	switch(driveSetting){
     	case 0:
-    		tankDrive(xbox.getLeftStickYAxis(), xbox.getRightStickYAxis());
+    		tankDrive(xbox.getLeftStickYAxis(), xbox.getRightStickYAxis(), xbox.getDPad());
     		SmartDashboard.putString("Drive Setting", "Tank Drive");
     		break;
     	case 1:
@@ -87,7 +90,7 @@ public class DriveTrainSubsystem extends PIDSubsystem {
      * Changes the drive mode. 0=tank, 1=jonny, 2=tommy.
      */
     public void toggleDriveSetting(){ //mapped to A button on driver's controller
-    	driveSetting++;
+    	driveSetting += 2;
     	if (driveSetting > 2){
     		driveSetting = 0;
     	}
@@ -119,9 +122,31 @@ public class DriveTrainSubsystem extends PIDSubsystem {
      * @param leftY Left joystick's y-value. Speed in range [-1,1] controlling the left motors
      * @param rightY Right joystick's y-value. Speed in range [-1,1] controlling the right motors
      */
-    public void tankDrive(double leftY, double rightY) {
-    	setMotor("L", leftY*driveSpeed);
-    	setMotor("R", rightY*driveSpeed);
+    public void tankDrive(double leftY, double rightY, int dpad) {
+    	if(dpad == -1) {
+	    	setMotor("L", leftY*driveSpeed);
+	    	setMotor("R", rightY*driveSpeed);
+    	} else{
+			switch(dpad){ //default dpad directions (perfectly straight, back, cw, ccw);
+			  //negative is forward specifically here... for some reason...
+			case 0: //forward
+				setMotor("L", -driveSpeed*dpadMult);
+				setMotor("R", -driveSpeed*dpadMult);
+				break;
+			case 2: //cw
+				setMotor("L", -driveSpeed*dpadMult);
+				setMotor("R", driveSpeed*dpadMult);
+				break;
+			case 4: //backward
+				setMotor("L", driveSpeed*dpadMult);
+				setMotor("R", driveSpeed*dpadMult);
+				break;
+			case 6: //ccw
+				setMotor("L", driveSpeed*dpadMult);
+				setMotor("R", -driveSpeed*dpadMult);
+				break;
+			}
+    	}
     }
     
     // uses one joystick, left stick y-axis for magnitude, x-axis for direction. car style

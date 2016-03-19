@@ -23,6 +23,7 @@ public class CannonWheelStop extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	Robot.cannonSubsystem.motorStop();
+    	Robot.pusherSubsystem.positionReverse();
 
     	// set rumble
     	Robot.oi.operatorController.setRumble(RumbleType.kLeftRumble, (float)0);

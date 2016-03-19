@@ -145,6 +145,8 @@ public class Vision {
 	 * Processes the camera frame
 	 */
 	public void frameProcess() {
+		double distanceFeetTemp;
+		
 		if(System.currentTimeMillis() - lastFrameProcessTimeMs < captureIntervalMs) {
 			return;
 		}
@@ -197,7 +199,7 @@ public class Vision {
 		numParticles = NIVision.imaqCountParticles(binaryFrame, 1);
 		SmartDashboard.putNumber("Filtered particles", numParticles);
 
-		if(numParticles > 1) {
+		if(numParticles >= 1) {
 			
 			//Measure particles and sort by particle size
 			Vector<ParticleReport> particles = new Vector<ParticleReport>();
@@ -237,10 +239,10 @@ public class Vision {
 
 			//Send distance and tote status to dashboard. The bounding rect, particularly the horizontal center (left - right) may be useful for rotating/driving towards a tote
 			SmartDashboard.putBoolean("IsTote", isTote);
-			distanceFeet = computeDistance(binaryFrame, largestParticle);
-			SmartDashboard.putNumber("Distance", distanceFeet);
-			SmartDashboard.putNumber("Distance (in)", distanceFeet * 12.0);
-			SmartDashboard.putNumber("Launch Angle", launchAngle(distanceFeet*0.3048)); //1 ft = 0.3048 m
+			distanceFeetTemp = computeDistance(binaryFrame, largestParticle);
+			SmartDashboard.putNumber("Distance (Temp)", distanceFeetTemp);
+			SmartDashboard.putNumber("Distance (in) (Temp)", distanceFeetTemp * 12.0);
+			SmartDashboard.putNumber("Launch Angle (Temp)", launchAngle(distanceFeetTemp)); //1 ft = 0.3048 m
 			errorAimingX = computeErrorAimingX(binaryFrame, largestParticle);
 			
 			//Bounding rectangle params
@@ -260,9 +262,26 @@ public class Vision {
 			drawRectangle(top, left, width, height, color, 4, frame);
 		} else {
 			SmartDashboard.putBoolean("IsTote", false);
+			distanceFeetTemp = distanceFeet;
+			
+			SmartDashboard.putNumber("Distance (Temp)", distanceFeetTemp);
+			SmartDashboard.putNumber("Distance (in) (Temp)", distanceFeetTemp * 12.0);
+			SmartDashboard.putNumber("Launch Angle (Temp)", launchAngle(distanceFeetTemp)); //1 ft = 0.3048 m
+			
+			/*distanceFeet = 0;
+			SmartDashboard.putNumber("Distance", distanceFeet);
+			SmartDashboard.putNumber("Distance (in)", distanceFeet * 12.0);
+			SmartDashboard.putNumber("Launch Angle", launchAngle(distanceFeet*0.3048)); //1 ft = 0.3048 m
+			errorAimingX = 0;*/
 		}
 		
 		CameraServer.getInstance().setImage(frame);
+		if(Math.abs(distanceFeet-distanceFeetTemp) > 0) {
+			distanceFeet = distanceFeetTemp;
+			SmartDashboard.putNumber("Distance", distanceFeet);
+			SmartDashboard.putNumber("Distance (in)", distanceFeet * 12.0);
+			SmartDashboard.putNumber("Launch Angle", launchAngle(distanceFeet*0.3048)); //1 ft = 0.3048 m
+		}
 		//Timer.delay(0.1);				// wait for a motor update time
 	}
 	
@@ -367,17 +386,19 @@ public class Vision {
  	}
  	
  	//calculate the angle the encoder should be
-    public double launchAngle(double distance) {
+    public double launchAngle(double distanceFt) {
     	final double g = 9.81; 	//acceleration due to gravity. (m/s^2)
+    	double distanceM; //distance in meters
     	
        //constants
     	double v = 6.26; 		//initial velocity. (m/s)	Roughly 14 mph = 6.26 m/s
-    	double height = Robot.visionSubsystem.cameraHeightMeters; 		//height of target. (m)		On old robot, roughly 63 inches
+    	double height = 7; 		//height of target. (m)
+    	
+    	distanceM = distanceFt/3.281;
     	
        //optimum launch angle so that ball passes through target at peak of trajectory
-    	double launchAngle = Math.atan( (Math.pow(v, 2) + Math.sqrt( Math.pow(v, 4) - g*(g*Math.pow(distance,2) + 2*height*Math.pow(v,2)) ))/
-    			(g*distance) );
-    	return launchAngle;
+    	double launchAngle = Math.atan( (Math.pow(v, 2) + Math.sqrt( Math.pow(v, 4) - g*(g*Math.pow(distanceM,2) + 2*height*Math.pow(v,2)) ))/(g*distanceM) );
+    	return launchAngle*180.0/Math.PI;
     }
   		
   	float color(int red, int green, int blue) {

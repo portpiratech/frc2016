@@ -7,6 +7,7 @@ import org.usfirst.frc.team4804.robot.commands.CannonEncoderMove;
 import com.portpiratech.xbox360.XboxController;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -21,19 +22,19 @@ public class EncoderSubsystem extends Subsystem {
 	private DigitalInput inputB = new DigitalInput(OI.CANNON_ENCODER_CHANNEL_B);*/
 	
    //constants
-	public final double DEGREES_PER_PULSE = 360.0 / 497.0; //7 encoder pulses per 1 encoder rev, gearbox reduction is 71:1 ratio; 7*71=497
+	public final double DEGREES_PER_PULSE = 1.0/5.92; //360.0 / 497.0; //7 encoder pulses per 1 encoder rev, gearbox reduction is 71:1 ratio; 7*71=497
 	public final double TRIGGER_TOLERANCE = 0.05;
 	public final double POSITION_TOLERANCE = 5.0;
 	public final double POSITION_RANGE_DEG = 137.0;
 	public final double POSITION_MAX_DEG = 90.0;
-	public final double POSITION_OFFSET_DEG = 47.0; //degrees below horizontal; need to measure this value
-	public final double PULSES_PER_DEGREE = 800.0/POSITION_RANGE_DEG;
+	public final double POSITION_MIN_DEG = -42.0; //degrees below horizontal; need to measure this value
+	public final double PULSES_PER_DEGREE = 5.92;
 	public final double SPEED_TOLERANCE = 0.03;
-	public double SPEED_MAX = 0.4;
+	public static double SPEED_MAX = 0.4;
 	
-	double targetPositionDeg = 0; //degrees
+	double targetPositionDeg = -45.0; //degrees
 	boolean calibrated = false;
-	public boolean auto = false;
+	public static boolean auto = false;
 	
 	public double p, i, d;
 	
@@ -51,23 +52,25 @@ public class EncoderSubsystem extends Subsystem {
 		super();
 		
 		//initialize the CANTalon PID stuff
-		p = 0.1;
-		i = 0.001;
-		d = 0.3;
-		Robot.cannonEncoderMotor.changeControlMode(CANTalon.TalonControlMode.Position);
+		p = 7;
+		i = 0;
+		d = 750;
 		Robot.cannonEncoderMotor.setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);
-		Robot.cannonEncoderMotor.setPID(p, i, d);
+		Robot.cannonEncoderMotor.changeControlMode(CANTalon.TalonControlMode.Position);
+		setPID(p, i, d);
+		SmartDashboard.putNumber("Enc Target angle", targetPositionDeg);
+		Robot.cannonEncoderMotor.configMaxOutputVoltage(9.0);
 	}
 	
 	// Default command
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        //setDefaultCommand(new CannonEncoderMove());
-    	setDefaultCommand(new CannonEncoderMove());
+        setDefaultCommand(new CannonEncoderMove());
     }
     
     //METHODS
 	
+    //POSITION/PID
     public double toDeg(double pulses) {
     	return pulses*DEGREES_PER_PULSE;
     }
@@ -82,12 +85,18 @@ public class EncoderSubsystem extends Subsystem {
 	}
     
     public void setMotorPositionPulses(double pulses) {
-    	Robot.cannonEncoderMotor.setEncPosition((int)pulses);
+    	Robot.cannonEncoderMotor.setPosition((int)pulses);
     }
     
 	public double getTargetPositionDeg() {
-		targetPositionDeg = Robot.vision.launchAngle( Robot.vision.distanceFeet * Math.cos(toDeg(getMotorPositionPulses())) ); //horizontal distance
-		SmartDashboard.putNumber("Target angle", targetPositionDeg);
+		if(Robot.vision.distanceFeet != 0) {
+			targetPositionDeg = Robot.vision.launchAngle( Robot.vision.distanceFeet * Math.cos(toDeg(getMotorPositionPulses())) ); //horizontal distance
+		} else {
+			targetPositionDeg = 38.0;
+		}
+		SmartDashboard.putNumber("Enc Target angle", targetPositionDeg);
+		//targetPositionDeg = SmartDashboard.getNumber("Enc Target angle");
+		//SmartDashboard.putNumber("Enc Target angle", targetPositionDeg);
 		return targetPositionDeg;
 	}
     
@@ -99,16 +108,25 @@ public class EncoderSubsystem extends Subsystem {
     	SmartDashboard.putNumber("EncPosition", Robot.cannonEncoderMotor.getEncPosition());
     	SmartDashboard.putNumber("EncVelocity", Robot.cannonEncoderMotor.getEncVelocity());
     	
+       //limit switch check
     	//check if encoder is hitting bottom (being reset)
     	if (Robot.cannonEncoderMotor.isRevLimitSwitchClosed()) {
-    		Robot.cannonEncoderMotor.setEncPosition((int) (-POSITION_OFFSET_DEG*PULSES_PER_DEGREE));
+    		SmartDashboard.putString("Is Rev Lim Closed?", "Yes");
+    		setMotorPositionPulses(toPulses(POSITION_MIN_DEG));
+    		Timer.delay(0.03);
+    	}else{
+    		SmartDashboard.putString("Is Rev Lim Closed?", "No");
     	}
     	//check if encoder is hitting top
     	if (Robot.cannonEncoderMotor.isFwdLimitSwitchClosed()) {
-    		Robot.cannonEncoderMotor.setEncPosition((int) (POSITION_MAX_DEG*PULSES_PER_DEGREE));
+    		SmartDashboard.putString("Is Fwd Lim Closed?", "Yes");
+    		setMotorPositionPulses(toPulses(POSITION_MAX_DEG));
+    		Timer.delay(0.03);
+    	}else{
+    		SmartDashboard.putString("Is Fwd Lim Closed?", "No");
     	}
     	
-    	//move encoder
+       //move encoder
     	if (auto) {
     		setPID(p, i, d);
     		//moveTowardTargetPosition();
@@ -116,28 +134,31 @@ public class EncoderSubsystem extends Subsystem {
     		Robot.cannonEncoderMotor.set(getTargetPositionDeg()*PULSES_PER_DEGREE);
     	} else {
     		setPID(0, 0, 0);
-    		Robot.cannonEncoderMotor.changeControlMode(CANTalon.TalonControlMode.Speed);
+    		Robot.cannonEncoderMotor.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
     		moveXbox(xbox);
     	}
     }
     
-    //SPEED
-    
+    //SPEED/MANUAL
     /**
      * Moves the encoder based on xbox left stick Y axis value
-     * @param xbox
+     * @param xbox Xbox controller object
      */
     public void moveXbox(XboxController xbox) {
     	setMotorSpeed(xbox.getLeftStickYAxis());
     }
     
+    /**
+     * Reads encoder velocity
+     * @return Current speed of encoder
+     */
     public double getMotorSpeed() {
 		SmartDashboard.putNumber("EncVelocity", Robot.cannonEncoderMotor.getEncVelocity());
 		return Robot.cannonEncoderMotor.getEncVelocity();
 	}
 	
 	/**
-	 * Sets encoder motor to a given speed (scaled to SPEED_MAX in subsystem)
+	 * Sets encoder to a given speed (scaled to SPEED_MAX in subsystem)
 	 * @param speed Value between [-1,1] to control encoder
 	 */
 	private void setMotorSpeed(double speed) {
@@ -150,7 +171,7 @@ public class EncoderSubsystem extends Subsystem {
 		//targetPositionDeg = Robot.cannonEncoderMotor.getEncPosition();
 	}
     
-    //////////////------------------/*
+    //////////////------------------------------------------------------------------------------------------------------------/*
 	
     /**
      * Moves the encoder based on camera target position

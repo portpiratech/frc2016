@@ -2,6 +2,7 @@
 package org.usfirst.frc.team4804.robot.subsystems;
 
 import org.usfirst.frc.team4804.robot.Robot;
+import org.usfirst.frc.team4804.robot.RobotModes;
 
 import com.portpiratech.xbox360.XboxController;
 
@@ -52,7 +53,15 @@ public class CannonSubsystem extends Subsystem {
     
     public void setMotor(double speed) { //setMotor(String side, double speed)
     // single CANTalon:
-    	Robot.cannonLauncherMotors.set(speed);
+    	switch(Robot.currentMode) {
+    	case NEW_ROBOT_MODE:
+    		Robot.cannonLauncherMotors.set(speed);
+    		break;
+    	case TEST_ROBOT_MODE:
+    		Robot.cannonLauncherMotorsTest.set(speed);
+    		break;
+    	}
+    	
     	SmartDashboard.putNumber("Cannon Launcher Speed", speed);
     	
     // independent CANTalons:

@@ -1,27 +1,30 @@
 package org.usfirst.frc.team4804.robot.commands;
 
 import org.usfirst.frc.team4804.robot.Robot;
+import org.usfirst.frc.team4804.robot.subsystems.EncoderSubsystem;
 
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
  */
 public class TargetingManual extends Command {
 	
+	boolean drive_ = true;
+	boolean encoder_ = true;
+	boolean swivel_ = false;
+	
     public TargetingManual() {
-        requires(Robot.driveTrainSubsystem);
-        requires(Robot.encoderSubsystem);
+        if(drive_) requires(Robot.driveTrainSubsystem);
+        if(encoder_) requires(Robot.encoderSubsystem);
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.driveTrainSubsystem.enablePID(false);
-    	Robot.encoderSubsystem.auto = false;
-    	Robot.driveTrainSubsystem.enablePID(false);
+    	if(drive_) Robot.driveTrainSubsystem.enablePID(false);
+    	if(encoder_) EncoderSubsystem.auto = false;
     }
 
     // Called repeatedly when this Command is scheduled to run

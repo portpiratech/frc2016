@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4804.robot.commands;
 
 import org.usfirst.frc.team4804.robot.Robot;
+import org.usfirst.frc.team4804.robot.subsystems.EncoderSubsystem;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -36,7 +37,7 @@ public class TargetingAuto extends Command {
     		Robot.driveTrainSubsystem.enablePID(true);
     	}
     	if(encoder) {
-    		Robot.encoderSubsystem.auto = true;
+    		EncoderSubsystem.auto = true;
     		//Robot.encoderSubsystem.enablePID(true);
     	}
     }
@@ -51,10 +52,10 @@ public class TargetingAuto extends Command {
     	}
 	    if(encoder) {	
 	    	Robot.encoderSubsystem.move(Robot.oi.operatorController);
-	    	/*Robot.encoderSubsystem.p = SmartDashboard.getNumber("Enc const-Proportional (p)");
+	    	Robot.encoderSubsystem.p = SmartDashboard.getNumber("Enc const-Proportional (p)");
 	    	Robot.encoderSubsystem.i = SmartDashboard.getNumber("Enc const-Integral (i)");
 	    	Robot.encoderSubsystem.d = SmartDashboard.getNumber("Enc const-Derivative (d)");
-	    	Robot.encoderSubsystem.getPIDController().setPID(Robot.encoderSubsystem.p, Robot.encoderSubsystem.i, Robot.encoderSubsystem.d);*/
+	    	Robot.encoderSubsystem.setPID(Robot.encoderSubsystem.p, Robot.encoderSubsystem.i, Robot.encoderSubsystem.d);
 	    }
     }
 

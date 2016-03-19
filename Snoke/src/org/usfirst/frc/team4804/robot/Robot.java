@@ -29,6 +29,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * directory.
  */
 public class Robot extends IterativeRobot {
+   //Switching robot mode: NEW_ROBOT_MODE, TEST_ROBOT_MODE
+	public static RobotModes currentMode = RobotModes.TEST_ROBOT_MODE;
+	
+   //subsystem debug enable/disable settings
+	boolean vision_ = true;
+	boolean pusher_ = true;
+	boolean drive_ = true;
+	boolean encoder_ = true;
+	boolean swivel_ = false;
+	boolean cannon_ = true;
+		
   //MECHANICAL
    //Subsystems
 	public static CannonSubsystem cannonSubsystem;
@@ -56,9 +67,6 @@ public class Robot extends IterativeRobot {
 	public static CANTalon cannonEncoderMotor;
 	public static CANTalon cannonSwivelMotor;
 	public static Compressor cannonCompressor;
-	
-   //Switching robot mode
-	public static RobotModes currentMode = RobotModes.TEST_ROBOT_MODE;
 	
    //Autonomous command
     Command autonomousCommand;
@@ -92,6 +100,7 @@ public class Robot extends IterativeRobot {
         	swivelSubsystem = new SwivelSubsystem();
         	encoderSubsystem = new EncoderSubsystem();
         	driveTrainSubsystem = new DriveTrainSubsystem();
+        	//pusherSubsystem = new PusherSubsystem();
         	visionSubsystem = new VisionSubsystem();
         	
            //Motors controllers and objects
@@ -102,37 +111,31 @@ public class Robot extends IterativeRobot {
         	tankDriveRight = new CANTalon(OI.NEW_TANKDRIVE_RIGHT_ID);
         	tankDriveLeft = new CANTalon(OI.NEW_TANKDRIVE_LEFT_ID);
         	cannonSwivelMotor = new CANTalon(OI.CANNON_SWIVEL_MOTOR_ID);
-        	
-           //sensors
-        	/*limitLeft = new DigitalInput(OI.LIMIT_LEFT_ID);
-        	limitRight = new DigitalInput(OI.LIMIT_RIGHT_ID);
-        	limitBottom = new DigitalInput(OI.LIMIT_TOP_ID);*/
-        	
-           //SmartDashboard inputs? Need to test these
-        	/*DriveTrainSubsystem.DRIVE_SPEED = (double)SmartDashboard.getNumber("Drive Speed Max", DriveTrainSubsystem.DRIVE_SPEED);
-        	CannonSubsystem.LOAD_SPEED = (double)SmartDashboard.getNumber("Cannon Load Speed", CannonSubsystem.LOAD_SPEED);
-        	CannonSubsystem.LAUNCH_SPEED = (double)SmartDashboard.getNumber("Cannon Launch Speed", CannonSubsystem.LAUNCH_SPEED);*/
+        	//pusher = new Servo(OI.TEST_PUSHER_SERVO_CHANNEL);
         	break;
         	
         case TEST_ROBOT_MODE:
-        	//Subsystems:
-        	//cannonSubsystem = new CannonSubsystem();
-        	//swivelSubsystem = new SwivelSubsystem();
-        	//encoderSubsystem = new EncoderSubsystem();
-        	//driveTrainSubsystem = new DriveTrainSubsystem();
-        	pusherSubsystem = new PusherSubsystem();
-        	//visionSubsystem = new VisionSubsystem();
-        	
         	//Motor controllers and objects
-        	//tankDriveLeftTest = new Talon(OI.TEST_TANKDRIVE_LEFT_CHANNEL);
-        	//tankDriveRightTest = new Talon(OI.TEST_TANKDRIVE_RIGHT_CHANNEL);
-        	//cannonLauncherMotorsTest = new Talon(OI.TEST_LAUNCHER_CHANNEL);
-        	//cannonEncoderMotor = new CANTalon(OI.TEST_CANNON_ENCODER_ID);
-        	//cannonSwivelMotor = new CANTalon(OI.TEST_CANNON_SWIVEL_ID);
-        	pusher = new Servo(OI.TEST_PUSHER_SERVO_CHANNEL);
+        	if (drive_) tankDriveLeftTest = new Talon(OI.TEST_TANKDRIVE_LEFT_CHANNEL);
+        	if (drive_) tankDriveRightTest = new Talon(OI.TEST_TANKDRIVE_RIGHT_CHANNEL);
+        	if (cannon_) cannonLauncherMotorsTest = new Talon(OI.TEST_LAUNCHER_CHANNEL);
+        	if (encoder_) cannonEncoderMotor = new CANTalon(OI.TEST_CANNON_ENCODER_ID);
+        	if (swivel_) cannonSwivelMotor = new CANTalon(OI.TEST_CANNON_SWIVEL_ID);
+        	if (pusher_) pusher = new Servo(OI.TEST_PUSHER_SERVO_CHANNEL);
+        	
+        	//Subsystems:
+        	if (cannon_) cannonSubsystem = new CannonSubsystem();
+        	if (swivel_) swivelSubsystem = new SwivelSubsystem();
+        	if (encoder_) encoderSubsystem = new EncoderSubsystem();
+        	if (drive_) driveTrainSubsystem = new DriveTrainSubsystem();
+        	if (pusher_) pusherSubsystem = new PusherSubsystem();
+        	if (vision_) visionSubsystem = new VisionSubsystem();
         	break;
         	
         case OLD_TALON_TANK_MODE:
+        	//Subsystems:
+        	driveTrainSubsystem = new DriveTrainSubsystem();
+        	
            //Motors controllers and objects
         	tankDriveLeftOld = new Talon(1);
             tankDriveRightOld = new Talon(0);
@@ -169,12 +172,21 @@ public class Robot extends IterativeRobot {
         // continue until interrupted by another command, remove
         // this line or comment it out.
         if (autonomousCommand != null) autonomousCommand.cancel();
-        SmartDashboard.putNumber("Drive Speed Max", DriveTrainSubsystem.driveSpeed);
-    	SmartDashboard.putNumber("Cannon Load Speed", CannonSubsystem.LOAD_SPEED);
-    	SmartDashboard.putNumber("Cannon Launch Speed", CannonSubsystem.LAUNCH_SPEED);
-    	
-    	//SmartDashboard.putNumber("setEncPosition", Robot.cannonEncoderMotor.getEncPosition());
-    	SmartDashboard.putNumber("Encoder max speed", Robot.encoderSubsystem.SPEED_MAX);
+        
+        if(drive_) {
+        	SmartDashboard.putNumber("Drive Speed Max", DriveTrainSubsystem.driveSpeed);
+        }
+        
+        if(cannon_) {
+        	SmartDashboard.putNumber("Cannon Load Speed", CannonSubsystem.LOAD_SPEED);
+        	SmartDashboard.putNumber("Cannon Launch Speed", CannonSubsystem.LAUNCH_SPEED);
+    	}
+        
+    	if(encoder_) {
+	    	//SmartDashboard.putNumber("setEncPosition", Robot.cannonEncoderMotor.getEncPosition());
+	    	SmartDashboard.putNumber("Encoder max speed", EncoderSubsystem.SPEED_MAX);
+	    	SmartDashboard.putBoolean("Encoder auto?", EncoderSubsystem.auto);
+    	}
     }
 
     /**
@@ -182,7 +194,7 @@ public class Robot extends IterativeRobot {
      * You can use it to reset subsystems before shutting down.
      */
     public void disabledInit(){
-    	//disable rumble
+       //disable rumble
     	Robot.oi.operatorController.setRumble(RumbleType.kLeftRumble, (float)0);
     	Robot.oi.operatorController.setRumble(RumbleType.kRightRumble, (float)0);
     	Robot.oi.driverController.setRumble(RumbleType.kLeftRumble, (float)0);
@@ -194,13 +206,25 @@ public class Robot extends IterativeRobot {
      */
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
-        DriveTrainSubsystem.driveSpeed = (double)SmartDashboard.getNumber("Drive Speed Max");
-    	CannonSubsystem.LOAD_SPEED = (double)SmartDashboard.getNumber("Cannon Load Speed");
-    	CannonSubsystem.LAUNCH_SPEED = (double)SmartDashboard.getNumber("Cannon Launch Speed");
-    	
-    	//SmartDashboard.putNumber("setEncPosition", Robot.cannonEncoderMotor.getEncPosition());
-    	//Robot.cannonEncoderMotor.setEncPosition((int)SmartDashboard.getNumber("setEncPosition"));
-    	Robot.encoderSubsystem.SPEED_MAX = (double)SmartDashboard.getNumber("Encoder max speed");
+        if(drive_){
+        	DriveTrainSubsystem.driveSpeed = (double)SmartDashboard.getNumber("Drive Speed Max");
+        }
+        
+        if(cannon_){
+        	CannonSubsystem.LOAD_SPEED = (double)SmartDashboard.getNumber("Cannon Load Speed");
+        	CannonSubsystem.LAUNCH_SPEED = (double)SmartDashboard.getNumber("Cannon Launch Speed");
+        }
+        
+    	if(encoder_) {
+	    	//SmartDashboard.putNumber("EncPosition", Robot.cannonEncoderMotor.getEncPosition());
+	    	//Robot.cannonEncoderMotor.setEncPosition((int)SmartDashboard.getNumber("setEncPosition"));
+	    	EncoderSubsystem.SPEED_MAX = (double)SmartDashboard.getNumber("Encoder max speed");
+	    	EncoderSubsystem.auto = (boolean)SmartDashboard.getBoolean("Encoder auto?");
+	    	SmartDashboard.putNumber("EncPosition", Robot.cannonEncoderMotor.getEncPosition());
+	    	SmartDashboard.putNumber("EncVelocity", Robot.cannonEncoderMotor.getEncVelocity());
+	    	SmartDashboard.putBoolean("Enc Reverse Lim", Robot.cannonEncoderMotor.isRevLimitSwitchClosed());
+	    	SmartDashboard.putBoolean("Enc Forward Lim", Robot.cannonEncoderMotor.isFwdLimitSwitchClosed());
+    	}
     }
     
     /**

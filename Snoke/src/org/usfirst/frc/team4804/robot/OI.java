@@ -78,10 +78,10 @@ public class OI {
     public static final int SOLENOID2_PORT2 = 3; //DoubleSolenoid
     
     // PWM (Pulse Width Modulation--on roboRIO) Device Channels
-    public static final int TEST_TANKDRIVE_LEFT_CHANNEL = 0; //TalonSR
-    public static final int TEST_TANKDRIVE_RIGHT_CHANNEL = 1; //TalonSR
-    public static final int TEST_LAUNCHER_CHANNEL = 2; //TalonSR???
-    public static final int TEST_PUSHER_SERVO_CHANNEL = 4; //Servo
+    public static final int TEST_TANKDRIVE_LEFT_CHANNEL = 3; //TalonSR
+    public static final int TEST_TANKDRIVE_RIGHT_CHANNEL = 4; //TalonSR
+    public static final int TEST_LAUNCHER_CHANNEL = 1; //TalonSR???
+    public static final int TEST_PUSHER_SERVO_CHANNEL = 6; //Servo
     
     // DIO (Digital Input/Output--on roboRIO) Channels
     /*public static final int CANNON_ENCODER_CHANNEL_A = 0; // DigitalInput
@@ -121,6 +121,17 @@ public class OI {
 			break;
 		
 		case TEST_ROBOT_MODE:
+			driverController.getStart().whenPressed(new TargetingAuto());
+			driverController.getSelect().whenPressed(new TargetingManual());
+			driverController.getAButton().whenPressed(new DriveToggle());
+			driverController.getBButton().whenPressed(new VisionToggle());
+			
+			operatorController.getLeftBumper().whenPressed(new CannonWheelLoad());
+			operatorController.getRightBumper().whenPressed(new CannonWheelLaunch());
+			operatorController.getYButton().whenPressed(new CannonWheelStop());
+			operatorController.getAButton().whenPressed(new CannonPusherCenter());
+			//operatorController.getBButton().whenPressed(new CannonPusherReverse()); //have this automatically do that
+			
 			SmartDashboard.putData("Pusher Forward", new CannonPusherForward());
 			SmartDashboard.putData("Pusher Center", new CannonPusherCenter());
 			SmartDashboard.putData("Pusher Reverse", new CannonPusherReverse());

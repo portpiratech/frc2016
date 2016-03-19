@@ -7,6 +7,7 @@ import org.usfirst.frc.team4804.robot.commands.CannonPusherMove;
 import com.portpiratech.xbox360.XboxController;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
@@ -20,24 +21,31 @@ public class PusherSubsystem extends Subsystem {
 
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        //setDefaultCommand(new ExampleCommand());
-    	setDefaultCommand(new CannonPusherMove());
+    	//setDefaultCommand(new CannonPusherMove());
     }
     
     public void positionForward() {
+    	SmartDashboard.putNumber("Pusher Target", 1.0);
     	Robot.pusher.set(1.0);
     }
     
     public void positionReverse() {
+    	SmartDashboard.putNumber("Pusher Target", 0.0);
     	Robot.pusher.set(0.0);
     }
     
     public void positionCenter() {
+    	SmartDashboard.putNumber("Pusher Target", 0.5);
     	Robot.pusher.set(0.5);
     }
 
 	public void positionJoystick(XboxController xbox) {
-		Robot.pusher.set(0.5*(xbox.getRightStickXAxis()+1.0));
+		double position = xbox.getRightStickXAxis();
+		SmartDashboard.putNumber("Pusher Target", position);
+		if(position < 0.1) {
+			position = 0;
+		}
+		Robot.pusher.set(position);
 	}
 }
 

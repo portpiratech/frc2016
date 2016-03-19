@@ -23,8 +23,7 @@ public class CannonWheelLoad extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.pusherSubsystem.positionReverse();
-    	//Robot.cannonSubsystem.motorLoad();
+    	Robot.cannonSubsystem.motorLoad();
     	
     	// set rumble
     	//Robot.oi.operatorController.setRumble(RumbleType.kLeftRumble, (float)0.5);
