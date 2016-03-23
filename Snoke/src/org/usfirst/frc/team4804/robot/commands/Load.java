@@ -2,7 +2,6 @@
 package org.usfirst.frc.team4804.robot.commands;
 
 import org.usfirst.frc.team4804.robot.Robot;
-import org.usfirst.frc.team4804.robot.subsystems.EncoderSubsystem;
 
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -15,29 +14,25 @@ public class Load extends Command {
         // Use requires() here to declare subsystem dependencies
         requires(Robot.cannonSubsystem);
         requires(Robot.pusherSubsystem);
+        requires(Robot.visionSubsystem);
+        requires(Robot.encoderSubsystem);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.pusherSubsystem.positionReverse();
-    	Robot.cannonSubsystem.motorLoad();
-    	EncoderSubsystem.auto = false;
+    	Robot.pusherSubsystem.positionReverse(); //retract pusher
+    	Robot.cannonSubsystem.motorLoad(); //load cannon motors
+    	Robot.encoderSubsystem.setEncMode(false, true); //disable encoder locking so manual control can be used
+    	Robot.visionSubsystem.disableProcessing(); //disable processing to free up resources during loading
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.pusherSubsystem.positionReverse();
-    	Robot.cannonSubsystem.motorLoad();
-    	EncoderSubsystem.auto = false;
-    	
-    	// set rumble
-    	//Robot.oi.operatorController.setRumble(RumbleType.kLeftRumble, (float)0.5);
-    	//Robot.oi.operatorController.setRumble(RumbleType.kRightRumble, (float)0);
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+        return true;
     }
 
     // Called once after isFinished returns true

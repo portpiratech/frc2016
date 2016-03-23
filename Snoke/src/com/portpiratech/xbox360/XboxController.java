@@ -2,7 +2,6 @@ package com.portpiratech.xbox360;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Class which adds helper methods to better use an XBox Controller without having

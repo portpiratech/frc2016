@@ -30,7 +30,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends IterativeRobot {
    //Switching robot mode: NEW_ROBOT_MODE, TEST_ROBOT_MODE
-	public static RobotModes currentMode = RobotModes.TEST_ROBOT_MODE;
+	public static RobotModes currentMode = RobotModes.NEW_ROBOT_MODE;
 	
    //subsystem debug enable/disable settings
 	boolean vision_ = true;
@@ -39,6 +39,7 @@ public class Robot extends IterativeRobot {
 	boolean encoder_ = true;
 	boolean swivel_ = false;
 	boolean cannon_ = true;
+	boolean piston_ = false;
 		
   //MECHANICAL
    //Subsystems
@@ -94,24 +95,50 @@ public class Robot extends IterativeRobot {
         switch (currentMode){
         
         case NEW_ROBOT_MODE:
-           //Subsystems
-        	cannonSubsystem = new CannonSubsystem();
-        	pistonSubsystem = new PistonSubsystem();
-        	swivelSubsystem = new SwivelSubsystem();
-        	encoderSubsystem = new EncoderSubsystem();
-        	driveTrainSubsystem = new DriveTrainSubsystem();
-        	//pusherSubsystem = new PusherSubsystem();
-        	visionSubsystem = new VisionSubsystem();
+            //Motors controllers and objects
+        	if (drive_) {
+        		tankDriveRight = new CANTalon(OI.TANKDRIVE_RIGHT_ID);
+            	tankDriveLeft = new CANTalon(OI.TANKDRIVE_LEFT_ID);
+        	}
+        	if (cannon_) {
+        		cannonLauncherMotors = new CANTalon(OI.CANNON_LAUNCHER_ID);
+        	}
+        	if (piston_) {
+        		cannonCompressor = new Compressor(OI.PCM_ID);
+        		cannonCompressor.setClosedLoopControl(true);
+        	}
+        	if (encoder_) {
+        		cannonEncoderMotor = new CANTalon(OI.CANNON_ENCODER_ID);
+        	}
+        	if (swivel_) {
+        		cannonSwivelMotor = new CANTalon(OI.CANNON_SWIVEL_MOTOR_ID);
+        	}
+        	if (pusher_) {
+        		pusher = new Servo(OI.PUSHER_SERVO_CHANNEL);
+        	}
         	
-           //Motors controllers and objects
-        	cannonLauncherMotors = new CANTalon(OI.CANNON_LAUNCHER_ID);
-        	cannonCompressor = new Compressor(OI.PCM_ID);
-        	cannonCompressor.setClosedLoopControl(true);
-        	cannonEncoderMotor = new CANTalon(OI.CANNON_ENCODER_ID);
-        	tankDriveRight = new CANTalon(OI.NEW_TANKDRIVE_RIGHT_ID);
-        	tankDriveLeft = new CANTalon(OI.NEW_TANKDRIVE_LEFT_ID);
-        	cannonSwivelMotor = new CANTalon(OI.CANNON_SWIVEL_MOTOR_ID);
-        	//pusher = new Servo(OI.TEST_PUSHER_SERVO_CHANNEL);
+        	//Subsystems
+        	if (drive_) {
+        		driveTrainSubsystem = new DriveTrainSubsystem();
+        	}
+        	if (cannon_) {
+        		cannonSubsystem = new CannonSubsystem();
+        	}
+        	if (piston_) {
+        		pistonSubsystem = new PistonSubsystem();
+        	}
+        	if (encoder_) {
+        		encoderSubsystem = new EncoderSubsystem();
+        	}
+        	if (swivel_) {
+        		swivelSubsystem = new SwivelSubsystem();
+        	}
+        	if (pusher_) {
+        		pusherSubsystem = new PusherSubsystem();
+        	}
+        	if (vision_) {
+        		visionSubsystem = new VisionSubsystem();
+        	}
         	break;
         	
         case TEST_ROBOT_MODE:
@@ -130,15 +157,6 @@ public class Robot extends IterativeRobot {
         	if (drive_) driveTrainSubsystem = new DriveTrainSubsystem();
         	if (pusher_) pusherSubsystem = new PusherSubsystem();
         	if (vision_) visionSubsystem = new VisionSubsystem();
-        	break;
-        	
-        case OLD_TALON_TANK_MODE:
-        	//Subsystems:
-        	driveTrainSubsystem = new DriveTrainSubsystem();
-        	
-           //Motors controllers and objects
-        	tankDriveLeftOld = new Talon(1);
-            tankDriveRightOld = new Talon(0);
         	break;
         }
         
@@ -184,8 +202,8 @@ public class Robot extends IterativeRobot {
         
     	if(encoder_) {
 	    	//SmartDashboard.putNumber("setEncPosition", Robot.cannonEncoderMotor.getEncPosition());
-	    	SmartDashboard.putNumber("Encoder max speed", EncoderSubsystem.SPEED_MAX);
-	    	SmartDashboard.putBoolean("Encoder auto?", EncoderSubsystem.auto);
+	    	SmartDashboard.putNumber("Encoder max speed", Robot.encoderSubsystem.SPEED_MAX);
+	    	SmartDashboard.putBoolean("Encoder auto?", Robot.encoderSubsystem.encPID);
     	}
     }
 
@@ -218,8 +236,8 @@ public class Robot extends IterativeRobot {
     	if(encoder_) {
 	    	//SmartDashboard.putNumber("EncPosition", Robot.cannonEncoderMotor.getEncPosition());
 	    	//Robot.cannonEncoderMotor.setEncPosition((int)SmartDashboard.getNumber("setEncPosition"));
-	    	EncoderSubsystem.SPEED_MAX = (double)SmartDashboard.getNumber("Encoder max speed");
-	    	EncoderSubsystem.auto = (boolean)SmartDashboard.getBoolean("Encoder auto?");
+	    	Robot.encoderSubsystem.SPEED_MAX = (double)SmartDashboard.getNumber("Encoder max speed");
+	    	Robot.encoderSubsystem.encPID = (boolean)SmartDashboard.getBoolean("Encoder auto?");
 	    	SmartDashboard.putNumber("EncPosition", Robot.cannonEncoderMotor.getEncPosition());
 	    	SmartDashboard.putNumber("EncVelocity", Robot.cannonEncoderMotor.getEncVelocity());
 	    	SmartDashboard.putBoolean("Enc Reverse Lim", Robot.cannonEncoderMotor.isRevLimitSwitchClosed());

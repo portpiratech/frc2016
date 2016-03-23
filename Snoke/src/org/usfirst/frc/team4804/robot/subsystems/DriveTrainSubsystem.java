@@ -19,7 +19,7 @@ public class DriveTrainSubsystem extends PIDSubsystem {
 	public static double dpadMult = 0.25;		// multiplier for dpad speed controls.
 	
 	public static final double SPEED_TOLERANCE = 0.1; // can't be too close to 0
-	static int driveSetting = 2; //0 is tank, 1 is Jonnydrive, 2 is Tommydrive
+	static int driveSetting = 0; //0 is tank, 1 is Jonnydrive, 2 is Tommydrive
     public boolean centered = false;
 	
 	public double p, i, d;
@@ -31,7 +31,7 @@ public class DriveTrainSubsystem extends PIDSubsystem {
 		d = getPIDController().getD();
 		
 		getPIDController().setContinuous(false);
-		getPIDController().setAbsoluteTolerance(0.05);
+		getPIDController().setAbsoluteTolerance(0.01);
 	}
 
     public void initDefaultCommand() {
@@ -167,10 +167,10 @@ public class DriveTrainSubsystem extends PIDSubsystem {
 	    	if (true){                   //increments motor speeds for turning
 	    		leftMotorSpeed += -leftX;
 	        	rightMotorSpeed += leftX;
-	    	}else{
+	    	}/*else{
 	    		leftMotorSpeed += leftX;
 	        	rightMotorSpeed += -leftX;
-	    	}
+	    	}*/
 	    	
 	    	if (leftMotorSpeed > 1.0)  leftMotorSpeed =  1.0;  //fixes values from being out of bounds
 	    	if (leftMotorSpeed < -1.0) leftMotorSpeed = -1.0;
@@ -287,7 +287,7 @@ public class DriveTrainSubsystem extends PIDSubsystem {
     }
     
     //crude camera centering method
-    public void autoCenterCamera() {
+    /*public void autoCenterCamera() {
     	double error = Robot.vision.errorAimingX;
     	double speed = 0;
     	
@@ -298,7 +298,7 @@ public class DriveTrainSubsystem extends PIDSubsystem {
     	
     	setMotor("L", -speed);
 		setMotor("R", speed);
-    }
+    }*/
     
     //PID loop camera centering methods--use these!
     @Override
@@ -327,6 +327,21 @@ public class DriveTrainSubsystem extends PIDSubsystem {
 			getPIDController().disable();
 		}
 	}
+	
+	//PID constants
+	public void setPID(double p, double i, double d) {
+    	Robot.driveTrainSubsystem.p = p;
+    	Robot.driveTrainSubsystem.i = i;
+    	Robot.driveTrainSubsystem.d = d;
+    	Robot.driveTrainSubsystem.getPIDController().setPID(p, i, d);
+    }
+    
+    public void updatePID() {
+    	double p = SmartDashboard.getNumber("Drive const-Proportional (p)");
+    	double i = SmartDashboard.getNumber("Drive const-Integral (i)");
+    	double d = SmartDashboard.getNumber("Drive const-Derivative (d)");
+    	setPID(p, i, d);
+    }
 }
 
 

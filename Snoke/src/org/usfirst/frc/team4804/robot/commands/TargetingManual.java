@@ -1,7 +1,6 @@
 package org.usfirst.frc.team4804.robot.commands;
 
 import org.usfirst.frc.team4804.robot.Robot;
-import org.usfirst.frc.team4804.robot.subsystems.EncoderSubsystem;
 
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -24,7 +23,7 @@ public class TargetingManual extends Command {
     // Called just before this Command runs the first time
     protected void initialize() {
     	if(drive_) Robot.driveTrainSubsystem.enablePID(false);
-    	if(encoder_) EncoderSubsystem.auto = false;
+    	if(encoder_) Robot.encoderSubsystem.setEncMode(false, true); //disable auto-locking encoder
     }
 
     // Called repeatedly when this Command is scheduled to run

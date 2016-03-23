@@ -1,14 +1,8 @@
 package org.usfirst.frc.team4804.robot;
 
-import org.usfirst.frc.team4804.robot.commands.CameraUpdate;
-import org.usfirst.frc.team4804.robot.commands.CannonPistonExtend;
-import org.usfirst.frc.team4804.robot.commands.CannonPistonFire;
-import org.usfirst.frc.team4804.robot.commands.CannonPistonRetract;
-import org.usfirst.frc.team4804.robot.commands.CannonWheelLaunch;
-import org.usfirst.frc.team4804.robot.commands.CannonWheelLoad;
 import org.usfirst.frc.team4804.robot.commands.CannonWheelStop;
 import org.usfirst.frc.team4804.robot.commands.DriveToggle;
-import org.usfirst.frc.team4804.robot.commands.EncoderToggle;
+import org.usfirst.frc.team4804.robot.commands.EncoderSetting;
 import org.usfirst.frc.team4804.robot.commands.Launch;
 import org.usfirst.frc.team4804.robot.commands.Load;
 import org.usfirst.frc.team4804.robot.commands.PositioningInit;
@@ -58,10 +52,8 @@ public class OI {
 	public XboxController operatorController = new XboxController(OPERATOR_CONTROLLER_PORT);
     
     // CAN Device IDs
-    public static final int OLD_TANKDRIVE_LEFT_ID = 0; //Talon
-	public static final int OLD_TANKDRIVE_RIGHT_ID = 1; //Talon
-    public static final int NEW_TANKDRIVE_RIGHT_ID = 6; //CAN Talon SRX
-	public static final int NEW_TANKDRIVE_LEFT_ID = 3; //CAN Talon SRX
+    public static final int TANKDRIVE_RIGHT_ID = 6; //CAN Talon SRX
+	public static final int TANKDRIVE_LEFT_ID = 3; //CAN Talon SRX
 	public static final int CANNON_LAUNCHER_ID = 5; //CAN Talon SRX
 	public static final int CANNON_ENCODER_ID = 2; //CAN Talon SRX
     public static final int CANNON_SWIVEL_MOTOR_ID = 4; //CAN Talon SRX
@@ -77,6 +69,7 @@ public class OI {
     public static final int SOLENOID2_PORT2 = 3; //DoubleSolenoid
     
     // PWM (Pulse Width Modulation--on roboRIO) Device Channels
+    public static final int PUSHER_SERVO_CHANNEL = 6; //Servo
     public static final int TEST_TANKDRIVE_LEFT_CHANNEL = 3; //TalonSR
     public static final int TEST_TANKDRIVE_RIGHT_CHANNEL = 4; //TalonSR
     public static final int TEST_LAUNCHER_CHANNEL = 1; //TalonSR???
@@ -95,28 +88,21 @@ public class OI {
 		switch(Robot.currentMode) {
 		case NEW_ROBOT_MODE:
 		// Driver commands:
-			driverController.getAButton().whenPressed(new DriveToggle());
-			driverController.getBButton().whenPressed(new VisionToggle());
-			
 			driverController.getStart().whenPressed(new TargetingAuto());
 			driverController.getSelect().whenPressed(new TargetingManual());
-			//Left stick for driving, left + right stick when in tank drive
+			driverController.getAButton().whenPressed(new DriveToggle());
+			driverController.getBButton().whenPressed(new VisionToggle());
+			//left + right stick when in tank drive, left stick in tommy/jonny drive
 			
 		// Operator commands: Cannon/piston controls
-			operatorController.getLeftBumper().whenPressed(new CannonWheelLoad());
-			operatorController.getRightBumper().whenPressed(new CannonWheelLaunch());
-			
+			operatorController.getBButton().whenPressed(new EncoderSetting(!Robot.encoderSubsystem.encPID, true));
+			operatorController.getXButton().whenPressed(new PositioningInit());
+			operatorController.getLeftBumper().whenPressed(new Load());
+			operatorController.getAButton().whenPressed(new Launch());
 			operatorController.getYButton().whenPressed(new CannonWheelStop());
-			operatorController.getXButton().whenPressed(new CannonPistonFire()); //automatic
-			
-			operatorController.getStart().whenPressed(new CannonPistonExtend()); // TODO: rotate the servo
-			operatorController.getSelect().whenPressed(new CannonPistonRetract());
-			operatorController.getAButton().whenPressed(new CameraUpdate());
-			//right stick y axis used temporarily for controlling launch speed
-			//left stick y axis used temporarily for the encoder motor
+			//right stick to control encoder in manual mode
 			
 		// SmartDashboard commands?
-			//SmartDashboard.putData("Cannon Piston Extend", new CannonPistonFire());
 			break;
 		
 		case TEST_ROBOT_MODE:
@@ -130,7 +116,7 @@ public class OI {
 			//operatorController.getAButton().whenPressed(new CannonPusherCenter());
 			//operatorController.getBButton().whenPressed(new CannonPusherReverse()); //have this automatically do that
 			
-			operatorController.getBButton().whenPressed(new EncoderToggle());
+			operatorController.getBButton().whenPressed(new EncoderSetting(!Robot.encoderSubsystem.encPID, true));
 			operatorController.getXButton().whenPressed(new PositioningInit());
 			operatorController.getLeftBumper().whenPressed(new Load());
 			operatorController.getAButton().whenPressed(new Launch());
@@ -139,9 +125,6 @@ public class OI {
 			/*SmartDashboard.putData("Pusher Forward", new CannonPusherForward());
 			SmartDashboard.putData("Pusher Center", new CannonPusherCenter());
 			SmartDashboard.putData("Pusher Reverse", new CannonPusherReverse());*/
-			break;
-		
-		case OLD_TALON_TANK_MODE:
 			break;
 		}
 	}

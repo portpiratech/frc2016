@@ -3,7 +3,6 @@ package org.usfirst.frc.team4804.robot.subsystems;
 import org.usfirst.frc.team4804.robot.Robot;
 import org.usfirst.frc.team4804.robot.commands.VisionDisplay;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
@@ -39,7 +38,7 @@ public class VisionSubsystem extends Subsystem {
 		//for(int i = 0; i<10; i++) {
 		//if(System.currentTimeMillis() - lastFrameProcessTimeMs >= captureIntervalMs) {
 			Robot.vision.frameProcess();
-			Timer.delay(0.1);
+			//Timer.delay(0.1);
 			//lastFrameProcessTimeMs = System.currentTimeMillis();
 		//}
 		//}
@@ -47,5 +46,13 @@ public class VisionSubsystem extends Subsystem {
 	
 	public void frameAutoDisplay() {
 		Robot.vision.frameAutoDisplay();
+	}
+	
+	public void enableProcessing() {
+		visionProcessing = true;
+	}
+	
+	public void disableProcessing() {
+		visionProcessing = false;
 	}
 }

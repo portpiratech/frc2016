@@ -1,13 +1,12 @@
 package org.usfirst.frc.team4804.robot.commands;
 
 import org.usfirst.frc.team4804.robot.Robot;
-import org.usfirst.frc.team4804.robot.subsystems.EncoderSubsystem;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
- *
+ * Switch the robot into auto targeting mode
  */
 public class TargetingAuto extends Command {
 	
@@ -33,29 +32,31 @@ public class TargetingAuto extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	Robot.visionSubsystem.enableProcessing(); //make sure vision processing is enabled
     	if(drive) {
     		Robot.driveTrainSubsystem.enablePID(true);
     	}
     	if(encoder) {
-    		EncoderSubsystem.auto = true;
-    		//Robot.encoderSubsystem.enablePID(true);
+    		Robot.encoderSubsystem.setEncMode(true, true); //set encoder into locking and manual target setting mode
     	}
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	if(drive) {
-	    	Robot.driveTrainSubsystem.p = SmartDashboard.getNumber("Drive const-Proportional (p)");
+    		Robot.driveTrainSubsystem.updatePID();
+	    	/*Robot.driveTrainSubsystem.p = SmartDashboard.getNumber("Drive const-Proportional (p)");
 	    	Robot.driveTrainSubsystem.i = SmartDashboard.getNumber("Drive const-Integral (i)");
 	    	Robot.driveTrainSubsystem.d = SmartDashboard.getNumber("Drive const-Derivative (d)");
-	    	Robot.driveTrainSubsystem.getPIDController().setPID(Robot.driveTrainSubsystem.p, Robot.driveTrainSubsystem.i, Robot.driveTrainSubsystem.d);
+	    	Robot.driveTrainSubsystem.getPIDController().setPID(Robot.driveTrainSubsystem.p, Robot.driveTrainSubsystem.i, Robot.driveTrainSubsystem.d);*/
     	}
 	    if(encoder) {	
 	    	Robot.encoderSubsystem.move(Robot.oi.operatorController);
-	    	Robot.encoderSubsystem.p = SmartDashboard.getNumber("Enc const-Proportional (p)");
+	    	Robot.encoderSubsystem.updatePID();
+	    	/*Robot.encoderSubsystem.p = SmartDashboard.getNumber("Enc const-Proportional (p)");
 	    	Robot.encoderSubsystem.i = SmartDashboard.getNumber("Enc const-Integral (i)");
 	    	Robot.encoderSubsystem.d = SmartDashboard.getNumber("Enc const-Derivative (d)");
-	    	Robot.encoderSubsystem.setPID(Robot.encoderSubsystem.p, Robot.encoderSubsystem.i, Robot.encoderSubsystem.d);
+	    	Robot.encoderSubsystem.setPID(Robot.encoderSubsystem.p, Robot.encoderSubsystem.i, Robot.encoderSubsystem.d);*/
 	    }
     }
 

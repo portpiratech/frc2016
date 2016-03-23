@@ -4,43 +4,36 @@
  */
 package org.usfirst.frc.team4804.robot.commands;
 import org.usfirst.frc.team4804.robot.Robot;
-import org.usfirst.frc.team4804.robot.subsystems.EncoderSubsystem;
 
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
-public class EncoderToggle extends Command {
+public class EncoderSetting extends Command {
     
+	boolean encPID = false;
 	boolean manualTarget = false;
-	boolean altConstructor = false;
-	
-	/**
-	 * Toggle vision mode -- processing enabled or disabled
-	 */
-    public EncoderToggle() {
-        requires(Robot.encoderSubsystem);
-    }
     
     /**
-     * Set vision mode directly
-     * @param process Should vision be processing?
+     * Set encoder mode directly
+     * @param PID Should encoder auto-lock (PID enabled), or use manual controls (joystick/speed)?
+     * @param manual Should encoder target position be set manually (through code/smartdashboard), or automatically (vision; not recommended)?
      */
-    public EncoderToggle(boolean manual) {
+    public EncoderSetting(boolean PID, boolean manual) {
         requires(Robot.encoderSubsystem);
+        encPID = PID;
         manualTarget = manual;
-        altConstructor = true;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	if(altConstructor) {
-    		//set vision mode directly
-    		EncoderSubsystem.manualTarget = manualTarget;
-    	} else {
-    		//toggle vision mode
-    		EncoderSubsystem.manualTarget = !EncoderSubsystem.manualTarget;
-	        SmartDashboard.putBoolean("Enc manualTarget", EncoderSubsystem.manualTarget);
+    	Robot.encoderSubsystem.setEncMode(encPID, manualTarget);
+    	
+    	if(Robot.encoderSubsystem.encPID) {
+    		//if enabled then enable vision
+    		Robot.visionSubsystem.enableProcessing();
+    	}else{
+    		//if disabled then disable processing
+    		Robot.visionSubsystem.disableProcessing();
     	}
     }
 
