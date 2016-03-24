@@ -2,6 +2,7 @@
 package org.usfirst.frc.team4804.robot;
 
 import org.usfirst.frc.team4804.robot.commands.AutonomousCommand;
+import org.usfirst.frc.team4804.robot.subsystems.BallDetectorSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.CannonSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.DriveTrainSubsystem;
 import org.usfirst.frc.team4804.robot.subsystems.EncoderSubsystem;
@@ -12,6 +13,7 @@ import org.usfirst.frc.team4804.robot.subsystems.VisionSubsystem;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick.RumbleType;
 import edu.wpi.first.wpilibj.Servo;
@@ -40,6 +42,7 @@ public class Robot extends IterativeRobot {
 	boolean swivel_ = false;
 	boolean cannon_ = true;
 	boolean piston_ = false;
+	boolean detector_ = true;
 		
   //MECHANICAL
    //Subsystems
@@ -49,6 +52,7 @@ public class Robot extends IterativeRobot {
 	public static SwivelSubsystem swivelSubsystem;
 	public static EncoderSubsystem encoderSubsystem;
 	public static PusherSubsystem pusherSubsystem;
+	public static BallDetectorSubsystem ballDetectorSubsystem;
 	public static VisionSubsystem visionSubsystem;
 	
    //Other classes
@@ -68,6 +72,7 @@ public class Robot extends IterativeRobot {
 	public static CANTalon cannonEncoderMotor;
 	public static CANTalon cannonSwivelMotor;
 	public static Compressor cannonCompressor;
+	public static DigitalInput ballDetectorLim;
 	
    //Autonomous command
     Command autonomousCommand;
@@ -116,6 +121,9 @@ public class Robot extends IterativeRobot {
         	if (pusher_) {
         		pusher = new Servo(OI.PUSHER_SERVO_CHANNEL);
         	}
+        	if (detector_) {
+        		ballDetectorLim = new DigitalInput(OI.DETECTOR_LIM);
+        	}
         	
         	//Subsystems
         	if (drive_) {
@@ -135,6 +143,9 @@ public class Robot extends IterativeRobot {
         	}
         	if (pusher_) {
         		pusherSubsystem = new PusherSubsystem();
+        	}
+        	if (detector_) {
+        		ballDetectorSubsystem = new BallDetectorSubsystem();
         	}
         	if (vision_) {
         		visionSubsystem = new VisionSubsystem();

@@ -14,20 +14,29 @@ public class TargetingAuto extends Command {
 	boolean encoder = true;
 	boolean swivel = false;
 	
+	boolean finished = false;
+	boolean autonomous = false;
+	double secs, startTimeMs;
+	
     public TargetingAuto() {
     	if(drive) {
 	        requires(Robot.driveTrainSubsystem);
-	        SmartDashboard.putNumber("Drive const-Proportional (p)", Robot.driveTrainSubsystem.p);
-	    	SmartDashboard.putNumber("Drive const-Integral (i)", Robot.driveTrainSubsystem.i);
-	    	SmartDashboard.putNumber("Drive const-Derivative (d)", Robot.driveTrainSubsystem.d);
     	}
-    	
     	if(encoder) {
 	    	requires(Robot.encoderSubsystem);
-	    	SmartDashboard.putNumber("Enc const-Proportional (p)", Robot.encoderSubsystem.p);
-	    	SmartDashboard.putNumber("Enc const-Integral (i)", Robot.encoderSubsystem.i);
-	    	SmartDashboard.putNumber("Enc const-Derivative (d)", Robot.encoderSubsystem.d);
     	}
+    }
+    
+    public TargetingAuto(double seconds) {
+    	if(drive) {
+	        requires(Robot.driveTrainSubsystem);
+    	}
+    	if(encoder) {
+	    	requires(Robot.encoderSubsystem);
+    	}
+    	autonomous = true;
+    	secs = seconds;
+    	startTimeMs = System.currentTimeMillis();
     }
 
     // Called just before this Command runs the first time
@@ -35,9 +44,15 @@ public class TargetingAuto extends Command {
     	Robot.visionSubsystem.enableProcessing(); //make sure vision processing is enabled
     	if(drive) {
     		Robot.driveTrainSubsystem.enablePID(true);
+	        SmartDashboard.putNumber("Drive const-Proportional (p)", Robot.driveTrainSubsystem.p);
+	    	SmartDashboard.putNumber("Drive const-Integral (i)", Robot.driveTrainSubsystem.i);
+	    	SmartDashboard.putNumber("Drive const-Derivative (d)", Robot.driveTrainSubsystem.d);
     	}
     	if(encoder) {
     		Robot.encoderSubsystem.setEncMode(true, true); //set encoder into locking and manual target setting mode
+	    	SmartDashboard.putNumber("Enc const-Proportional (p)", Robot.encoderSubsystem.p);
+	    	SmartDashboard.putNumber("Enc const-Integral (i)", Robot.encoderSubsystem.i);
+	    	SmartDashboard.putNumber("Enc const-Derivative (d)", Robot.encoderSubsystem.d);
     	}
     }
 
@@ -45,24 +60,19 @@ public class TargetingAuto extends Command {
     protected void execute() {
     	if(drive) {
     		Robot.driveTrainSubsystem.updatePID();
-	    	/*Robot.driveTrainSubsystem.p = SmartDashboard.getNumber("Drive const-Proportional (p)");
-	    	Robot.driveTrainSubsystem.i = SmartDashboard.getNumber("Drive const-Integral (i)");
-	    	Robot.driveTrainSubsystem.d = SmartDashboard.getNumber("Drive const-Derivative (d)");
-	    	Robot.driveTrainSubsystem.getPIDController().setPID(Robot.driveTrainSubsystem.p, Robot.driveTrainSubsystem.i, Robot.driveTrainSubsystem.d);*/
-    	}
+	    }
 	    if(encoder) {	
 	    	Robot.encoderSubsystem.move(Robot.oi.operatorController);
 	    	Robot.encoderSubsystem.updatePID();
-	    	/*Robot.encoderSubsystem.p = SmartDashboard.getNumber("Enc const-Proportional (p)");
-	    	Robot.encoderSubsystem.i = SmartDashboard.getNumber("Enc const-Integral (i)");
-	    	Robot.encoderSubsystem.d = SmartDashboard.getNumber("Enc const-Derivative (d)");
-	    	Robot.encoderSubsystem.setPID(Robot.encoderSubsystem.p, Robot.encoderSubsystem.i, Robot.encoderSubsystem.d);*/
 	    }
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+    	if(autonomous && System.currentTimeMillis() - startTimeMs >= 1000*secs) {
+    		finished = true;
+    	}
+        return finished;
     }
 
     // Called once after isFinished returns true

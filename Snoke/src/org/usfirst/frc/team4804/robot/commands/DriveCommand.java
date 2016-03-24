@@ -9,10 +9,23 @@ import edu.wpi.first.wpilibj.command.Command;
  *
  */
 public class DriveCommand extends Command {
-
+	
+	boolean finished = false;
+	boolean autonomous = false;
+	double secs, left, right, startTimeMs;
+	
     public DriveCommand() {
         // Use requires() here to declare subsystem dependencies
         requires(Robot.driveTrainSubsystem);
+    }
+    
+    public DriveCommand(double seconds, double leftSpeed, double rightSpeed) {
+    	requires(Robot.driveTrainSubsystem);
+    	autonomous = true;
+    	secs = seconds;
+    	left = leftSpeed;
+    	right = rightSpeed;
+    	startTimeMs = System.currentTimeMillis();
     }
 
     // Called just before this Command runs the first time
@@ -21,12 +34,21 @@ public class DriveCommand extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.driveTrainSubsystem.drive(Robot.oi.driverController);
+    	if(!autonomous) {
+    		Robot.driveTrainSubsystem.drive(Robot.oi.driverController);
+    	}else{
+    		Robot.driveTrainSubsystem.tankDrive(left, right, -1);
+    	}
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+    	if(autonomous) {
+    		if(System.currentTimeMillis() - startTimeMs >= 1000*secs) {
+    			finished = true;
+    		}
+    	}
+        return finished;
     }
 
     // Called once after isFinished returns true

@@ -138,6 +138,7 @@ public class Vision {
 				SmartDashboard.putBoolean("Update Camera", false);
       	}
       	targetCam.getImage(frame);
+      	rotate180(frame);
       	CameraServer.getInstance().setImage(frame);
   	}
   	
@@ -168,6 +169,7 @@ public class Vision {
 				SmartDashboard.putBoolean("Update Camera", false);
       	}
       	targetCam.getImage(frame);
+      	rotate180(frame);
 
 		//Update threshold values from SmartDashboard. For performance reasons it is recommended to remove this after calibration is finished.
 		TOTE_HUE_RANGE.minValue = (int)SmartDashboard.getNumber("Tote hue min", TOTE_HUE_RANGE.minValue);
@@ -410,5 +412,10 @@ public class Vision {
   	float color(int red, int green, int blue) {
   		// each color value input is between 0-255
   		return (float)(blue*256*256 + green*256 + red);
+  	}
+  	
+  	public void rotate180(Image frame) {
+  		NIVision.imaqFlip(frame, frame, NIVision.FlipAxis.HORIZONTAL_AXIS);
+  		NIVision.imaqFlip(frame, frame, NIVision.FlipAxis.VERTICAL_AXIS);
   	}
 }

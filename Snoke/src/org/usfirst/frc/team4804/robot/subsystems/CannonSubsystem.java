@@ -27,8 +27,6 @@ public class CannonSubsystem extends Subsystem {
     // Loading/Launching the ball
     public void motorLoad() {
     	setMotor(-LOAD_SPEED);
-    	/*setMotor("L", LOAD_SPEED_L);
-    	setMotor("R", LOAD_SPEED_R);*/
     }
     public void motorLoad(XboxController xbox) {
     	setMotor(-LOAD_SPEED*Math.abs(xbox.getRightStickYAxis()));
@@ -36,22 +34,16 @@ public class CannonSubsystem extends Subsystem {
     
     public void motorLaunch() {
     	setMotor(-LAUNCH_SPEED);
-    	/*setMotor("L", LAUNCH_SPEED_L);
-    	setMotor("R", LAUNCH_SPEED_R);*/
     }
     public void motorLaunch(XboxController xbox) {
     	setMotor(-LAUNCH_SPEED*Math.abs(xbox.getRightStickYAxis()));
-    	
     }
     
     public void motorStop() {
     	setMotor(0);
-    	/*setMotor("L", 0);
-    	setMotor("R", 0);*/
     }
     
-    public void setMotor(double speed) { //setMotor(String side, double speed)
-    // single CANTalon:
+    public void setMotor(double speed) {
     	switch(Robot.currentMode) {
     	case NEW_ROBOT_MODE:
     		Robot.cannonLauncherMotors.set(speed);
@@ -62,23 +54,7 @@ public class CannonSubsystem extends Subsystem {
     	}
     	
     	SmartDashboard.putNumber("Cannon Launcher Speed", speed);
-    	
-    // independent CANTalons:
-    /*	// side "L" = left
-    	// side "R" = right1
-    		
-    	switch(side) {
-    		case "L": Robot.cannonLauncherMotorLeft.set(speed); // check if this is the right method
-    		case "R": Robot.cannonLauncherMotorRight.set(speed);
-    	} */
     }
-    
-    
-    // Positioning
-    public void setCannonPosition(double position) {
-    	//Robot.cannonTiltMotor.set(position); // need to set CANTalon to correct mode
-    }
-    
     
     // Set the default command for a subsystem here.
     public void initDefaultCommand() {

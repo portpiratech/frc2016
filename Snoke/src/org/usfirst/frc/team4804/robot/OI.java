@@ -76,6 +76,7 @@ public class OI {
     public static final int TEST_PUSHER_SERVO_CHANNEL = 6; //Servo
     
     // DIO (Digital Input/Output--on roboRIO) Channels
+    public static final int DETECTOR_LIM = 0; // DigitalInput
     /*public static final int CANNON_ENCODER_CHANNEL_A = 0; // DigitalInput
     public static final int CANNON_ENCODER_CHANNEL_B = 1; // DigitalInput
     public static final int LIMIT_LEFT_ID = 9;            // DigitalInput (limit switch for swivel)
