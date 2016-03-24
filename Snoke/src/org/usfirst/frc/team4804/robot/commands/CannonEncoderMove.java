@@ -37,7 +37,7 @@ public class CannonEncoderMove extends Command {
     	SmartDashboard.putBoolean("Enc manualTarget", Robot.encoderSubsystem.manualTarget);
     	if(!autonomous) {
     		Robot.encoderSubsystem.move(Robot.oi.operatorController);
-    		System.out.println("Move Called");
+    		//System.out.println("Move Called");
     	}else{
     		Robot.encoderSubsystem.setEncMode(true, true);
     		Robot.encoderSubsystem.setTargetPositionDeg(targetPositionDeg);

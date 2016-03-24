@@ -143,6 +143,9 @@ public class EncoderSubsystem extends Subsystem {
 			Robot.cannonEncoderMotor.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
 		}
 		manualTarget = manual;
+		
+		SmartDashboard.putBoolean("Encoder auto?", encPID);
+		SmartDashboard.putBoolean("Enc manualTarget", manualTarget);
 	}
     
     public void setPID(double pConst, double iConst, double dConst) {
@@ -188,8 +191,8 @@ public class EncoderSubsystem extends Subsystem {
     		//moveTowardTargetPosition();
     		Robot.cannonEncoderMotor.changeControlMode(CANTalon.TalonControlMode.Position);
     		Robot.cannonEncoderMotor.set(toPulses(getTargetPositionDeg()));
-    		System.out.println("Degrees: " + Double.toString(getTargetPositionDeg()));
-    		System.out.println(toPulses(getTargetPositionDeg()));
+    		//System.out.println("Degrees: " + Double.toString(getTargetPositionDeg()));
+    		//System.out.println(toPulses(getTargetPositionDeg()));
     	} else {
     		setPID(0, 0, 0);
     		Robot.cannonEncoderMotor.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
