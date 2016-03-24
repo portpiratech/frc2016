@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class DriveTrainSubsystem extends PIDSubsystem {
     
 	//multipliers
-	public static double driveSpeed = 0.6;	// maximum drive speed; scales other speeds to this
+	public static double driveSpeed = 1.0;	// maximum drive speed; scales other speeds to this
 	public static double dpadMult = 0.25;		// multiplier for dpad speed controls.
 	
 	public static final double SPEED_TOLERANCE = 0.1; // can't be too close to 0
@@ -53,14 +53,14 @@ public class DriveTrainSubsystem extends PIDSubsystem {
     		
     	switch(side) { //CANTalons are hooked up pos-pos && neg-neg
     		case "L":
-    			if(Robot.currentMode == RobotModes.NEW_ROBOT_MODE) Robot.tankDriveLeft.set(-speed);
-    			if(Robot.currentMode == RobotModes.TEST_ROBOT_MODE) Robot.tankDriveLeftTest.set(-speed);
-    			SmartDashboard.putNumber("Drive train left:", -speed);
+    			if(Robot.currentMode == RobotModes.NEW_ROBOT_MODE) Robot.tankDriveLeft.set(speed);
+    			if(Robot.currentMode == RobotModes.TEST_ROBOT_MODE) Robot.tankDriveLeftTest.set(speed);
+    			SmartDashboard.putNumber("Drive train left:", speed);
     			break;
     		case "R": 
-    			if(Robot.currentMode == RobotModes.NEW_ROBOT_MODE) Robot.tankDriveRight.set(speed);
-    			if(Robot.currentMode == RobotModes.TEST_ROBOT_MODE) Robot.tankDriveRightTest.set(speed);
-    			SmartDashboard.putNumber("Drive train right:", speed);
+    			if(Robot.currentMode == RobotModes.NEW_ROBOT_MODE) Robot.tankDriveRight.set(-speed);
+    			if(Robot.currentMode == RobotModes.TEST_ROBOT_MODE) Robot.tankDriveRightTest.set(-speed);
+    			SmartDashboard.putNumber("Drive train right:", -speed);
     			break;
     	}
     }

@@ -4,6 +4,7 @@ package org.usfirst.frc.team4804.robot.commands;
 import org.usfirst.frc.team4804.robot.Robot;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
@@ -32,6 +33,8 @@ public class CannonEncoderMove extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+    	SmartDashboard.putBoolean("Encoder auto?", Robot.encoderSubsystem.encPID);
+    	SmartDashboard.putBoolean("Enc manualTarget", Robot.encoderSubsystem.manualTarget);
     	if(!autonomous) {
     		Robot.encoderSubsystem.move(Robot.oi.operatorController);
     	}else{

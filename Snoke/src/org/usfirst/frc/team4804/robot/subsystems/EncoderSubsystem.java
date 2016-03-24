@@ -27,7 +27,7 @@ public class EncoderSubsystem extends Subsystem {
 	public final double POSITION_TOLERANCE = 5.0;
 	public final double POSITION_RANGE_DEG = 137.0;
 	public final double POSITION_MAX_DEG = 101.0;
-	public final double POSITION_MIN_DEG = -38.0; //degrees below horizontal; need to measure this value
+	public final double POSITION_MIN_DEG = -40.0; //degrees below horizontal; need to measure this value
 	public final double PULSES_PER_DEGREE = 5.52;
 	public final double SPEED_TOLERANCE = 0.03;
 	public double SPEED_MAX = 0.4;
@@ -115,7 +115,7 @@ public class EncoderSubsystem extends Subsystem {
 			}*/
 			
 			SmartDashboard.putNumber("Enc Target angle", targetPositionDeg);
-			//targetPositionDeg = SmartDashboard.getNumber("Enc Target angle");
+			targetPositionDeg = SmartDashboard.getNumber("Enc Target angle");
 			//SmartDashboard.putNumber("Enc Target angle", targetPositionDeg);
 		}
 		return targetPositionDeg;
@@ -125,6 +125,8 @@ public class EncoderSubsystem extends Subsystem {
 		Robot.cannonEncoderMotor.changeControlMode(CANTalon.TalonControlMode.Position);
 		targetPositionDeg = degrees;
 		SmartDashboard.putNumber("Enc Target angle", targetPositionDeg);
+		
+		this.move(Robot.oi.operatorController);
 	}
 	
 	/**
