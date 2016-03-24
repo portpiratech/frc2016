@@ -147,10 +147,10 @@ public class EncoderSubsystem extends Subsystem {
     
     public void setPID(double pConst, double iConst, double dConst) {
     	Robot.cannonEncoderMotor.changeControlMode(CANTalon.TalonControlMode.Position);
-    	this.p = pConst;
-    	this.i = iConst;
-    	this.d = dConst;
-    	Robot.cannonEncoderMotor.setPID(this.p, this.i, this.d);
+//    	this.p = pConst;
+//    	this.i = iConst;
+//    	this.d = dConst;
+    	Robot.cannonEncoderMotor.setPID(pConst, iConst, dConst);
     }
     
     public void updatePID() {
@@ -187,7 +187,9 @@ public class EncoderSubsystem extends Subsystem {
     		setPID(p, i, d);
     		//moveTowardTargetPosition();
     		Robot.cannonEncoderMotor.changeControlMode(CANTalon.TalonControlMode.Position);
-    		Robot.cannonEncoderMotor.set(getTargetPositionDeg()*PULSES_PER_DEGREE);
+    		Robot.cannonEncoderMotor.set(toPulses(getTargetPositionDeg()));
+    		System.out.println("Degrees: " + Double.toString(getTargetPositionDeg()));
+    		System.out.println(toPulses(getTargetPositionDeg()));
     	} else {
     		setPID(0, 0, 0);
     		Robot.cannonEncoderMotor.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
