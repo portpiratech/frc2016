@@ -122,6 +122,7 @@ public class EncoderSubsystem extends Subsystem {
 	}
 	
 	public void setTargetPositionDeg(double degrees) {
+		Robot.cannonEncoderMotor.changeControlMode(CANTalon.TalonControlMode.Position);
 		targetPositionDeg = degrees;
 		SmartDashboard.putNumber("Enc Target angle", targetPositionDeg);
 	}
@@ -132,22 +133,29 @@ public class EncoderSubsystem extends Subsystem {
 	 * @param manual Enables or disables manual target angle fetching while PID is enabled. (enabled = set target w/ code or SmartDashboard; disabled = auto-angle [vision] search, not recommended)
 	 */
 	public void setEncMode(boolean PID, boolean manual) {
-		encPID = PID;
+		if(PID) {
+			encPID = true;
+			Robot.cannonEncoderMotor.changeControlMode(CANTalon.TalonControlMode.Position);
+		} else {
+			encPID = false;
+			Robot.cannonEncoderMotor.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+		}
 		manualTarget = manual;
 	}
     
-    public void setPID(double p, double i, double d) {
-    	Robot.encoderSubsystem.p = p;
-    	Robot.encoderSubsystem.i = i;
-    	Robot.encoderSubsystem.d = d;
-    	Robot.cannonEncoderMotor.setPID(p, i, d);
+    public void setPID(double pConst, double iConst, double dConst) {
+    	Robot.cannonEncoderMotor.changeControlMode(CANTalon.TalonControlMode.Position);
+    	this.p = pConst;
+    	this.i = iConst;
+    	this.d = dConst;
+    	Robot.cannonEncoderMotor.setPID(this.p, this.i, this.d);
     }
     
     public void updatePID() {
-    	double p = SmartDashboard.getNumber("Enc const-Proportional (p)");
-    	double i = SmartDashboard.getNumber("Enc const-Integral (i)");
-    	double d = SmartDashboard.getNumber("Enc const-Derivative (d)");
-    	setPID(p, i, d);
+    	double pConst = SmartDashboard.getNumber("Enc const-Proportional (p)");
+    	double iConst = SmartDashboard.getNumber("Enc const-Integral (i)");
+    	double dConst = SmartDashboard.getNumber("Enc const-Derivative (d)");
+    	setPID(pConst, iConst, dConst);
     }
     
     public void move(XboxController xbox) {

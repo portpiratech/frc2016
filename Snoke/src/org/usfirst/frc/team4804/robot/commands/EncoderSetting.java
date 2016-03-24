@@ -16,7 +16,7 @@ public class EncoderSetting extends Command {
     /**
      * Set encoder mode directly
      * @param PID Should encoder auto-lock (PID enabled), or use manual controls (joystick/speed)?
-     * @param manual Should encoder target position be set manually (through code/smartdashboard), or automatically (vision; not recommended)?
+     * @param manual Should encoder target angle be set manually (through code/smartdashboard), or automatically (vision; not recommended)?
      */
     public EncoderSetting(boolean PID, boolean manual) {
         requires(Robot.encoderSubsystem);
@@ -27,14 +27,6 @@ public class EncoderSetting extends Command {
     // Called just before this Command runs the first time
     protected void initialize() {
     	Robot.encoderSubsystem.setEncMode(encPID, manualTarget);
-    	
-    	if(Robot.encoderSubsystem.encPID) {
-    		//if enabled then enable vision
-    		Robot.visionSubsystem.enableProcessing();
-    	}else{
-    		//if disabled then disable processing
-    		Robot.visionSubsystem.disableProcessing();
-    	}
     }
 
     // Called repeatedly when this Command is scheduled to run

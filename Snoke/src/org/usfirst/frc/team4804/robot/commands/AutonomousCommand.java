@@ -11,6 +11,7 @@ public class AutonomousCommand extends CommandGroup {
     public AutonomousCommand() {
     	addSequential(new VisionToggle(false)); //disable vision processing
     	addSequential(new DriveToggle("tank")); //set drive into tank mode
+    	addSequential(new EncoderSetting(true, true));
     	addSequential(new CannonEncoderMove(0.0)); //move encoder to 0 degrees (horizontal)
     	Timer.delay(0.5); //wait half a second to make sure cannon is positioned
     	addSequential(new DriveCommand(5.0, 0.6, 0.6)); //drive at 60% speed for 5 seconds

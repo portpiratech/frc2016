@@ -244,7 +244,7 @@ public class Vision {
 			distanceFeetTemp = computeDistance(binaryFrame, largestParticle);
 			SmartDashboard.putNumber("Distance (Temp)", distanceFeetTemp);
 			SmartDashboard.putNumber("Distance (in) (Temp)", distanceFeetTemp * 12.0);
-			SmartDashboard.putString("Launch Angle (Test)", Double.toString(launchAngle(distanceFeetTemp))); //1 ft = 0.3048 m
+			SmartDashboard.putNumber("Launch Angle", launchAngle(distanceFeetTemp)); //1 ft = 0.3048 m
 			//SmartDashboard.putString("Launch Angle (Test)", "test1");
 			errorAimingX = computeErrorAimingX(binaryFrame, largestParticle);
 			
@@ -269,7 +269,7 @@ public class Vision {
 			
 			SmartDashboard.putNumber("Distance (Temp)", distanceFeetTemp);
 			SmartDashboard.putNumber("Distance (in) (Temp)", distanceFeetTemp * 12.0);
-			SmartDashboard.putString("Launch Angle (Test)", Double.toString(launchAngle(distanceFeetTemp))); //1 ft = 0.3048 m
+			SmartDashboard.putNumber("Launch Angle", launchAngle(distanceFeetTemp)); //1 ft = 0.3048 m
 			//SmartDashboard.putString("Launch Angle (Test)", "test2");
 			
 			/*distanceFeet = 0;

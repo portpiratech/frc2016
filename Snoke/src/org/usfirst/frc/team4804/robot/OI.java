@@ -56,7 +56,8 @@ public class OI {
 	public static final int TANKDRIVE_LEFT_ID = 3; //CAN Talon SRX
 	public static final int CANNON_LAUNCHER_ID = 5; //CAN Talon SRX
 	public static final int CANNON_ENCODER_ID = 2; //CAN Talon SRX
-    public static final int CANNON_SWIVEL_MOTOR_ID = 4; //CAN Talon SRX
+    //public static final int CANNON_SWIVEL_MOTOR_ID = 4; //CAN Talon SRX
+	public static final int CANNON_LAUNCHER_ID_2 = 4; //CAN Talon SRX
     public static final int PCM_ID = 1; //Compressor/Pneumatics Control Module (used for DoubleSolenoids)
     
     public static final int TEST_CANNON_ENCODER_ID = 10; //CAN Talon SRX
@@ -117,7 +118,7 @@ public class OI {
 			//operatorController.getAButton().whenPressed(new CannonPusherCenter());
 			//operatorController.getBButton().whenPressed(new CannonPusherReverse()); //have this automatically do that
 			
-			operatorController.getBButton().whenPressed(new EncoderSetting(!Robot.encoderSubsystem.encPID, true));
+			operatorController.getBButton().whenPressed(new EncoderSetting(!Robot.encoderSubsystem.encPID, true)); //toggle encoder
 			operatorController.getXButton().whenPressed(new PositioningInit());
 			operatorController.getLeftBumper().whenPressed(new Load());
 			operatorController.getAButton().whenPressed(new Launch());

@@ -69,6 +69,7 @@ public class Robot extends IterativeRobot {
 	public static CANTalon tankDriveLeft;
 	public static CANTalon tankDriveRight;
 	public static CANTalon cannonLauncherMotors;
+	public static CANTalon cannonLauncherMotors_2;
 	public static CANTalon cannonEncoderMotor;
 	public static CANTalon cannonSwivelMotor;
 	public static Compressor cannonCompressor;
@@ -107,6 +108,7 @@ public class Robot extends IterativeRobot {
         	}
         	if (cannon_) {
         		cannonLauncherMotors = new CANTalon(OI.CANNON_LAUNCHER_ID);
+        		cannonLauncherMotors_2 = new CANTalon(OI.CANNON_LAUNCHER_ID_2);
         	}
         	if (piston_) {
         		cannonCompressor = new Compressor(OI.PCM_ID);
@@ -115,9 +117,9 @@ public class Robot extends IterativeRobot {
         	if (encoder_) {
         		cannonEncoderMotor = new CANTalon(OI.CANNON_ENCODER_ID);
         	}
-        	if (swivel_) {
-        		cannonSwivelMotor = new CANTalon(OI.CANNON_SWIVEL_MOTOR_ID);
-        	}
+//        	if (swivel_) {
+//        		cannonSwivelMotor = new CANTalon(OI.CANNON_SWIVEL_MOTOR_ID);
+//        	}
         	if (pusher_) {
         		pusher = new Servo(OI.PUSHER_SERVO_CHANNEL);
         	}

@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Launch extends Command {
 	
+	boolean finished = true;
+	
     public Launch() {
         // Use requires() here to declare subsystem dependencies
         requires(Robot.cannonSubsystem);
@@ -22,12 +24,19 @@ public class Launch extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	setInterruptible(true);
+    	
     	Robot.pusherSubsystem.positionReverse(); //make sure pusher is retracted
+    	SmartDashboard.putNumber("Launch Angle", 50.0);
     	Robot.visionSubsystem.enableProcessing(); //enable vision processing so angle can be calculated
     	Robot.encoderSubsystem.setEncMode(true, true); //make sure encoder position locking is enabled
     	Robot.encoderSubsystem.setTargetPositionDeg(45.0);
     	Timer.delay(0.5);
-    	Robot.encoderSubsystem.setTargetPositionDeg(SmartDashboard.getNumber("Launch Angle (Test)")); //grab the calculated launch angle
+    	if(SmartDashboard.getNumber("Launch Angle") < 120) {
+    		Robot.encoderSubsystem.setTargetPositionDeg(SmartDashboard.getNumber("Launch Angle")); //grab the calculated launch angle
+    	} else {
+    		Robot.encoderSubsystem.setTargetPositionDeg(50.0);
+    	}
     	Robot.cannonSubsystem.motorLaunch(); //start motors
     	Timer.delay(2);
     	Robot.pusherSubsystem.positionCenter(); //push ball
@@ -43,7 +52,7 @@ public class Launch extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return true;
+        return finished;
     }
 
     // Called once after isFinished returns true
@@ -53,5 +62,7 @@ public class Launch extends Command {
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
+    	finished = true;
+    	isFinished();
     }
 }
