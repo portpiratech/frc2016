@@ -24,9 +24,9 @@ public class QuickLaunch extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	Robot.cannonSubsystem.motorLaunch();
-    	Timer.delay(1.5);
+    	Timer.delay(0.5);
     	Robot.pusherSubsystem.positionCenter();
-    	Timer.delay(1.5);
+    	Timer.delay(0.5);
     	Robot.pusherSubsystem.positionReverse();
     	Robot.cannonSubsystem.motorStop();
     	

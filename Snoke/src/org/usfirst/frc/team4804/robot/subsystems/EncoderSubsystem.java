@@ -30,7 +30,8 @@ public class EncoderSubsystem extends Subsystem {
 	public final double POSITION_MIN_DEG = -40.0; //degrees below horizontal; need to measure this value
 	public final double PULSES_PER_DEGREE = 5.52;
 	public final double SPEED_TOLERANCE = 0.03;
-	public double SPEED_MAX = 0.4;
+	public double SPEED_MAX = 0.7;
+	public double DOWN_SPEED_MULT = 0.5;
 	
 	public double targetPositionDeg = -40; //initial setting, units are degrees
 	public boolean encPID = false;
@@ -228,7 +229,14 @@ public class EncoderSubsystem extends Subsystem {
 			speed = 0;
 		}
 		//set motor
-		Robot.cannonEncoderMotor.set(-speed*SPEED_MAX);
+		if(speed>0) {
+			//moving up
+			Robot.cannonEncoderMotor.set(-speed*SPEED_MAX);
+		}
+		if(speed<=0) {
+			//moving down
+			Robot.cannonEncoderMotor.set(-speed*SPEED_MAX*DOWN_SPEED_MULT);
+		}
 		//targetPositionDeg = Robot.cannonEncoderMotor.getEncPosition();
 	}
 }

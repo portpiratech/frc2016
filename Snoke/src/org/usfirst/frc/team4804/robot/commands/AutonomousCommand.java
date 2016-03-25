@@ -10,9 +10,17 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
  *
  */
 public class AutonomousCommand extends CommandGroup {
+	//defense names: "rough" "ramparts" "moat" "wall" "chival" "lowbar"
+	//relative to center: "far right" "right" "center" "left" "far left"
+	
+	boolean lowbar = false;
+	//String obstacle = "rough";
+	String position = "center";
+	
 	//times for each driving segment (seconds)
-	static double fwdTime = 2.0; //drive forward
-	static double turnTime = 1.0; //turn robot
+	static double fwdTime = 7.0; //drive forward
+	static double turnTimeLow = 0.8; //turn robot if slightly off-center
+	static double turnTimeHigh = 1.6; //turn robot if far off-center
 	static double encMoveTime = 1.0; //move encoder to position
 	static double targetTime = 1.5; //auto target time
 	
@@ -21,17 +29,41 @@ public class AutonomousCommand extends CommandGroup {
     	addSequential(new VisionToggle(false)); //disable vision processing
     	addSequential(new DriveToggle("tank")); //set drive into tank mode
     	addSequential(new EncoderSetting(true, true));
-    	addSequential(new CannonEncoderMove(-1.0, encMoveTime)); //move encoder to minimum angle (horizontal)
-    	Timer.delay(encMoveTime); //wait "encMoveTime" seconds to make sure cannon is positioned
-    	addParallel(new CannonEncoderMove(Robot.encoderSubsystem.POSITION_MIN_DEG, 0.2));
+    	if(lowbar) {
+    		addSequential(new CannonEncoderMove(-100, encMoveTime)); //move encoder to minimum angle (horizontal)
+    		Timer.delay(encMoveTime); //wait "encMoveTime" seconds to make sure cannon is positioned
+        	addParallel(new CannonEncoderMove(Robot.encoderSubsystem.POSITION_MIN_DEG, 0.2));
+        	
+        	addSequential(new DriveCommand(fwdTime, -0.7, -0.7)); //drive at 60% speed for "fwdTime" seconds
+        	Timer.delay(fwdTime);
+    	} else {
+    		//switch(obstacle) {}
+        	addSequential(new DriveCommand(fwdTime, 1.0, 1.0)); //drive at 60% speed for "fwdTime" seconds
+        	Timer.delay(fwdTime);
+    	}
     	
-    	addSequential(new DriveCommand(fwdTime, 1.0, 1.0)); //drive at 60% speed for "fwdTime" seconds
-    	Timer.delay(fwdTime);
-    	
-    	/*addSequential(new DriveCommand(turnTime, 0.3, -0.3)); //turn right at 30% speed for "turnTime" seconds
-    	Timer.delay(turnTime);
-    	
-    	addSequential(new PositioningInit()); //put into position for auto-target
+    	switch(position) {
+    	case "far right":
+    		addSequential(new DriveCommand(turnTimeHigh, -0.3, 0.3)); //turn left at 30% speed for "turnTime" seconds
+        	Timer.delay(turnTimeHigh);
+    		break;
+    	case "right":
+    		addSequential(new DriveCommand(turnTimeLow, -0.3, 0.3)); //turn left at 30% speed for "turnTime" seconds
+        	Timer.delay(turnTimeLow);
+    		break;
+    	case "center":
+    		//don't turn
+    		break;
+    	case "left":
+    		addSequential(new DriveCommand(turnTimeLow, 0.3, -0.3)); //turn right at 30% speed for "turnTime" seconds
+        	Timer.delay(turnTimeLow);
+    		break;
+    	case "far left":
+    		addSequential(new DriveCommand(turnTimeHigh, 0.3, -0.3)); //turn right at 30% speed for "turnTime" seconds
+        	Timer.delay(turnTimeHigh);
+    		break;
+    	}
+    	/*addSequential(new PositioningInit()); //put into position for auto-target
     	Timer.delay(encMoveTime); //wait "encMoveTime" seconds to make sure cannon is positioned
     	
     	addSequential(new VisionToggle(true)); //make sure vision is enabled
