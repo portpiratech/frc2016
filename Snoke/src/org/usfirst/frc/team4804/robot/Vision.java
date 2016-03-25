@@ -129,14 +129,14 @@ public class Vision {
   		//NIVision.IMAQdxGrab(session, frame, 1);
   		//CameraServer.getInstance().setImage(frame);
   		
-  		//if (SmartDashboard.getBoolean("Update Camera")) {
+  		if (SmartDashboard.getBoolean("Update Camera")) {
 //          // robot code here!
 	            targetCam.setExposureManual(0);
 	            targetCam.setBrightness((int) SmartDashboard.getNumber("Brightness"));
 	        	targetCam.setExposureHoldCurrent();
 	            targetCam.updateSettings();
 				SmartDashboard.putBoolean("Update Camera", false);
-      	//}
+      	}
       	targetCam.getImage(frame);
       	rotate180(frame);
       	CameraServer.getInstance().setImage(frame);
