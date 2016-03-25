@@ -112,7 +112,7 @@ public class Vision {
 //    	
     	targetCam.updateSettings();
 //    	
-    	SmartDashboard.putNumber("Brightness", targetCam.getBrightness());
+    	SmartDashboard.putNumber("Brightness", 0); //targetCam.getBrightness());
     	SmartDashboard.putBoolean("Update Camera", false);
     	
     	targetCam.openCamera();
@@ -129,14 +129,14 @@ public class Vision {
   		//NIVision.IMAQdxGrab(session, frame, 1);
   		//CameraServer.getInstance().setImage(frame);
   		
-  		if (SmartDashboard.getBoolean("Update Camera")) {
+  		//if (SmartDashboard.getBoolean("Update Camera")) {
 //          // robot code here!
 	            targetCam.setExposureManual(0);
 	            targetCam.setBrightness((int) SmartDashboard.getNumber("Brightness"));
 	        	targetCam.setExposureHoldCurrent();
 	            targetCam.updateSettings();
 				SmartDashboard.putBoolean("Update Camera", false);
-      	}
+      	//}
       	targetCam.getImage(frame);
       	rotate180(frame);
       	CameraServer.getInstance().setImage(frame);
@@ -147,6 +147,7 @@ public class Vision {
 	 */
 	public void frameProcess() {
 		double distanceFeetTemp;
+		//Image savedFrame;
 		
 		if(System.currentTimeMillis() - lastFrameProcessTimeMs < captureIntervalMs) {
 			return;
@@ -160,15 +161,18 @@ public class Vision {
 		//NIVision.imaqReadFile(frame, "/home/lvuser/SampleImages/image.jpg");
 		//NIVision.IMAQdxGrab(session, frame, 1);
 		
-		if (SmartDashboard.getBoolean("Update Camera")) {
+		//if (SmartDashboard.getBoolean("Update Camera")) {
 //          // robot code here!
 	            targetCam.setExposureManual(0);
 	            targetCam.setBrightness((int) SmartDashboard.getNumber("Brightness"));
 	        	targetCam.setExposureHoldCurrent();
+	        	//targetCam.getImage(frame);
+	        	//savedFrame = frame;
 	            targetCam.updateSettings();
 				SmartDashboard.putBoolean("Update Camera", false);
-      	}
-      	targetCam.getImage(frame);
+      	//}
+		targetCam.getImage(frame);
+      	
       	rotate180(frame);
 
 		//Update threshold values from SmartDashboard. For performance reasons it is recommended to remove this after calibration is finished.
@@ -280,12 +284,11 @@ public class Vision {
 		}
 		
 		CameraServer.getInstance().setImage(frame);
-		if(Math.abs(distanceFeet-distanceFeetTemp) > 0) {
-			distanceFeet = distanceFeetTemp;
-			SmartDashboard.putNumber("Distance", distanceFeet);
-			SmartDashboard.putNumber("Distance (in)", distanceFeet * 12.0);
-			SmartDashboard.putNumber("Launch Angle", launchAngle(distanceFeet*0.3048)); //1 ft = 0.3048 m
-		}
+		distanceFeet = distanceFeetTemp;
+		SmartDashboard.putNumber("Distance", distanceFeet);
+		SmartDashboard.putNumber("Distance (in)", distanceFeet * 12.0);
+		SmartDashboard.putNumber("Launch Angle", launchAngle(distanceFeet*0.3048)); //1 ft = 0.3048 m
+		
 		//Timer.delay(0.1);				// wait for a motor update time
 	}
 	
