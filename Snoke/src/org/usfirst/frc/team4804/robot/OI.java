@@ -6,6 +6,7 @@ import org.usfirst.frc.team4804.robot.commands.EncoderSetting;
 import org.usfirst.frc.team4804.robot.commands.Launch;
 import org.usfirst.frc.team4804.robot.commands.Load;
 import org.usfirst.frc.team4804.robot.commands.PositioningInit;
+import org.usfirst.frc.team4804.robot.commands.QuickLaunch;
 import org.usfirst.frc.team4804.robot.commands.TargetingAuto;
 import org.usfirst.frc.team4804.robot.commands.TargetingManual;
 import org.usfirst.frc.team4804.robot.commands.VisionToggle;
@@ -101,6 +102,7 @@ public class OI {
 			operatorController.getXButton().whenPressed(new PositioningInit());
 			operatorController.getLeftBumper().whenPressed(new Load());
 			operatorController.getAButton().whenPressed(new Launch());
+			operatorController.getRightBumper().whenPressed(new QuickLaunch());
 			operatorController.getYButton().whenPressed(new CannonWheelStop());
 			//right stick to control encoder in manual mode
 			

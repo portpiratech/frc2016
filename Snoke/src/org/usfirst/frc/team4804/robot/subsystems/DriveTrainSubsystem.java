@@ -16,7 +16,7 @@ public class DriveTrainSubsystem extends PIDSubsystem {
     
 	//multipliers
 	public static double driveSpeed = 1.0;	// maximum drive speed; scales other speeds to this
-	public static double dpadMult = 0.25;		// multiplier for dpad speed controls.
+	public static double dpadMult = 0.5;		// multiplier for dpad speed controls.
 	
 	public static final double SPEED_TOLERANCE = 0.1; // can't be too close to 0
 	static int driveSetting = 0; //0 is tank, 1 is Jonnydrive, 2 is Tommydrive

@@ -1,6 +1,8 @@
 
 package org.usfirst.frc.team4804.robot.commands;
 
+import org.usfirst.frc.team4804.robot.Robot;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 
@@ -8,24 +10,38 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
  *
  */
 public class AutonomousCommand extends CommandGroup {
+	//times for each driving segment (seconds)
+	static double fwdTime = 3.5; //drive forward
+	static double turnTime = 1.0; //turn robot
+	static double encMoveTime = 0.5; //move encoder to position
+	static double targetTime = 1.5; //auto target time
+	
     public AutonomousCommand() {
     	addSequential(new TargetingManual());
     	addSequential(new VisionToggle(false)); //disable vision processing
     	addSequential(new DriveToggle("tank")); //set drive into tank mode
     	addSequential(new EncoderSetting(true, true));
-    	addSequential(new CannonEncoderMove(0.0)); //move encoder to 0 degrees (horizontal)
-    	Timer.delay(0.5); //wait half a second to make sure cannon is positioned
-    	addSequential(new DriveCommand(4.5, 1.0, 1.0)); //drive at 60% speed for 5 seconds
-    	addSequential(new DriveCommand(2.0, 0.3, -0.3)); //turn right at 30% speed for 3 seconds
+    	addSequential(new CannonEncoderMove(Robot.encoderSubsystem.POSITION_MIN_DEG)); //move encoder to minimum angle (horizontal)
+    	Timer.delay(encMoveTime); //wait "encMoveTime" seconds to make sure cannon is positioned
+    	
+    	addSequential(new DriveCommand(fwdTime, 0.7, 0.7)); //drive at 60% speed for "fwdTime" seconds
+    	Timer.delay(fwdTime);
+    	
+    	addSequential(new DriveCommand(turnTime, 0.3, -0.3)); //turn right at 30% speed for "turnTime" seconds
+    	Timer.delay(turnTime);
+    	
     	addSequential(new PositioningInit()); //put into position for auto-target
-    	Timer.delay(0.5); //wait half a second to make sure cannon is positioned
-    	addSequential(new TargetingAuto(2.0)); //auto target for 2 seconds
+    	Timer.delay(encMoveTime); //wait "encMoveTime" seconds to make sure cannon is positioned
+    	
+    	addSequential(new VisionToggle(true)); //make sure vision is enabled
+    	addSequential(new TargetingAuto(targetTime)); //auto target for "targetTime" seconds
+    	Timer.delay(targetTime);
+    	
     	addSequential(new TargetingManual()); //switch back to manual target
+    	addSequential(new Launch()); //launch the ball
+    	Timer.delay(Launch.elapsedTime); //wait for launch to complete
     	
     	addSequential(new DriveCommand());
-    	//addSequential(new Launch()); //launch the ball
-    	
-    	//Roughly 11 seconds should have elapsed?
     	
     	//addSequential(new Load());
     	

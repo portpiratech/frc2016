@@ -14,6 +14,12 @@ public class Launch extends Command {
 	
 	boolean finished = true;
 	
+	//times for each delay segment (seconds)
+	static double encMoveWait = 0.5; //wait for encoder to move to position
+	static double motorWait = 2.0; //wait for motors to spin up
+	static double pushWait = 2.5; //wait for ball to be pushed
+	static double elapsedTime = encMoveWait + motorWait + pushWait;
+	
     public Launch() {
         // Use requires() here to declare subsystem dependencies
         requires(Robot.cannonSubsystem);
@@ -31,19 +37,20 @@ public class Launch extends Command {
     	Robot.visionSubsystem.enableProcessing(); //enable vision processing so angle can be calculated
     	Robot.encoderSubsystem.setEncMode(true, true); //make sure encoder position locking is enabled
     	Robot.encoderSubsystem.setTargetPositionDeg(45.0);
-    	Timer.delay(0.5);
+    	Timer.delay(encMoveWait);
     	if(SmartDashboard.getNumber("Launch Angle") < 120) {
     		Robot.encoderSubsystem.setTargetPositionDeg(SmartDashboard.getNumber("Launch Angle")); //grab the calculated launch angle
     	} else {
     		Robot.encoderSubsystem.setTargetPositionDeg(50.0);
     	}
     	Robot.cannonSubsystem.motorLaunch(); //start motors
-    	Timer.delay(2);
+    	Timer.delay(motorWait);
     	Robot.pusherSubsystem.positionCenter(); //push ball
-    	Timer.delay(4);
+    	Timer.delay(pushWait);
     	Robot.pusherSubsystem.positionReverse(); //retract pusher
     	Robot.visionSubsystem.disableProcessing(); //disable vision processing to free up resources
     	Robot.encoderSubsystem.setEncMode(false, true); //disable encoder locking to prepare for next pickup
+    	Robot.cannonSubsystem.motorStop(); //stop motors
     }
 
     // Called repeatedly when this Command is scheduled to run
