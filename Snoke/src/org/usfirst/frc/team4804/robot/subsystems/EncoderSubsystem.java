@@ -26,13 +26,13 @@ public class EncoderSubsystem extends Subsystem {
 	public final double TRIGGER_TOLERANCE = 0.05;
 	public final double POSITION_TOLERANCE = 5.0;
 	public final double POSITION_RANGE_DEG = 137.0;
-	public final double POSITION_MAX_DEG = 101.0;
+	public final double POSITION_MAX_DEG = 103.0;
 	public final double POSITION_MIN_DEG = -40.0; //degrees below horizontal; need to measure this value
 	public final double PULSES_PER_DEGREE = 5.52;
 	public final double SPEED_TOLERANCE = 0.03;
 	public double SPEED_MAX = 0.4;
 	
-	public double targetPositionDeg = -40; //degrees
+	public double targetPositionDeg = -40; //initial setting, units are degrees
 	public boolean encPID = false;
 	public boolean manualTarget = true;
 	
@@ -222,7 +222,7 @@ public class EncoderSubsystem extends Subsystem {
 	 * Sets encoder to a given speed (scaled to SPEED_MAX in subsystem)
 	 * @param speed Value between [-1,1] to control encoder
 	 */
-	private void setMotorSpeed(double speed) {
+	public void setMotorSpeed(double speed) {
 		//check if speed is too low to do anything
 		if (Math.abs(speed*SPEED_MAX) < SPEED_TOLERANCE) {
 			speed = 0;

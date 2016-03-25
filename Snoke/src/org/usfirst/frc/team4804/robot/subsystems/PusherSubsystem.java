@@ -24,13 +24,13 @@ public class PusherSubsystem extends Subsystem {
     }
     
     public void positionForward() {
-    	SmartDashboard.putNumber("Pusher Target", 1.0);
-    	Robot.pusher.set(1.0);
+    	SmartDashboard.putNumber("Pusher Target", 0.0);
+    	Robot.pusher.set(0.0);
     }
     
     public void positionReverse() {
-    	SmartDashboard.putNumber("Pusher Target", 0.0);
-    	Robot.pusher.set(0.0);
+    	SmartDashboard.putNumber("Pusher Target", 1.0);
+    	Robot.pusher.set(1.0);
     }
     
     public void positionCenter() {

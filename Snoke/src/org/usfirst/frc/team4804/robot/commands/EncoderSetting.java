@@ -10,9 +10,19 @@ import edu.wpi.first.wpilibj.command.Command;
 
 public class EncoderSetting extends Command {
     
+	boolean directSet = false;
 	boolean encPID = false;
 	boolean manualTarget = false;
     
+	/**
+	 * Toggles encoder PID setting
+	 */
+	public EncoderSetting() {
+		requires(Robot.encoderSubsystem);
+		encPID = !Robot.encoderSubsystem.encPID;
+		manualTarget = Robot.encoderSubsystem.manualTarget;
+	}
+	
     /**
      * Set encoder mode directly
      * @param PID Should encoder auto-lock (PID enabled), or use manual controls (joystick/speed)?

@@ -1,5 +1,8 @@
 package org.usfirst.frc.team4804.robot;
 
+import org.usfirst.frc.team4804.robot.commands.CannonPusherCenter;
+import org.usfirst.frc.team4804.robot.commands.CannonPusherForward;
+import org.usfirst.frc.team4804.robot.commands.CannonPusherReverse;
 import org.usfirst.frc.team4804.robot.commands.CannonWheelStop;
 import org.usfirst.frc.team4804.robot.commands.DriveToggle;
 import org.usfirst.frc.team4804.robot.commands.EncoderSetting;
@@ -12,6 +15,8 @@ import org.usfirst.frc.team4804.robot.commands.TargetingManual;
 import org.usfirst.frc.team4804.robot.commands.VisionToggle;
 
 import com.portpiratech.xbox360.XboxController;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -98,7 +103,7 @@ public class OI {
 			//left + right stick when in tank drive, left stick in tommy/jonny drive
 			
 		// Operator commands: Cannon/piston controls
-			operatorController.getBButton().whenPressed(new EncoderSetting(!Robot.encoderSubsystem.encPID, true));
+			operatorController.getBButton().whenPressed(new EncoderSetting());
 			operatorController.getXButton().whenPressed(new PositioningInit());
 			operatorController.getLeftBumper().whenPressed(new Load());
 			operatorController.getAButton().whenPressed(new Launch());
@@ -107,6 +112,9 @@ public class OI {
 			//right stick to control encoder in manual mode
 			
 		// SmartDashboard commands?
+			SmartDashboard.putData("Pusher Forward", new CannonPusherForward());
+			SmartDashboard.putData("Pusher Center", new CannonPusherCenter());
+			SmartDashboard.putData("Pusher Reverse", new CannonPusherReverse());
 			break;
 		
 		case TEST_ROBOT_MODE:

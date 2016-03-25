@@ -25,11 +25,11 @@ public class DriveCommand extends Command {
     	secs = seconds;
     	left = leftSpeed;
     	right = rightSpeed;
-    	startTimeMs = System.currentTimeMillis();
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	startTimeMs = System.currentTimeMillis();
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -37,7 +37,7 @@ public class DriveCommand extends Command {
     	if(!autonomous) {
     		Robot.driveTrainSubsystem.drive(Robot.oi.driverController);
     	}else{
-    		Robot.driveTrainSubsystem.tankDrive(left, right, -1);
+    		Robot.driveTrainSubsystem.tankDrive(-left, -right, -1);
     	}
     }
 
