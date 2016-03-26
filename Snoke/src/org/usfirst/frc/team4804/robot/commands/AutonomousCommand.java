@@ -73,10 +73,10 @@ public class AutonomousCommand extends CommandGroup {
     	}*/
     	
     	if(highGoal) {
-	    	addParallel(new DriveCommand(0.6, 0.3, -0.3));
-	    	addSequential(new CannonEncoderMove(-100, encMoveTime)); //move encoder to minimum angle (horizontal)
+	    	addSequential(new CannonEncoderMove(110, encMoveTime)); //move encoder to minimum angle (horizontal)
 	    	Timer.delay(0.3);
 	    	addSequential(new PositioningInit()); //put into position for auto-target
+	    	addSequential(new DriveCommand(0.7, 0.5, -0.5));
 	    	Timer.delay(encMoveTime); //wait "encMoveTime" seconds to make sure cannon is positioned
 	    	
 	    	addSequential(new VisionToggle(true)); //make sure vision is enabled
