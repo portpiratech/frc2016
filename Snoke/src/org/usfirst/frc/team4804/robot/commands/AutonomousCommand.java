@@ -13,15 +13,21 @@ public class AutonomousCommand extends CommandGroup {
 	//defense names: "rough" "ramparts" "moat" "wall" "chival" "lowbar"
 	//relative to center: "far right" "right" "center" "left" "far left"
 	
-	boolean lowbar = false;
+	boolean lowbar = true;
 	//String obstacle = "rough";
 	String position = "center";
 	
+	boolean backwards = false;
+	
+	boolean highGoal = false;
+	boolean lowGoal = false;
+	
 	//times for each driving segment (seconds)
-	static double fwdTime = 7.0; //drive forward
+	static double fwdTime = 6.0; //drive forward
+	static double turnTime = 0.8; //turn robot if off-center
 	static double turnTimeLow = 0.8; //turn robot if slightly off-center
 	static double turnTimeHigh = 1.6; //turn robot if far off-center
-	static double encMoveTime = 1.0; //move encoder to position
+	static double encMoveTime = 0.8; //move encoder to position
 	static double targetTime = 1.5; //auto target time
 	
     public AutonomousCommand() {
@@ -34,15 +40,17 @@ public class AutonomousCommand extends CommandGroup {
     		Timer.delay(encMoveTime); //wait "encMoveTime" seconds to make sure cannon is positioned
         	addParallel(new CannonEncoderMove(Robot.encoderSubsystem.POSITION_MIN_DEG, 0.2));
         	
-        	addSequential(new DriveCommand(fwdTime, -0.7, -0.7)); //drive at 60% speed for "fwdTime" seconds
+        	if(!backwards) addSequential(new DriveCommand(fwdTime, 0.7, 0.7)); //drive at 60% speed for "fwdTime" seconds
+        	if(backwards) addSequential(new DriveCommand(fwdTime, -0.7, -0.7));
         	Timer.delay(fwdTime);
     	} else {
     		//switch(obstacle) {}
-        	addSequential(new DriveCommand(fwdTime, 1.0, 1.0)); //drive at 60% speed for "fwdTime" seconds
+        	if(!backwards) addSequential(new DriveCommand(fwdTime, 1.0, 1.0)); //drive at 60% speed for "fwdTime" seconds
+        	if(backwards) addSequential(new DriveCommand(fwdTime, -1.0, -1.0));
         	Timer.delay(fwdTime);
     	}
     	
-    	switch(position) {
+    	/*switch(position) {
     	case "far right":
     		addSequential(new DriveCommand(turnTimeHigh, -0.3, 0.3)); //turn left at 30% speed for "turnTime" seconds
         	Timer.delay(turnTimeHigh);
@@ -62,14 +70,21 @@ public class AutonomousCommand extends CommandGroup {
     		addSequential(new DriveCommand(turnTimeHigh, 0.3, -0.3)); //turn right at 30% speed for "turnTime" seconds
         	Timer.delay(turnTimeHigh);
     		break;
+    	}*/
+    	
+    	if(highGoal) {
+	    	addParallel(new DriveCommand(0.6, 0.3, -0.3));
+	    	addSequential(new CannonEncoderMove(-100, encMoveTime)); //move encoder to minimum angle (horizontal)
+	    	
+	    	addSequential(new PositioningInit()); //put into position for auto-target
+	    	Timer.delay(encMoveTime); //wait "encMoveTime" seconds to make sure cannon is positioned
+	    	
+	    	addSequential(new VisionToggle(true)); //make sure vision is enabled
+	    	addSequential(new TargetingAuto(targetTime)); //auto target for "targetTime" seconds
+	    	Timer.delay(targetTime);
+	    	
+	    	addSequential(new Launch());
     	}
-    	/*addSequential(new PositioningInit()); //put into position for auto-target
-    	Timer.delay(encMoveTime); //wait "encMoveTime" seconds to make sure cannon is positioned
-    	
-    	addSequential(new VisionToggle(true)); //make sure vision is enabled
-    	addSequential(new TargetingAuto(targetTime)); //auto target for "targetTime" seconds
-    	Timer.delay(targetTime);*/
-    	
     	addSequential(new TargetingManual()); //switch back to manual target
     	//addSequential(new Launch()); //launch the ball
     	//Timer.delay(Launch.elapsedTime); //wait for launch to complete

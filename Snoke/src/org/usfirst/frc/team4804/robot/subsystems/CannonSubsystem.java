@@ -19,6 +19,10 @@ public class CannonSubsystem extends Subsystem {
 	public static double LOAD_SPEED = -0.55;
 	public static double LAUNCH_SPEED = 1.0;
 	
+	// Set the default command for a subsystem here.
+    public void initDefaultCommand() {
+        // setDefaultCommand(new ExampleCommand());
+    }
 	
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
@@ -34,6 +38,9 @@ public class CannonSubsystem extends Subsystem {
     
     public void motorLaunch() {
     	setMotor(-LAUNCH_SPEED);
+    }
+    public void motorLaunch(boolean slow) {
+    	setMotor(-LAUNCH_SPEED*0.75);
     }
     public void motorLaunch(XboxController xbox) {
     	setMotor(-LAUNCH_SPEED*Math.abs(xbox.getRightStickYAxis()));
@@ -56,11 +63,6 @@ public class CannonSubsystem extends Subsystem {
     	}
     	
     	SmartDashboard.putNumber("Cannon Launcher Speed", speed);
-    }
-    
-    // Set the default command for a subsystem here.
-    public void initDefaultCommand() {
-        // setDefaultCommand(new ExampleCommand());
     }
 }
 
