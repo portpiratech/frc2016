@@ -19,16 +19,16 @@ public class AutonomousCommand extends CommandGroup {
 	
 	boolean backwards = false;
 	
-	boolean highGoal = false;
+	boolean highGoal = true;
 	boolean lowGoal = false;
 	
 	//times for each driving segment (seconds)
-	static double fwdTime = 6.0; //drive forward
-	static double turnTime = 0.8; //turn robot if off-center
+	static double fwdTime = 2.0; //drive forward
+	static double turnTime = 2.0; //turn robot if off-center
 	static double turnTimeLow = 0.8; //turn robot if slightly off-center
 	static double turnTimeHigh = 1.6; //turn robot if far off-center
-	static double encMoveTime = 0.8; //move encoder to position
-	static double targetTime = 1.5; //auto target time
+	static double encMoveTime = 1.6; //move encoder to position
+	static double targetTime = 2.0; //auto target time
 	
     public AutonomousCommand() {
     	addSequential(new TargetingManual());
@@ -75,7 +75,7 @@ public class AutonomousCommand extends CommandGroup {
     	if(highGoal) {
 	    	addParallel(new DriveCommand(0.6, 0.3, -0.3));
 	    	addSequential(new CannonEncoderMove(-100, encMoveTime)); //move encoder to minimum angle (horizontal)
-	    	
+	    	Timer.delay(0.3);
 	    	addSequential(new PositioningInit()); //put into position for auto-target
 	    	Timer.delay(encMoveTime); //wait "encMoveTime" seconds to make sure cannon is positioned
 	    	
@@ -84,6 +84,7 @@ public class AutonomousCommand extends CommandGroup {
 	    	Timer.delay(targetTime);
 	    	
 	    	addSequential(new Launch());
+	    	Timer.delay(Launch.elapsedTime);
     	}
     	addSequential(new TargetingManual()); //switch back to manual target
     	//addSequential(new Launch()); //launch the ball

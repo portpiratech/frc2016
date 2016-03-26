@@ -401,7 +401,7 @@ public class Vision {
     	
        //constants
     	double v = 8.686; 		//initial velocity. (m/s)	Roughly 14 mph = 6.26 m/s
-    	double heightM = 1.3; //2.311; 		//height of target. (m)							
+    	double heightM = 2.311; 		//height of target. (m)							
     	//TODO: Change back
     	
        //optimum launch angle so that ball passes through target at peak of trajectory
